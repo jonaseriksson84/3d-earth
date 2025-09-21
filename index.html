@@ -80,14 +80,67 @@
         // Earth setup
         const textureLoader = new THREE.TextureLoader();
 
-        // Earth geometry and material
+        // Earth geometry and material with city lights
         const earthGeometry = new THREE.SphereGeometry(5, 64, 64);
-        const earthMaterial = new THREE.MeshPhongMaterial({
-            map: textureLoader.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg'),
-            normalMap: textureLoader.load('https://threejs.org/examples/textures/planets/earth_normal_2048.jpg'),
-            specularMap: textureLoader.load('https://threejs.org/examples/textures/planets/earth_specular_2048.jpg'),
-            shininess: 50
+        
+        // Load textures
+        const dayTexture = textureLoader.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
+        const normalTexture = textureLoader.load('https://threejs.org/examples/textures/planets/earth_normal_2048.jpg');
+        const specularTexture = textureLoader.load('https://threejs.org/examples/textures/planets/earth_specular_2048.jpg');
+        const nightTexture = textureLoader.load('https://threejs.org/examples/textures/planets/earth_lights_2048.png');
+        
+        // Custom shader material for day/night blending
+        const earthMaterial = new THREE.ShaderMaterial({
+            uniforms: {
+                dayTexture: { value: dayTexture },
+                nightTexture: { value: nightTexture },
+                normalTexture: { value: normalTexture },
+                specularTexture: { value: specularTexture },
+                sunDirection: { value: new THREE.Vector3(1, 0, 0) }
+            },
+            vertexShader: `
+                varying vec2 vUv;
+                varying vec3 vNormal;
+                varying vec3 vPosition;
+                
+                void main() {
+                    vUv = uv;
+                    vNormal = normalize(normalMatrix * normal);
+                    vPosition = position;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform sampler2D dayTexture;
+                uniform sampler2D nightTexture;
+                uniform sampler2D normalTexture;
+                uniform sampler2D specularTexture;
+                uniform vec3 sunDirection;
+                
+                varying vec2 vUv;
+                varying vec3 vNormal;
+                varying vec3 vPosition;
+                
+                void main() {
+                    vec4 dayColor = texture2D(dayTexture, vUv);
+                    vec4 nightColor = texture2D(nightTexture, vUv);
+                    
+                    // Use object-space normal and position for lighting calculation
+                    // This ensures lighting is fixed to Earth's surface geometry
+                    vec3 objectNormal = normalize(vPosition);
+                    float sunDot = dot(objectNormal, normalize(sunDirection));
+                    
+                    // Create smooth transition between day and night
+                    float mixFactor = smoothstep(-0.1, 0.1, sunDot);
+                    
+                    // Blend day and night textures
+                    vec4 finalColor = mix(nightColor, dayColor, mixFactor);
+                    
+                    gl_FragColor = finalColor;
+                }
+            `
         });
+        
         const earth = new THREE.Mesh(earthGeometry, earthMaterial);
         scene.add(earth);
 
@@ -179,8 +232,8 @@
             // Calculate subsolar longitude (sun moves west as time progresses)
             let subsolarLon = -(utcMinutes - 720 + eqTime) * 0.25;
             
-            // Account for Earth texture orientation in Three.js (90° offset)
-            let sunLon = subsolarLon - 90;
+            // Use subsolar longitude directly (no offset needed)
+            let sunLon = subsolarLon;
             // Normalize to [-180, 180]
             subsolarLon = ((subsolarLon + 540) % 360) - 180;
 
@@ -196,7 +249,9 @@
             directionalLight.intensity = 1.5;
             ambientLight.intensity = 0.2;
             
-
+            // Update shader uniform with sun direction in object space
+            // Using object space ensures lighting stays fixed to Earth's surface
+            earthMaterial.uniforms.sunDirection.value.set(x, y, z);
             
             // Update display
             updateTimeDisplay(now, subsolarLon, decl);
