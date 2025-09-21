@@ -5,11 +5,13 @@ An interactive 3D Earth visualization that displays real-time day/night cycles b
 ## Features
 
 - **Real-Time Sun Positioning**: Uses NOAA equations for precise sun position calculation
-- **Geolocation Integration**: Centers your longitude in the view and calculates local lighting
-- **Interactive Time Controls**: Manual time slider or real-time mode
+- **City Lights**: Realistic illuminated cities visible on the dark side of Earth
+- **Geolocation Integration**: Centers your longitude in the view for personalized lighting
+- **Intuitive Time Control**: Clean slider interface to explore different times of day
 - **Realistic Earth Rendering**: High-quality textures with surface maps, normal maps, and specular reflectance
-- **Cloud Layer**: Semi-transparent cloud coverage with independent rotation
-- **Astronomical Accuracy**: Shows subsolar point coordinates and accounts for equation of time
+- **Cloud Layer**: Semi-transparent global cloud coverage
+- **Interactive Controls**: Mouse drag to rotate, scroll to zoom, with zoom limits to prevent going inside Earth
+- **User-Friendly Interface**: Clear time display and interaction instructions
 
 ## Technical Implementation
 
@@ -25,63 +27,78 @@ The sun's position is calculated using standard astronomical formulas:
 ```javascript
 // Core formula for subsolar longitude (moves west as time progresses)
 let subsolarLon = -(utcMinutes - 720 + eqTime) * 0.25;
-// Account for Earth texture orientation in Three.js
-let sunLon = subsolarLon - 90;
+// Use directly without offset for correct positioning
+let sunLon = subsolarLon;
+```
+
+### City Lights Implementation
+
+City lights are rendered using a custom shader that blends day and night textures:
+
+```javascript
+// Custom shader blends textures based on sun position
+const earthMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+        dayTexture: { value: dayTexture },
+        nightTexture: { value: nightTexture },
+        sunDirection: { value: new THREE.Vector3() }
+    },
+    // Shader calculates lighting in object space for proper rotation
+    fragmentShader: `
+        float sunDot = dot(objectNormal, normalize(sunDirection));
+        float mixFactor = smoothstep(-0.1, 0.1, sunDot);
+        vec4 finalColor = mix(nightColor, dayColor, mixFactor);
+    `
+});
 ```
 
 ### Coordinate System
 
-The project uses a hybrid coordinate system:
+The project uses object-space coordinates for lighting to ensure proper rotation:
 
 - **Geographic coordinates**: Standard longitude/latitude for sun calculations  
-- **Three.js world coordinates**: 3D Cartesian coordinates for rendering
-- **Earth texture mapping**: Accounts for texture orientation with 90° offset
+- **Object-space lighting**: Ensures day/night patterns rotate with Earth
+- **OrbitControls integration**: Lighting stays fixed to Earth's surface during user interaction
 
-Key coordinate conversion with proper east/west movement:
+Key coordinate conversion:
 ```javascript
 const x = Math.cos(lat) * Math.cos(lon);
 const y = Math.sin(lat);
 const z = -Math.cos(lat) * Math.sin(lon);  // Inverted for correct Three.js movement
 ```
 
-### Earth Rotation
+### User Interface
 
-The Earth is rotated to center the user's longitude in view:
-```javascript
-earth.rotation.y = -(Math.PI / 2) - (userLongitude * Math.PI / 180);
-```
+Clean, intuitive interface with:
+- **Single time display**: Shows local time with UTC in parentheses
+- **Direct time control**: Slider immediately updates sun position
+- **Interaction guidance**: Clear instructions for mouse controls
+- **Zoom limits**: Prevents camera from going inside Earth geometry
 
-This rotation accounts for both the Earth texture's default orientation and the user's geographic location.
+## User Controls
 
-## Time Controls
-
-- **Real-Time Mode**: Updates sun position continuously based on current time
-- **Manual Mode**: Use the time slider to see sun position at any time of day
-- **Reset Button**: Returns to current real time
+- **Mouse Drag**: Rotate the Earth in any direction
+- **Mouse Scroll**: Zoom in for surface detail or zoom out for global view
+- **Time Slider**: Adjust time to see how lighting changes throughout the day
 
 ## Display Information
 
-- **Local Time**: Your current local time
-- **UTC Time**: Coordinated Universal Time
-- **Subsolar Point**: Current latitude and longitude where sun is directly overhead
+- **Time Display**: Shows your local time with UTC time in parentheses
+- **City Lights**: Illuminated cities automatically appear in nighttime regions
+- **Realistic Lighting**: Smooth day/night transitions with accurate sun positioning
 
 ## Technical Challenges Solved
 
-### East/West Movement Direction
-Initially, the sun was moving east as time progressed instead of west. This was solved by:
-1. Correcting the longitude calculation formula to use negative time progression
-2. Inverting the Z-coordinate in the spherical-to-Cartesian conversion for Three.js
+### Sun Movement and Positioning
+- **East/West Direction**: Corrected sun movement to properly move west as time progresses
+- **Timing Accuracy**: Fixed sun position to correctly illuminate regions at appropriate times
+- **Coordinate System**: Implemented object-space lighting to ensure day/night patterns rotate with Earth
 
-### Day/Night Timing Accuracy
-The sun's position was offset by approximately 12 hours from reality. Fixed by:
-1. Properly accounting for the Earth texture's orientation in Three.js coordinate system
-2. Adding/subtracting the correct 90° offset for texture alignment
-
-### Coordinate System Integration
-Reconciled three different coordinate systems:
-1. Standard geographic coordinates (longitude/latitude)
-2. Three.js world coordinates (x, y, z)
-3. Earth texture mapping coordinates
+### User Experience Improvements
+- **Interface Simplification**: Removed confusing controls and technical jargon for intuitive use
+- **City Lights Integration**: Added realistic nighttime illumination using custom shaders
+- **Zoom Controls**: Implemented distance limits to prevent camera from going inside Earth
+- **Visual Polish**: Changed to black space background and added clear user instructions
 
 ## Dependencies
 
@@ -94,11 +111,15 @@ Reconciled three different coordinate systems:
 Simply open `index.html` in a web browser. The application will:
 
 1. Request your location for accurate positioning
-2. Display the Earth with real-time lighting
+2. Display the Earth with real-time lighting and city lights
 3. Center your longitude in the view
-4. Update continuously to show current day/night conditions
+4. Show current time with intuitive controls
 
-Use the time slider to explore lighting conditions at different times of day, or toggle real-time mode to see live updates.
+**Interactions:**
+- **Drag** to rotate the Earth and explore different regions
+- **Scroll** to zoom in for surface details or zoom out for global view  
+- **Use the time slider** to see how lighting changes throughout the day
+- **Watch city lights** appear automatically in nighttime areas
 
 ## Astronomical Data Sources
 

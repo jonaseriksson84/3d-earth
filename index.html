@@ -41,27 +41,54 @@
             font-size: 14px;
             margin: 5px 0;
         }
+
+        .instructions {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 8px;
+            color: white;
+            font-size: 12px;
+            max-width: 200px;
+        }
+
+        .instructions h4 {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+        }
+
+        .instructions ul {
+            margin: 0;
+            padding-left: 15px;
+        }
+
+        .instructions li {
+            margin: 4px 0;
+        }
     </style>
 </head>
 
 <body>
     <div class="controls">
         <div class="time-display">
-            <div id="localTime">Local Time: --:--</div>
-            <div id="utcTime">UTC Time: --:--</div>
-            <div id="subsolarInfo">Subsolar Point: --</div>
+            <div id="currentTime">--:-- (--:-- UTC)</div>
         </div>
         
         <div class="slider-container">
-            <label for="timeSlider">Time Control:</label>
+            <label for="timeSlider">Time control</label>
             <input type="range" id="timeSlider" class="slider" min="0" max="1440" value="720" step="15">
-            <div id="sliderTime">12:00</div>
         </div>
-        
-        <div class="slider-container">
-            <button id="realTimeBtn">Use Real Time</button>
-            <button id="resetBtn">Reset to Now</button>
-        </div>
+    </div>
+
+    <div class="instructions">
+        <h4>Controls</h4>
+        <ul>
+            <li>Drag to rotate Earth</li>
+            <li>Scroll to zoom in/out</li>
+            <li>Use slider to change time</li>
+        </ul>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -72,7 +99,7 @@
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer();
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setClearColor(0x000033, 1); // Dark blue space background
+        renderer.setClearColor(0x000000, 1); // Black space background
         document.body.appendChild(renderer.domElement);
 
 
@@ -159,7 +186,6 @@
         let userLatitude = 59;
         
         // Time control variables
-        let useRealTime = true;
         let simulatedTime = null;
         const getLocation = () => {
             if (navigator.geolocation) {
@@ -211,7 +237,11 @@
 
         // Adjust sun position for day/night based on current time
         function updateSunPosition() {
-            const now = useRealTime ? new Date() : simulatedTime;
+            // Get time from slider or current time
+            const sliderMinutes = parseInt(timeSlider.value);
+            const today = new Date();
+            const now = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 
+                Math.floor(sliderMinutes / 60), sliderMinutes % 60, 0);
             // Minutes since UTC midnight
             const utcMinutes = now.getUTCHours() * 60 + now.getUTCMinutes() + now.getUTCSeconds() / 60;
 
@@ -254,18 +284,14 @@
             earthMaterial.uniforms.sunDirection.value.set(x, y, z);
             
             // Update display
-            updateTimeDisplay(now, subsolarLon, decl);
+            updateTimeDisplay(now);
         }
         
-        function updateTimeDisplay(now, subsolarLon, decl) {
-            const localTime = now.toLocaleTimeString();
-            const utcTime = now.toUTCString().split(' ')[4];
-            const subsolarLat = decl * 180 / Math.PI;
+        function updateTimeDisplay(now) {
+            const localTime = now.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+            const utcTime = now.toUTCString().split(' ')[4].substring(0, 5);
             
-            document.getElementById('localTime').textContent = `Local Time: ${localTime}`;
-            document.getElementById('utcTime').textContent = `UTC Time: ${utcTime}`;
-            document.getElementById('subsolarInfo').textContent = 
-                `Subsolar Point: ${subsolarLat.toFixed(1)}°N, ${subsolarLon.toFixed(1)}°E`;
+            document.getElementById('currentTime').textContent = `${localTime} (${utcTime} UTC)`;
         }
 
         // Camera position
@@ -277,62 +303,16 @@
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
         controls.target.set(0, 0, 0);
+        controls.minDistance = 7;  // Prevent zooming inside Earth (radius 5)
+        controls.maxDistance = 50; // Optional zoom out limit
         
         // Time control setup
         const timeSlider = document.getElementById('timeSlider');
-        const sliderTimeDisplay = document.getElementById('sliderTime');
-        const realTimeBtn = document.getElementById('realTimeBtn');
-        const resetBtn = document.getElementById('resetBtn');
-        
-        function minutesToTime(minutes) {
-            const hours = Math.floor(minutes / 60);
-            const mins = minutes % 60;
-            return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
-        }
-        
-        function updateSliderTime() {
-            const minutes = parseInt(timeSlider.value);
-            sliderTimeDisplay.textContent = minutesToTime(minutes);
-            
-            if (!useRealTime) {
-                const today = new Date();
-                simulatedTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 
-                    Math.floor(minutes / 60), minutes % 60, 0);
-            }
-        }
-        
-        timeSlider.addEventListener('input', () => {
-            useRealTime = false;
-            realTimeBtn.textContent = 'Use Real Time';
-            updateSliderTime();
-        });
-        
-        realTimeBtn.addEventListener('click', () => {
-            useRealTime = !useRealTime;
-            realTimeBtn.textContent = useRealTime ? 'Use Slider Time' : 'Use Real Time';
-            
-            if (useRealTime) {
-                const now = new Date();
-                const minutes = now.getHours() * 60 + now.getMinutes();
-                timeSlider.value = minutes;
-                updateSliderTime();
-            }
-        });
-        
-        resetBtn.addEventListener('click', () => {
-            const now = new Date();
-            const minutes = now.getHours() * 60 + now.getMinutes();
-            timeSlider.value = minutes;
-            updateSliderTime();
-            useRealTime = true;
-            realTimeBtn.textContent = 'Use Slider Time';
-        });
         
         // Initialize slider to current time
         const initNow = new Date();
         const initMinutes = initNow.getHours() * 60 + initNow.getMinutes();
         timeSlider.value = initMinutes;
-        updateSliderTime();
 
 
 
