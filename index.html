@@ -112,17 +112,59 @@
 
 
 
-        // Earth setup
-        const textureLoader = new THREE.TextureLoader();
+        // Earth setup with loading management
+        const loadingManager = new THREE.LoadingManager();
+        
+        loadingManager.onLoad = () => {
+            console.log('All textures loaded successfully');
+            // Ensure canvas is visible once everything is ready
+            renderer.domElement.style.display = 'block';
+        };
+        
+        loadingManager.onError = (url) => {
+            console.error('Failed to load texture:', url);
+            // Still show canvas even if some textures fail
+            renderer.domElement.style.display = 'block';
+        };
+        
+        const textureLoader = new THREE.TextureLoader(loadingManager);
 
-        // Earth geometry and material with city lights
-        const earthGeometry = new THREE.SphereGeometry(5, 64, 64);
+        // Earth geometry with responsive complexity based on device capabilities
+        const devicePixelRatio = window.devicePixelRatio || 1;
+        const isHighDPI = devicePixelRatio > 1.5;
+        const isLargeScreen = window.innerWidth > 1200;
+        
+        // Adjust geometry complexity: High-DPI/large screens get more detail
+        const segments = (isHighDPI && isLargeScreen) ? 64 : (isHighDPI || isLargeScreen) ? 48 : 32;
+        console.log(`Using ${segments}x${segments} geometry segments (${segments * segments * 2} triangles) for device`);
+        
+        const earthGeometry = new THREE.SphereGeometry(5, segments, segments);
 
-        // Load textures
-        const dayTexture = textureLoader.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
-        const normalTexture = textureLoader.load('https://threejs.org/examples/textures/planets/earth_normal_2048.jpg');
-        const specularTexture = textureLoader.load('https://threejs.org/examples/textures/planets/earth_specular_2048.jpg');
-        const nightTexture = textureLoader.load('https://threejs.org/examples/textures/planets/earth_lights_2048.png');
+        // Load textures with error handling
+        const dayTexture = textureLoader.load(
+            'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg',
+            undefined, // onLoad handled by manager
+            undefined, // onProgress
+            (err) => console.warn('Day texture failed, using fallback')
+        );
+        const normalTexture = textureLoader.load(
+            'https://threejs.org/examples/textures/planets/earth_normal_2048.jpg',
+            undefined,
+            undefined,
+            (err) => console.warn('Normal texture failed, using fallback')
+        );
+        const specularTexture = textureLoader.load(
+            'https://threejs.org/examples/textures/planets/earth_specular_2048.jpg',
+            undefined,
+            undefined,
+            (err) => console.warn('Specular texture failed, using fallback')
+        );
+        const nightTexture = textureLoader.load(
+            'https://threejs.org/examples/textures/planets/earth_lights_2048.png',
+            undefined,
+            undefined,
+            (err) => console.warn('Night lights texture failed, using fallback')
+        );
 
         // Custom shader material for day/night blending
         const earthMaterial = new THREE.ShaderMaterial({
@@ -179,10 +221,16 @@
         const earth = new THREE.Mesh(earthGeometry, earthMaterial);
         scene.add(earth);
 
-        // Clouds
-        const cloudsGeometry = new THREE.SphereGeometry(5.05, 64, 64);
+        // Clouds with same responsive geometry as Earth
+        const cloudsGeometry = new THREE.SphereGeometry(5.05, segments, segments);
+        const cloudTexture = textureLoader.load(
+            'https://threejs.org/examples/textures/planets/earth_clouds_1024.png',
+            undefined,
+            undefined,
+            (err) => console.warn('Cloud texture failed, continuing without clouds')
+        );
         const cloudsMaterial = new THREE.MeshLambertMaterial({
-            map: textureLoader.load('https://threejs.org/examples/textures/planets/earth_clouds_1024.png'),
+            map: cloudTexture,
             transparent: true,
             opacity: 0.3
         });
@@ -202,17 +250,17 @@
                     userLatitude = position.coords.latitude;
                     console.log('Geolocation success: lat:', userLatitude, 'lon:', userLongitude);
                     updateEarthRotation();
-                    renderer.domElement.style.display = 'block';
+                    // Canvas visibility now managed by loading manager
                 }, () => {
                     console.log('Geolocation failed, using default');
                     // Default if denied
                     updateEarthRotation();
-                    renderer.domElement.style.display = 'block';
+                    // Canvas visibility now managed by loading manager
                 });
             } else {
                 console.log('Geolocation not supported');
                 updateEarthRotation();
-                renderer.domElement.style.display = 'block';
+                // Canvas visibility now managed by loading manager
             }
         };
 
@@ -322,12 +370,29 @@
         const initMinutes = initNow.getHours() * 60 + initNow.getMinutes();
         timeSlider.value = initMinutes;
 
+        // Performance optimization: track when sun calculation is needed
+        let lastSliderValue = timeSlider.value;
+        let needsSunUpdate = true;
+
+        // Add slider input listener for immediate updates
+        timeSlider.addEventListener('input', () => {
+            needsSunUpdate = true;
+        });
+
 
 
         // Animation
         function animate() {
             requestAnimationFrame(animate);
-            updateSunPosition();
+            
+            // Only update sun position when slider changes (HUGE performance gain)
+            const currentSliderValue = timeSlider.value;
+            if (needsSunUpdate || currentSliderValue !== lastSliderValue) {
+                updateSunPosition();
+                lastSliderValue = currentSliderValue;
+                needsSunUpdate = false;
+            }
+            
             controls.update();
             renderer.render(scene, camera);
         }
