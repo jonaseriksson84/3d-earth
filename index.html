@@ -102,202 +102,374 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script>
-        // Scene setup
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setClearColor(0x000000, 1); // Black space background
-        document.body.appendChild(renderer.domElement);
-
-
-
-        // Earth setup with loading management
-        const loadingManager = new THREE.LoadingManager();
+        // ==========================================
+        // CONFIGURATION
+        // ==========================================
         
-        loadingManager.onLoad = () => {
-            console.log('All textures loaded successfully');
-            // Ensure canvas is visible once everything is ready
-            renderer.domElement.style.display = 'block';
+        const CONFIG = {
+            // Earth physical properties
+            EARTH_RADIUS: 5,
+            CLOUD_RADIUS: 5.05,
+            
+            // Time constants
+            UTC_NOON_MINUTES: 720,  // 12:00 UTC in minutes
+            MINUTES_PER_DAY: 1440,  // 24 hours * 60 minutes
+            DEGREES_PER_MINUTE: 0.25,  // Earth rotation: 360° / 1440 minutes
+            SLIDER_STEP: 15,  // 15-minute increments
+            
+            // Geometry quality
+            GEOMETRY_HIGH: 64,
+            GEOMETRY_MEDIUM: 48,
+            GEOMETRY_LOW: 32,
+            
+            // Camera settings
+            CAMERA_FOV: 75,
+            CAMERA_NEAR: 0.1,
+            CAMERA_FAR: 1000,
+            INITIAL_CAMERA_DISTANCE: 15,
+            MIN_ZOOM_DISTANCE: 7,
+            MAX_ZOOM_DISTANCE: 50,
+            
+            // Lighting
+            AMBIENT_LIGHT_INTENSITY: 0.25,
+            DIRECTIONAL_LIGHT_INTENSITY: 1.5,
+            SUN_DISTANCE: 10,
+            
+            // Visual effects
+            CLOUD_OPACITY: 0.3,
+            DAY_NIGHT_TRANSITION: { min: -0.1, max: 0.1 },  // smoothstep range
+            
+            // Default location (Stockholm)
+            DEFAULT_LONGITUDE: 18,
+            DEFAULT_LATITUDE: 59,
+            
+            // Controls
+            DAMPING_FACTOR: 0.05
         };
+
+        // ==========================================
+        // GLOBAL VARIABLES
+        // ==========================================
         
-        loadingManager.onError = (url) => {
-            console.error('Failed to load texture:', url);
-            // Still show canvas even if some textures fail
-            renderer.domElement.style.display = 'block';
-        };
-        
-        const textureLoader = new THREE.TextureLoader(loadingManager);
+        let scene, camera, renderer, controls;
+        let earth, clouds, earthMaterial;
+        let ambientLight, directionalLight;
+        let userLongitude = CONFIG.DEFAULT_LONGITUDE;
+        let userLatitude = CONFIG.DEFAULT_LATITUDE;
+        let timeSlider, lastSliderValue, needsSunUpdate = true;
 
-        // Earth geometry with responsive complexity based on device capabilities
-        const devicePixelRatio = window.devicePixelRatio || 1;
-        const isHighDPI = devicePixelRatio > 1.5;
-        const isLargeScreen = window.innerWidth > 1200;
-        
-        // Adjust geometry complexity: High-DPI/large screens get more detail
-        const segments = (isHighDPI && isLargeScreen) ? 64 : (isHighDPI || isLargeScreen) ? 48 : 32;
-        console.log(`Using ${segments}x${segments} geometry segments (${segments * segments * 2} triangles) for device`);
-        
-        const earthGeometry = new THREE.SphereGeometry(5, segments, segments);
+        // ==========================================
+        // UTILITY FUNCTIONS
+        // ==========================================
 
-        // Load textures with error handling
-        const dayTexture = textureLoader.load(
-            'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg',
-            undefined, // onLoad handled by manager
-            undefined, // onProgress
-            (err) => console.warn('Day texture failed, using fallback')
-        );
-        const normalTexture = textureLoader.load(
-            'https://threejs.org/examples/textures/planets/earth_normal_2048.jpg',
-            undefined,
-            undefined,
-            (err) => console.warn('Normal texture failed, using fallback')
-        );
-        const specularTexture = textureLoader.load(
-            'https://threejs.org/examples/textures/planets/earth_specular_2048.jpg',
-            undefined,
-            undefined,
-            (err) => console.warn('Specular texture failed, using fallback')
-        );
-        const nightTexture = textureLoader.load(
-            'https://threejs.org/examples/textures/planets/earth_lights_2048.png',
-            undefined,
-            undefined,
-            (err) => console.warn('Night lights texture failed, using fallback')
-        );
-
-        // Custom shader material for day/night blending
-        const earthMaterial = new THREE.ShaderMaterial({
-            uniforms: {
-                dayTexture: { value: dayTexture },
-                nightTexture: { value: nightTexture },
-                normalTexture: { value: normalTexture },
-                specularTexture: { value: specularTexture },
-                sunDirection: { value: new THREE.Vector3(1, 0, 0) }
-            },
-            vertexShader: `
-                varying vec2 vUv;
-                varying vec3 vNormal;
-                varying vec3 vPosition;
-                
-                void main() {
-                    vUv = uv;
-                    vNormal = normalize(normalMatrix * normal);
-                    vPosition = position;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                }
-            `,
-            fragmentShader: `
-                uniform sampler2D dayTexture;
-                uniform sampler2D nightTexture;
-                uniform sampler2D normalTexture;
-                uniform sampler2D specularTexture;
-                uniform vec3 sunDirection;
-                
-                varying vec2 vUv;
-                varying vec3 vNormal;
-                varying vec3 vPosition;
-                
-                void main() {
-                    vec4 dayColor = texture2D(dayTexture, vUv);
-                    vec4 nightColor = texture2D(nightTexture, vUv);
-                    
-                    // Use object-space normal and position for lighting calculation
-                    // This ensures lighting is fixed to Earth's surface geometry
-                    vec3 objectNormal = normalize(vPosition);
-                    float sunDot = dot(objectNormal, normalize(sunDirection));
-                    
-                    // Create smooth transition between day and night
-                    float mixFactor = smoothstep(-0.1, 0.1, sunDot);
-                    
-                    // Blend day and night textures
-                    vec4 finalColor = mix(nightColor, dayColor, mixFactor);
-                    
-                    gl_FragColor = finalColor;
-                }
-            `
-        });
-
-        const earth = new THREE.Mesh(earthGeometry, earthMaterial);
-        scene.add(earth);
-
-        // Clouds with same responsive geometry as Earth
-        const cloudsGeometry = new THREE.SphereGeometry(5.05, segments, segments);
-        const cloudTexture = textureLoader.load(
-            'https://threejs.org/examples/textures/planets/earth_clouds_1024.png',
-            undefined,
-            undefined,
-            (err) => console.warn('Cloud texture failed, continuing without clouds')
-        );
-        const cloudsMaterial = new THREE.MeshLambertMaterial({
-            map: cloudTexture,
-            transparent: true,
-            opacity: 0.3
-        });
-        const clouds = new THREE.Mesh(cloudsGeometry, cloudsMaterial);
-        scene.add(clouds);
-
-        // Get user location
-        let userLongitude = 18; // Default to Stockholm
-        let userLatitude = 59;
-
-        // Time control variables
-        let simulatedTime = null;
-        const getLocation = () => {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition((position) => {
-                    userLongitude = position.coords.longitude;
-                    userLatitude = position.coords.latitude;
-                    console.log('Geolocation success: lat:', userLatitude, 'lon:', userLongitude);
-                    updateEarthRotation();
-                    // Canvas visibility now managed by loading manager
-                }, () => {
-                    console.log('Geolocation failed, using default');
-                    // Default if denied
-                    updateEarthRotation();
-                    // Canvas visibility now managed by loading manager
-                });
-            } else {
-                console.log('Geolocation not supported');
-                updateEarthRotation();
-                // Canvas visibility now managed by loading manager
+        function checkWebGLSupport() {
+            try {
+                const canvas = document.createElement('canvas');
+                return !!(window.WebGLRenderingContext && 
+                         (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
+            } catch(e) {
+                return false;
             }
-        };
+        }
+
+        function showError(title, message) {
+            document.body.innerHTML = `
+                <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                           text-align: center; color: white; font-family: Arial, sans-serif;">
+                    <h2>${title}</h2>
+                    <p>${message}</p>
+                </div>`;
+        }
 
         function getDayOfYear(date) {
-            const startUTC = Date.UTC(date.getUTCFullYear(), 0, 1);
-            const nowUTC = Date.UTC(
-                date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),
-                date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds()
+            try {
+                if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+                    console.warn('Invalid date provided to getDayOfYear, using current date');
+                    date = new Date();
+                }
+                
+                const startUTC = Date.UTC(date.getUTCFullYear(), 0, 1);
+                const nowUTC = Date.UTC(
+                    date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),
+                    date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds()
+                );
+                const oneDay = 1000 * 60 * 60 * 24;
+                const dayOfYear = Math.floor((nowUTC - startUTC) / oneDay) + 1;
+                
+                // Validate result (should be 1-366)
+                return (dayOfYear >= 1 && dayOfYear <= 366) ? dayOfYear : 1;
+            } catch (error) {
+                console.error('Error calculating day of year:', error);
+                return 1; // Fallback to January 1st
+            }
+        }
+
+        // ==========================================
+        // INITIALIZATION & SETUP
+        // ==========================================
+
+        function initWebGL() {
+            if (!checkWebGLSupport()) {
+                showError('WebGL Not Supported', 
+                         'This application requires WebGL to display 3D graphics.<br>' +
+                         'Please update your browser or enable WebGL in settings.');
+                throw new Error('WebGL not supported');
+            }
+        }
+
+        function initScene() {
+            try {
+                scene = new THREE.Scene();
+                camera = new THREE.PerspectiveCamera(
+                    CONFIG.CAMERA_FOV, 
+                    window.innerWidth / window.innerHeight, 
+                    CONFIG.CAMERA_NEAR, 
+                    CONFIG.CAMERA_FAR
+                );
+                renderer = new THREE.WebGLRenderer({ antialias: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setClearColor(0x000000, 1);
+                document.body.appendChild(renderer.domElement);
+                
+                console.log('Scene initialized successfully');
+            } catch (error) {
+                console.error('Failed to initialize WebGL renderer:', error);
+                showError('Graphics Initialization Failed',
+                         'Unable to start the 3D graphics system.<br>' +
+                         'Please refresh the page or try a different browser.');
+                throw error;
+            }
+        }
+
+
+
+        // ==========================================
+        // 3D OBJECTS & MATERIALS
+        // ==========================================
+
+        function initEarth() {
+            const loadingManager = new THREE.LoadingManager();
+            
+            loadingManager.onLoad = () => {
+                console.log('All textures loaded successfully');
+                renderer.domElement.style.display = 'block';
+            };
+            
+            loadingManager.onError = (url) => {
+                console.error('Failed to load texture:', url);
+                renderer.domElement.style.display = 'block';
+            };
+            
+            const textureLoader = new THREE.TextureLoader(loadingManager);
+
+            // Responsive geometry based on device capabilities
+            const devicePixelRatio = window.devicePixelRatio || 1;
+            const isHighDPI = devicePixelRatio > 1.5;
+            const isLargeScreen = window.innerWidth > 1200;
+            
+            const segments = (isHighDPI && isLargeScreen) ? CONFIG.GEOMETRY_HIGH : 
+                            (isHighDPI || isLargeScreen) ? CONFIG.GEOMETRY_MEDIUM : 
+                            CONFIG.GEOMETRY_LOW;
+            console.log(`Using ${segments}x${segments} geometry segments (${segments * segments * 2} triangles)`);
+            
+            const earthGeometry = new THREE.SphereGeometry(CONFIG.EARTH_RADIUS, segments, segments);
+
+            // Load Earth textures
+            const dayTexture = textureLoader.load(
+                'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg',
+                undefined, undefined, (err) => console.warn('Day texture failed')
             );
-            const oneDay = 1000 * 60 * 60 * 24;
-            return Math.floor((nowUTC - startUTC) / oneDay) + 1;
+            const normalTexture = textureLoader.load(
+                'https://threejs.org/examples/textures/planets/earth_normal_2048.jpg',
+                undefined, undefined, (err) => console.warn('Normal texture failed')
+            );
+            const specularTexture = textureLoader.load(
+                'https://threejs.org/examples/textures/planets/earth_specular_2048.jpg',
+                undefined, undefined, (err) => console.warn('Specular texture failed')
+            );
+            const nightTexture = textureLoader.load(
+                'https://threejs.org/examples/textures/planets/earth_lights_2048.png',
+                undefined, undefined, (err) => console.warn('Night lights texture failed')
+            );
+
+            // Earth shader material
+            earthMaterial = new THREE.ShaderMaterial({
+                uniforms: {
+                    dayTexture: { value: dayTexture },
+                    nightTexture: { value: nightTexture },
+                    normalTexture: { value: normalTexture },
+                    specularTexture: { value: specularTexture },
+                    sunDirection: { value: new THREE.Vector3(1, 0, 0) }
+                },
+                vertexShader: `
+                    varying vec2 vUv;
+                    varying vec3 vNormal;
+                    varying vec3 vPosition;
+                    
+                    void main() {
+                        vUv = uv;
+                        vNormal = normalize(normalMatrix * normal);
+                        vPosition = position;
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    uniform sampler2D dayTexture;
+                    uniform sampler2D nightTexture;
+                    uniform sampler2D normalTexture;
+                    uniform sampler2D specularTexture;
+                    uniform vec3 sunDirection;
+                    
+                    varying vec2 vUv;
+                    varying vec3 vNormal;
+                    varying vec3 vPosition;
+                    
+                    void main() {
+                        vec4 dayColor = texture2D(dayTexture, vUv);
+                        vec4 nightColor = texture2D(nightTexture, vUv);
+                        
+                        vec3 objectNormal = normalize(vPosition);
+                        float sunDot = dot(objectNormal, normalize(sunDirection));
+                        
+                        float mixFactor = smoothstep(${CONFIG.DAY_NIGHT_TRANSITION.min}, ${CONFIG.DAY_NIGHT_TRANSITION.max}, sunDot);
+                        vec4 finalColor = mix(nightColor, dayColor, mixFactor);
+                        
+                        gl_FragColor = finalColor;
+                    }
+                `
+            });
+
+            earth = new THREE.Mesh(earthGeometry, earthMaterial);
+            scene.add(earth);
+
+            // Clouds
+            const cloudsGeometry = new THREE.SphereGeometry(CONFIG.CLOUD_RADIUS, segments, segments);
+            const cloudTexture = textureLoader.load(
+                'https://threejs.org/examples/textures/planets/earth_clouds_1024.png',
+                undefined, undefined, (err) => console.warn('Cloud texture failed')
+            );
+            const cloudsMaterial = new THREE.MeshLambertMaterial({
+                map: cloudTexture,
+                transparent: true,
+                opacity: CONFIG.CLOUD_OPACITY
+            });
+            clouds = new THREE.Mesh(cloudsGeometry, cloudsMaterial);
+            scene.add(clouds);
+        }
+
+        function initLighting() {
+            // Lights
+            ambientLight = new THREE.AmbientLight(0x404040, CONFIG.AMBIENT_LIGHT_INTENSITY);
+            scene.add(ambientLight);
+
+            directionalLight = new THREE.DirectionalLight(0xffffff, CONFIG.DIRECTIONAL_LIGHT_INTENSITY);
+            directionalLight.position.set(0, 0, CONFIG.SUN_DISTANCE);
+            scene.add(directionalLight);
+        }
+
+        function initControls() {
+            // Camera position
+            camera.position.set(0, 0, CONFIG.INITIAL_CAMERA_DISTANCE);
+            camera.lookAt(0, 0, 0);
+
+            // Orbit controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = CONFIG.DAMPING_FACTOR;
+            controls.target.set(0, 0, 0);
+            controls.minDistance = CONFIG.MIN_ZOOM_DISTANCE;
+            controls.maxDistance = CONFIG.MAX_ZOOM_DISTANCE;
+        }
+
+        // ==========================================
+        // GEOLOCATION & LOCATION HANDLING
+        // ==========================================
+
+        function getLocation() {
+            if (!navigator.geolocation) {
+                console.log('Geolocation not supported, using default location');
+                updateEarthRotation();
+                return;
+            }
+
+            const options = {
+                enableHighAccuracy: false,
+                timeout: 10000,
+                maximumAge: 300000
+            };
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    
+                    if (lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
+                        userLongitude = lon;
+                        userLatitude = lat;
+                        console.log(`Geolocation success: ${lat.toFixed(2)}°N, ${lon.toFixed(2)}°E`);
+                        updateEarthRotation();
+                    } else {
+                        console.warn('Invalid coordinates received, using default location');
+                        updateEarthRotation();
+                    }
+                },
+                (error) => {
+                    let errorMsg = 'Geolocation failed: ';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED: errorMsg += 'Permission denied'; break;
+                        case error.POSITION_UNAVAILABLE: errorMsg += 'Position unavailable'; break;
+                        case error.TIMEOUT: errorMsg += 'Request timed out'; break;
+                        default: errorMsg += 'Unknown error';
+                    }
+                    console.log(errorMsg + ', using default location');
+                    updateEarthRotation();
+                },
+                options
+            );
         }
 
         function updateEarthRotation() {
             // Center user's longitude at camera by yawing Earth
-            earth.rotation.y = - (Math.PI / 2) - (userLongitude * Math.PI / 180);
+            earth.rotation.y = -(Math.PI / 2) - (userLongitude * Math.PI / 180);
             earth.rotation.x = 0;
             clouds.rotation.y = earth.rotation.y;
             clouds.rotation.x = 0;
         }
-        getLocation();
 
-        // Lights
-        const ambientLight = new THREE.AmbientLight(0x404040, 0.25);
-        scene.add(ambientLight);
+        function getDayOfYear(date) {
+            try {
+                if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+                    console.warn('Invalid date provided to getDayOfYear, using current date');
+                    date = new Date();
+                }
+                
+                const startUTC = Date.UTC(date.getUTCFullYear(), 0, 1);
+                const nowUTC = Date.UTC(
+                    date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),
+                    date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds()
+                );
+                const oneDay = 1000 * 60 * 60 * 24;
+                const dayOfYear = Math.floor((nowUTC - startUTC) / oneDay) + 1;
+                
+                // Validate result (should be 1-366)
+                return (dayOfYear >= 1 && dayOfYear <= 366) ? dayOfYear : 1;
+            } catch (error) {
+                console.error('Error calculating day of year:', error);
+                return 1; // Fallback to January 1st
+            }
+        }
 
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
-        directionalLight.position.set(0, 0, 10);
-        scene.add(directionalLight);
+        // ==========================================
+        // ASTRONOMY & SUN POSITIONING
+        // ==========================================
 
-        // Adjust sun position for day/night based on current time
         function updateSunPosition() {
-            // Get time from slider or current time
+            // Get time from slider
             const sliderMinutes = parseInt(timeSlider.value);
             const today = new Date();
             const now = new Date(today.getFullYear(), today.getMonth(), today.getDate(),
                 Math.floor(sliderMinutes / 60), sliderMinutes % 60, 0);
+            
             // Minutes since UTC midnight
             const utcMinutes = now.getUTCHours() * 60 + now.getUTCMinutes() + now.getUTCSeconds() / 60;
 
@@ -314,96 +486,173 @@
                 - 0.006758 * Math.cos(2 * gamma) + 0.000907 * Math.sin(2 * gamma)
                 - 0.002697 * Math.cos(3 * gamma) + 0.00148 * Math.sin(3 * gamma);
 
-            // Subsolar longitude (degrees, East positive)
             // Calculate subsolar longitude (sun moves west as time progresses)
-            let subsolarLon = -(utcMinutes - 720 + eqTime) * 0.25;
-
-            // Use subsolar longitude directly (no offset needed)
+            let subsolarLon = -(utcMinutes - CONFIG.UTC_NOON_MINUTES + eqTime) * CONFIG.DEGREES_PER_MINUTE;
             let sunLon = subsolarLon;
-            // Normalize to [-180, 180]
             subsolarLon = ((subsolarLon + 540) % 360) - 180;
 
-            // Convert subsolar point to unit vector (ECEF)
+            // Convert to 3D coordinates
             const lat = decl; // radians
             const lon = sunLon * Math.PI / 180;
             const x = Math.cos(lat) * Math.cos(lon);
             const y = Math.sin(lat);
             const z = -Math.cos(lat) * Math.sin(lon);
 
-            // Position directional light directly (sun doesn't rotate with Earth)
-            directionalLight.position.set(x * 10, y * 10, z * 10);
-            directionalLight.intensity = 1.5;
-            ambientLight.intensity = 0.2;
+            // Update lighting
+            directionalLight.position.set(x * CONFIG.SUN_DISTANCE, y * CONFIG.SUN_DISTANCE, z * CONFIG.SUN_DISTANCE);
+            directionalLight.intensity = CONFIG.DIRECTIONAL_LIGHT_INTENSITY;
+            ambientLight.intensity = CONFIG.AMBIENT_LIGHT_INTENSITY;
 
-            // Update shader uniform with sun direction in object space
-            // Using object space ensures lighting stays fixed to Earth's surface
+            // Update shader
             earthMaterial.uniforms.sunDirection.value.set(x, y, z);
 
-            // Update display
+            // Update UI
             updateTimeDisplay(now);
         }
 
-        function updateTimeDisplay(now) {
-            const localTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const utcTime = now.toUTCString().split(' ')[4].substring(0, 5);
+        // ==========================================
+        // USER INTERFACE
+        // ==========================================
 
-            document.getElementById('currentTime').textContent = `${localTime} (${utcTime} UTC)`;
+        function updateTimeDisplay(now) {
+            try {
+                if (!now || !(now instanceof Date) || isNaN(now.getTime())) {
+                    console.warn('Invalid date provided to updateTimeDisplay');
+                    now = new Date();
+                }
+                
+                const localTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const utcTime = now.toUTCString().split(' ')[4].substring(0, 5);
+                
+                const timeElement = document.getElementById('currentTime');
+                if (timeElement) {
+                    timeElement.textContent = `${localTime} (${utcTime} UTC)`;
+                }
+            } catch (error) {
+                console.error('Error updating time display:', error);
+                const timeElement = document.getElementById('currentTime');
+                if (timeElement) {
+                    timeElement.textContent = '--:-- (--:-- UTC)';
+                }
+            }
         }
 
-        // Camera position
-        camera.position.set(0, 0, 15);
-        camera.lookAt(0, 0, 0);
-
-        // Controls
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
-        controls.target.set(0, 0, 0);
-        controls.minDistance = 7;  // Prevent zooming inside Earth (radius 5)
-        controls.maxDistance = 50; // Optional zoom out limit
-
-        // Time control setup
-        const timeSlider = document.getElementById('timeSlider');
-
-        // Initialize slider to current time
-        const initNow = new Date();
-        const initMinutes = initNow.getHours() * 60 + initNow.getMinutes();
-        timeSlider.value = initMinutes;
-
-        // Performance optimization: track when sun calculation is needed
-        let lastSliderValue = timeSlider.value;
-        let needsSunUpdate = true;
-
-        // Add slider input listener for immediate updates
-        timeSlider.addEventListener('input', () => {
-            needsSunUpdate = true;
-        });
-
-
-
-        // Animation
-        function animate() {
-            requestAnimationFrame(animate);
+        function initTimeControls() {
+            timeSlider = document.getElementById('timeSlider');
             
-            // Only update sun position when slider changes (HUGE performance gain)
-            const currentSliderValue = timeSlider.value;
-            if (needsSunUpdate || currentSliderValue !== lastSliderValue) {
-                updateSunPosition();
-                lastSliderValue = currentSliderValue;
-                needsSunUpdate = false;
+            if (!timeSlider) {
+                console.error('Time slider element not found');
+                throw new Error('Required UI elements missing');
             }
             
-            controls.update();
-            renderer.render(scene, camera);
-        }
-        animate();
+            // Configure slider
+            timeSlider.min = 0;
+            timeSlider.max = CONFIG.MINUTES_PER_DAY;
+            timeSlider.step = CONFIG.SLIDER_STEP;
 
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
+            // Initialize to current time
+            const initNow = new Date();
+            let initMinutes = initNow.getHours() * 60 + initNow.getMinutes();
+            initMinutes = Math.max(0, Math.min(CONFIG.MINUTES_PER_DAY - 1, initMinutes));
+            timeSlider.value = initMinutes;
+
+            // Performance tracking
+            lastSliderValue = timeSlider.value;
+            needsSunUpdate = true;
+
+            // Event listeners
+            timeSlider.addEventListener('input', (event) => {
+                try {
+                    const value = parseInt(event.target.value);
+                    if (isNaN(value) || value < 0 || value >= CONFIG.MINUTES_PER_DAY) {
+                        console.warn('Invalid slider value, clamping to valid range');
+                        event.target.value = Math.max(0, Math.min(CONFIG.MINUTES_PER_DAY - 1, value || 0));
+                    }
+                    needsSunUpdate = true;
+                } catch (error) {
+                    console.error('Error handling slider input:', error);
+                }
+            });
+        }
+
+        // ==========================================
+        // ANIMATION & RENDERING
+        // ==========================================
+
+
+
+        function animate() {
+            try {
+                requestAnimationFrame(animate);
+                
+                // Only update sun position when slider changes (performance optimization)
+                const currentSliderValue = timeSlider.value;
+                if (needsSunUpdate || currentSliderValue !== lastSliderValue) {
+                    updateSunPosition();
+                    lastSliderValue = currentSliderValue;
+                    needsSunUpdate = false;
+                }
+                
+                if (controls) controls.update();
+                if (renderer && scene && camera) {
+                    renderer.render(scene, camera);
+                }
+            } catch (error) {
+                console.error('Animation error:', error);
+                requestAnimationFrame(animate);
+            }
+        }
+
+        function initEventListeners() {
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                try {
+                    if (camera && renderer) {
+                        camera.aspect = window.innerWidth / window.innerHeight;
+                        camera.updateProjectionMatrix();
+                        renderer.setSize(window.innerWidth, window.innerHeight);
+                    }
+                } catch (error) {
+                    console.error('Error handling window resize:', error);
+                }
+            });
+        }
+
+        // ==========================================
+        // APPLICATION INITIALIZATION
+        // ==========================================
+
+        function initApp() {
+            try {
+                console.log('Initializing 3D Earth visualization...');
+                
+                // Initialize all systems
+                initWebGL();
+                initScene();
+                initEarth();
+                initLighting();
+                initControls();
+                initTimeControls();
+                initEventListeners();
+                
+                // Start location detection and animation
+                getLocation();
+                animate();
+                
+                console.log('Application initialized successfully');
+            } catch (error) {
+                console.error('Failed to initialize application:', error);
+                document.body.innerHTML += `
+                    <div style="position: fixed; bottom: 20px; left: 20px; 
+                               background: rgba(255, 0, 0, 0.8); color: white; 
+                               padding: 10px; border-radius: 5px; font-family: Arial, sans-serif;">
+                        <strong>Error:</strong> Application failed to start. Check console for details.
+                    </div>`;
+            }
+        }
+
+        // Start the application
+        initApp();
     </script>
 </body>
 
