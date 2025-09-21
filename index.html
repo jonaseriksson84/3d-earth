@@ -32,6 +32,11 @@
             margin: 10px 0;
         }
 
+        .slider-container-title {
+            justify-content: space-between;
+            display: flex;
+        }
+
         .slider {
             width: 100%;
             margin: 8px 0;
@@ -72,12 +77,15 @@
 
 <body>
     <div class="controls">
-        <div class="time-display">
-            <div id="currentTime">--:-- (--:-- UTC)</div>
-        </div>
-        
+
+
         <div class="slider-container">
-            <label for="timeSlider">Time control</label>
+            <div class="slider-container-title">
+                <label for="timeSlider">Time control</label>
+                <span class="time-display">
+                    <span id="currentTime">--:-- <span class="time-display-utc">(--:-- UTC)</span></span>
+                </span>
+            </div>
             <input type="range" id="timeSlider" class="slider" min="0" max="1440" value="720" step="15">
         </div>
     </div>
@@ -109,13 +117,13 @@
 
         // Earth geometry and material with city lights
         const earthGeometry = new THREE.SphereGeometry(5, 64, 64);
-        
+
         // Load textures
         const dayTexture = textureLoader.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
         const normalTexture = textureLoader.load('https://threejs.org/examples/textures/planets/earth_normal_2048.jpg');
         const specularTexture = textureLoader.load('https://threejs.org/examples/textures/planets/earth_specular_2048.jpg');
         const nightTexture = textureLoader.load('https://threejs.org/examples/textures/planets/earth_lights_2048.png');
-        
+
         // Custom shader material for day/night blending
         const earthMaterial = new THREE.ShaderMaterial({
             uniforms: {
@@ -167,7 +175,7 @@
                 }
             `
         });
-        
+
         const earth = new THREE.Mesh(earthGeometry, earthMaterial);
         scene.add(earth);
 
@@ -184,7 +192,7 @@
         // Get user location
         let userLongitude = 18; // Default to Stockholm
         let userLatitude = 59;
-        
+
         // Time control variables
         let simulatedTime = null;
         const getLocation = () => {
@@ -240,7 +248,7 @@
             // Get time from slider or current time
             const sliderMinutes = parseInt(timeSlider.value);
             const today = new Date();
-            const now = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 
+            const now = new Date(today.getFullYear(), today.getMonth(), today.getDate(),
                 Math.floor(sliderMinutes / 60), sliderMinutes % 60, 0);
             // Minutes since UTC midnight
             const utcMinutes = now.getUTCHours() * 60 + now.getUTCMinutes() + now.getUTCSeconds() / 60;
@@ -261,7 +269,7 @@
             // Subsolar longitude (degrees, East positive)
             // Calculate subsolar longitude (sun moves west as time progresses)
             let subsolarLon = -(utcMinutes - 720 + eqTime) * 0.25;
-            
+
             // Use subsolar longitude directly (no offset needed)
             let sunLon = subsolarLon;
             // Normalize to [-180, 180]
@@ -278,19 +286,19 @@
             directionalLight.position.set(x * 10, y * 10, z * 10);
             directionalLight.intensity = 1.5;
             ambientLight.intensity = 0.2;
-            
+
             // Update shader uniform with sun direction in object space
             // Using object space ensures lighting stays fixed to Earth's surface
             earthMaterial.uniforms.sunDirection.value.set(x, y, z);
-            
+
             // Update display
             updateTimeDisplay(now);
         }
-        
+
         function updateTimeDisplay(now) {
-            const localTime = now.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+            const localTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const utcTime = now.toUTCString().split(' ')[4].substring(0, 5);
-            
+
             document.getElementById('currentTime').textContent = `${localTime} (${utcTime} UTC)`;
         }
 
@@ -305,10 +313,10 @@
         controls.target.set(0, 0, 0);
         controls.minDistance = 7;  // Prevent zooming inside Earth (radius 5)
         controls.maxDistance = 50; // Optional zoom out limit
-        
+
         // Time control setup
         const timeSlider = document.getElementById('timeSlider');
-        
+
         // Initialize slider to current time
         const initNow = new Date();
         const initMinutes = initNow.getHours() * 60 + initNow.getMinutes();
