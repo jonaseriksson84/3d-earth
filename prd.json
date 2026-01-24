@@ -1,6 +1,6 @@
 {
   "projectName": "3D Earth Visualization Enhancement",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "createdAt": "2026-01-24",
   "repository": "git@github.com:jonaseriksson84/3d-earth.git",
   "requirements": [
@@ -290,17 +290,697 @@
         "Different colors for axis vs latitude circles for clarity"
       ],
       "passes": true
+    },
+    {
+      "id": "FEATURE-006",
+      "category": "New Feature",
+      "priority": "medium",
+      "description": "Add Moon visualization with correct orbital position and phases",
+      "details": "Implement a Moon object that orbits Earth at the correct relative position based on the current date/time. The Moon should display the correct phase (illumination) based on its position relative to the Sun.",
+      "stepsToVerify": [
+        "Verify Moon mesh appears in scene at appropriate scale relative to Earth",
+        "Verify Moon orbits Earth at correct relative distance (approximately 30 Earth radii)",
+        "Change date and verify Moon position updates along its orbital path",
+        "Verify Moon phase (illumination) changes correctly based on Sun-Moon-Earth geometry",
+        "Verify new moon occurs when Moon is between Earth and Sun",
+        "Verify full moon occurs when Earth is between Moon and Sun",
+        "Verify Moon texture or shader shows realistic lunar surface",
+        "Verify Moon is visible from all camera angles when not behind Earth"
+      ],
+      "acceptanceCriteria": [
+        "Moon mesh rendered with realistic lunar surface texture",
+        "Moon positioned at astronomically accurate orbital position for current date",
+        "Moon phase correctly calculated and displayed based on Sun position",
+        "Moon orbit period approximately 29.5 days (synodic month)",
+        "Moon tidally locked (same face always toward Earth)",
+        "Moon casts no shadow on Earth (simplified model acceptable)",
+        "Performance impact less than 2ms per frame",
+        "Optional UI toggle to show/hide Moon"
+      ],
+      "passes": false
+    },
+    {
+      "id": "FEATURE-007",
+      "category": "New Feature",
+      "priority": "medium",
+      "description": "Add atmospheric glow effect at Earth's edge",
+      "details": "Implement a subtle blue atmospheric glow (limb effect) around Earth's edge to simulate the appearance of atmosphere when viewed from space. This should be visible as a soft blue halo around the planet's silhouette.",
+      "stepsToVerify": [
+        "Verify blue glow is visible around Earth's edge/limb",
+        "Rotate camera and verify glow appears consistently at all viewing angles",
+        "Verify glow is more prominent on the day side (sun-facing edge)",
+        "Verify glow fades smoothly into space (no hard edges)",
+        "Verify glow does not obscure Earth's surface details",
+        "Verify glow color is realistic atmospheric blue",
+        "Check performance impact is minimal",
+        "Verify glow scales appropriately when zooming in/out"
+      ],
+      "acceptanceCriteria": [
+        "Atmospheric glow visible as blue rim around Earth's edge",
+        "Glow implemented using fresnel shader effect or separate glow mesh",
+        "Glow intensity varies based on viewing angle (stronger at limb)",
+        "Glow color matches realistic atmospheric scattering (blue/cyan)",
+        "Glow blends smoothly with space background",
+        "Day side glow slightly brighter than night side",
+        "Performance impact less than 1ms per frame",
+        "Optional UI toggle to enable/disable atmosphere effect"
+      ],
+      "passes": false
+    },
+    {
+      "id": "FEATURE-008",
+      "category": "New Feature",
+      "priority": "low",
+      "description": "Add Aurora Borealis and Australis visualization",
+      "details": "Implement animated aurora effects near the polar regions (Arctic and Antarctic). The auroras should appear as shimmering, colorful light curtains that animate over time.",
+      "stepsToVerify": [
+        "Verify aurora effect appears near the North Pole (Aurora Borealis)",
+        "Verify aurora effect appears near the South Pole (Aurora Australis)",
+        "Verify auroras are positioned at correct geomagnetic latitudes (60-70 degrees)",
+        "Verify aurora animation shows shimmering/waving motion",
+        "Verify aurora colors include green, blue, and purple tones",
+        "Verify auroras are only visible on the night side of Earth",
+        "Verify auroras do not obscure underlying Earth texture excessively",
+        "Check performance with aurora animation enabled"
+      ],
+      "acceptanceCriteria": [
+        "Aurora Borealis rendered near Arctic region (65-70 degrees N)",
+        "Aurora Australis rendered near Antarctic region (65-70 degrees S)",
+        "Auroras animate with realistic curtain/wave motion",
+        "Aurora colors transition through green, blue, purple spectrum",
+        "Auroras only visible on night side of Earth",
+        "Auroras have appropriate transparency (0.3-0.6 alpha)",
+        "Animation runs smoothly at 60fps",
+        "UI toggle to enable/disable aurora effect",
+        "Performance impact less than 3ms per frame when enabled"
+      ],
+      "passes": false
+    },
+    {
+      "id": "FEATURE-009",
+      "category": "New Feature",
+      "priority": "medium",
+      "description": "Add satellite orbit visualization with ISS tracking",
+      "details": "Display orbital paths for notable satellites, with real-time or simulated position tracking for the International Space Station (ISS). Show orbital tracks as lines and satellite positions as markers.",
+      "stepsToVerify": [
+        "Verify ISS orbital path displayed as a line around Earth",
+        "Verify ISS marker shows current position along orbital path",
+        "Verify ISS orbit is inclined approximately 51.6 degrees to equator",
+        "Verify ISS completes one orbit approximately every 90 minutes (simulation)",
+        "Move time slider and verify ISS position updates along orbit",
+        "Verify orbital track line is semi-transparent and doesn't obscure Earth",
+        "Hover over ISS marker and verify tooltip shows satellite info",
+        "Verify option to show additional satellite orbits (GPS, geostationary)"
+      ],
+      "acceptanceCriteria": [
+        "ISS orbital path rendered as curved line at ~400km altitude",
+        "ISS position marker moves along orbital path based on time",
+        "Orbital inclination accurately represented (51.6 degrees for ISS)",
+        "Orbital period approximately correct (90 minutes for ISS)",
+        "Tooltip shows satellite name and altitude on hover",
+        "Orbital tracks use distinct colors for different satellites",
+        "UI toggle to show/hide satellite orbits",
+        "Option to add geostationary orbit ring (35,786 km altitude)",
+        "Performance impact less than 2ms per frame with orbits enabled"
+      ],
+      "passes": false
+    },
+    {
+      "id": "FEATURE-010",
+      "category": "New Feature",
+      "priority": "low",
+      "description": "Add animated or real-time cloud layer",
+      "details": "Enhance the cloud layer to either animate slowly over time or fetch real-time cloud data from a weather API to display current global cloud coverage.",
+      "stepsToVerify": [
+        "Verify cloud layer animates or updates over time",
+        "If animated: verify clouds drift slowly and realistically",
+        "If real-time: verify cloud data fetched from weather API",
+        "Verify cloud layer remains properly aligned with Earth surface",
+        "Verify cloud opacity remains appropriate (not too dense or sparse)",
+        "Verify animation/updates don't cause visual glitches",
+        "Check performance impact of animated clouds",
+        "Verify fallback to static clouds if API unavailable"
+      ],
+      "acceptanceCriteria": [
+        "Cloud layer shows motion or updates periodically",
+        "Animated option: clouds rotate slightly slower than Earth (trade winds effect)",
+        "Real-time option: fetches data from satellite imagery API (e.g., NASA GIBS)",
+        "Cloud animation smooth without stuttering",
+        "Cloud updates don't cause visible texture loading flashes",
+        "UI option to choose static, animated, or real-time clouds",
+        "Graceful fallback to static texture on API failure",
+        "Performance impact less than 2ms per frame for animation"
+      ],
+      "passes": false
+    },
+    {
+      "id": "FEATURE-011",
+      "category": "New Feature",
+      "priority": "high",
+      "description": "Add time scrubber for full day visualization",
+      "details": "Replace or enhance the time slider with a more intuitive time scrubber that allows users to drag through a full 24-hour day and see the sun position animate smoothly. Include play/pause controls for automatic time progression.",
+      "stepsToVerify": [
+        "Verify time scrubber UI allows dragging through 24-hour period",
+        "Verify sun position updates smoothly while dragging scrubber",
+        "Verify play button starts automatic time progression",
+        "Verify pause button stops automatic time progression",
+        "Verify playback speed can be adjusted (1x, 10x, 60x real-time)",
+        "Verify current time display updates during playback",
+        "Verify city marker times update during playback",
+        "Verify scrubber position updates during automatic playback"
+      ],
+      "acceptanceCriteria": [
+        "Time scrubber allows smooth dragging through 24-hour period",
+        "Play/pause button toggles automatic time progression",
+        "Speed controls allow 1x, 10x, 60x, 360x playback speeds",
+        "Current time clearly displayed in HH:MM format",
+        "Sun position animates smoothly during playback (minimum 30fps)",
+        "All time-dependent elements update during playback (markers, day/night)",
+        "Scrubber handle shows current position during playback",
+        "Keyboard shortcuts: Space for play/pause, arrow keys for step"
+      ],
+      "passes": false
+    },
+    {
+      "id": "FEATURE-012",
+      "category": "New Feature",
+      "priority": "medium",
+      "description": "Add fly-to animation for city markers",
+      "details": "When a user clicks on a city marker, smoothly animate the camera to fly to that location, centering the view on the selected city with an appropriate zoom level.",
+      "stepsToVerify": [
+        "Click on a city marker and verify camera starts moving toward it",
+        "Verify camera animation is smooth (no jerky movements)",
+        "Verify camera ends up centered on the clicked city",
+        "Verify zoom level adjusts appropriately during fly-to",
+        "Verify fly-to can be interrupted by user interaction (drag/scroll)",
+        "Verify fly-to works for cities on opposite side of Earth",
+        "Verify animation duration is appropriate (2-3 seconds)",
+        "Verify Earth rotation is handled correctly during animation"
+      ],
+      "acceptanceCriteria": [
+        "Clicking city marker triggers smooth camera fly-to animation",
+        "Camera follows curved path (not straight line through Earth)",
+        "Animation duration 2-3 seconds for distant locations",
+        "Camera ends centered on city with appropriate zoom level",
+        "Animation easing applied (ease-in-out)",
+        "User can interrupt animation with mouse/touch interaction",
+        "Works correctly for cities on both visible and hidden sides of Earth",
+        "Optional: double-click to fly-to without showing tooltip first"
+      ],
+      "passes": false
+    },
+    {
+      "id": "FEATURE-013",
+      "category": "New Feature",
+      "priority": "medium",
+      "description": "Expand city markers to 50+ locations with search",
+      "details": "Increase the number of city markers from 12 to 50+ major cities worldwide. Add a search input that allows users to find and highlight specific cities by name.",
+      "stepsToVerify": [
+        "Verify at least 50 city markers are available",
+        "Verify cities span all continents and major regions",
+        "Verify search input field exists in UI",
+        "Type city name and verify matching results appear",
+        "Select search result and verify city is highlighted/centered",
+        "Verify search works with partial city names",
+        "Verify search is case-insensitive",
+        "Verify markers don't cause performance issues at 50+ count"
+      ],
+      "acceptanceCriteria": [
+        "Minimum 50 city markers with accurate coordinates and timezones",
+        "Cities include major capitals and population centers worldwide",
+        "Search input with autocomplete dropdown showing matching cities",
+        "Search filters as user types (debounced, 200ms delay)",
+        "Selecting search result triggers fly-to animation to city",
+        "Search supports partial matching and case-insensitive input",
+        "Clear button to reset search and show all markers",
+        "Performance: 50+ markers render without dropping below 30fps",
+        "Optional: group nearby markers when zoomed out (clustering)"
+      ],
+      "passes": false
+    },
+    {
+      "id": "FEATURE-014",
+      "category": "New Feature",
+      "priority": "low",
+      "description": "Allow users to add custom location markers",
+      "details": "Enable users to add their own markers to the globe by clicking on a location or entering coordinates. Custom markers should persist in local storage and show user-defined labels.",
+      "stepsToVerify": [
+        "Verify UI option to add custom marker exists",
+        "Click on globe surface and verify marker is placed at click location",
+        "Verify prompt appears to enter marker label",
+        "Verify custom marker appears with user-defined label",
+        "Refresh page and verify custom markers persist (local storage)",
+        "Verify option to delete custom markers",
+        "Verify custom markers show local time like city markers",
+        "Verify maximum limit on custom markers (prevent abuse)"
+      ],
+      "acceptanceCriteria": [
+        "Add marker button or click-to-place mode in UI",
+        "Clicking on Earth surface places marker at correct lat/lon",
+        "Modal/prompt allows entering custom label for marker",
+        "Custom markers visually distinct from preset city markers",
+        "Custom markers saved to localStorage and restored on reload",
+        "Edit and delete options for custom markers",
+        "Custom markers show local time based on calculated timezone",
+        "Maximum 20 custom markers allowed",
+        "Export/import custom markers as JSON (optional)"
+      ],
+      "passes": false
+    },
+    {
+      "id": "FEATURE-015",
+      "category": "New Feature",
+      "priority": "medium",
+      "description": "Display sunrise and sunset times for locations",
+      "details": "Calculate and display sunrise and sunset times for the user's location and any selected city marker. Show golden hour periods and twilight times.",
+      "stepsToVerify": [
+        "Verify user's location shows sunrise/sunset times in UI",
+        "Verify times update when date is changed",
+        "Click on city marker and verify sunrise/sunset times displayed",
+        "Verify times are accurate for different latitudes",
+        "Verify polar day/night handled correctly (no sunrise/sunset)",
+        "Verify golden hour times displayed (optional)",
+        "Verify civil, nautical, astronomical twilight times (optional)",
+        "Compare calculated times with known accurate source"
+      ],
+      "acceptanceCriteria": [
+        "Sunrise and sunset times displayed for user's geolocation",
+        "Times calculated using solar position algorithms",
+        "Times accurate within 2 minutes of actual sunrise/sunset",
+        "City marker tooltip includes sunrise/sunset times for that location",
+        "Date picker changes update sunrise/sunset calculations",
+        "Polar regions show 'No sunrise' or 'No sunset' when appropriate",
+        "Times displayed in local timezone for each location",
+        "Optional: highlight golden hour period on time scrubber"
+      ],
+      "passes": false
+    },
+    {
+      "id": "FEATURE-016",
+      "category": "New Feature",
+      "priority": "medium",
+      "description": "Add solstice and equinox preset buttons",
+      "details": "Provide quick-access buttons to jump to astronomically significant dates: summer solstice, winter solstice, spring equinox, and autumn equinox. These presets help users explore seasonal extremes.",
+      "stepsToVerify": [
+        "Verify preset buttons exist for all four events",
+        "Click Summer Solstice and verify date set to June 20-21",
+        "Click Winter Solstice and verify date set to December 21-22",
+        "Click Spring Equinox and verify date set to March 19-21",
+        "Click Autumn Equinox and verify date set to September 22-23",
+        "Verify day/night terminator visually changes for each preset",
+        "Verify Arctic/Antarctic illumination matches expected pattern",
+        "Verify preset buttons work in combination with time slider"
+      ],
+      "acceptanceCriteria": [
+        "Four preset buttons: Summer Solstice, Winter Solstice, Spring Equinox, Autumn Equinox",
+        "Each button sets date picker to correct date for current year",
+        "Visual feedback when preset is active",
+        "Day/night visualization updates immediately on preset click",
+        "Tooltip explains significance of each astronomical event",
+        "Presets use noon (12:00 UTC) as default time",
+        "Buttons styled consistently with other UI controls",
+        "Optional: animate date transition when clicking preset"
+      ],
+      "passes": false
+    },
+    {
+      "id": "FEATURE-017",
+      "category": "New Feature",
+      "priority": "medium",
+      "description": "Highlight the day/night terminator line",
+      "details": "Add an optional visible line or glow effect along the day/night terminator (the boundary between day and night on Earth's surface). This helps users visualize the exact transition zone.",
+      "stepsToVerify": [
+        "Verify terminator line toggle exists in UI controls",
+        "Enable toggle and verify line appears at day/night boundary",
+        "Verify terminator line is a complete great circle around Earth",
+        "Move time slider and verify terminator line moves correctly",
+        "Change date and verify terminator tilt changes with seasons",
+        "Verify terminator line is visible but not overly dominant",
+        "Verify line renders correctly at all viewing angles",
+        "Verify terminator matches actual shader day/night transition"
+      ],
+      "acceptanceCriteria": [
+        "Toggle checkbox to show/hide terminator line",
+        "Terminator rendered as glowing line at day/night boundary",
+        "Line follows the solar terminator (90 degrees from subsolar point)",
+        "Line updates in real-time as time/date changes",
+        "Line color suggests transition (orange/gold gradient)",
+        "Line width appropriate (visible but not thick)",
+        "Line has slight glow effect for visibility",
+        "Performance impact minimal (< 1ms per frame)"
+      ],
+      "passes": false
+    },
+    {
+      "id": "FEATURE-018",
+      "category": "New Feature",
+      "priority": "low",
+      "description": "Add solar eclipse visualization",
+      "details": "When the date is set to a known solar eclipse date, visualize the Moon's shadow (umbra and penumbra) on Earth's surface showing the path of totality.",
+      "stepsToVerify": [
+        "Set date to known solar eclipse and verify shadow appears",
+        "Verify umbra (total eclipse) shown as dark spot on Earth",
+        "Verify penumbra (partial eclipse) shown as larger shadow gradient",
+        "Verify shadow position moves across Earth surface over time",
+        "Verify eclipse only shown for actual eclipse dates",
+        "Verify notification/indicator when eclipse date is selected",
+        "Verify eclipse data includes at least 5 future eclipses",
+        "Compare shadow path with known eclipse maps for accuracy"
+      ],
+      "acceptanceCriteria": [
+        "Database of solar eclipse dates and paths (2024-2030 minimum)",
+        "Umbra rendered as small dark ellipse on Earth surface",
+        "Penumbra rendered as larger gradient shadow around umbra",
+        "Shadow position calculated based on Moon's orbital position",
+        "Shadow moves across Earth as time progresses during eclipse",
+        "UI notification when selected date has solar eclipse",
+        "Quick-jump buttons to next upcoming eclipses",
+        "Tooltip shows eclipse type (total, partial, annular) and path info"
+      ],
+      "passes": false
+    },
+    {
+      "id": "FEATURE-019",
+      "category": "New Feature",
+      "priority": "low",
+      "description": "Display timezone boundaries on globe",
+      "details": "Add an optional overlay showing timezone boundaries on Earth's surface. Display timezone names or UTC offsets when hovering over regions.",
+      "stepsToVerify": [
+        "Verify timezone toggle exists in UI controls",
+        "Enable toggle and verify timezone boundaries appear on globe",
+        "Verify boundaries follow actual timezone shapes (not just meridians)",
+        "Hover over region and verify timezone name/offset displayed",
+        "Verify major timezone anomalies shown (China single zone, etc.)",
+        "Verify boundaries don't obscure Earth texture excessively",
+        "Verify boundaries update correctly when Earth rotates",
+        "Check performance with timezone boundaries enabled"
+      ],
+      "acceptanceCriteria": [
+        "Toggle checkbox to show/hide timezone boundaries",
+        "Timezone boundaries rendered as semi-transparent colored regions",
+        "Boundaries follow actual political timezone shapes",
+        "Hover tooltip shows timezone name (e.g., 'Eastern Time') and UTC offset",
+        "Current time in hovered timezone displayed in tooltip",
+        "Different colors for each hour offset from UTC",
+        "Legend showing timezone color coding",
+        "Performance impact less than 3ms per frame when enabled"
+      ],
+      "passes": false
+    },
+    {
+      "id": "IMPROVEMENT-001",
+      "category": "Technical Improvement",
+      "priority": "high",
+      "description": "Add loading indicator for texture downloads",
+      "details": "Display a loading indicator while Earth textures (day, night, clouds) are being downloaded. Show progress and gracefully handle slow connections.",
+      "stepsToVerify": [
+        "Throttle network in DevTools and reload page",
+        "Verify loading indicator appears during texture download",
+        "Verify progress indication (percentage or spinner)",
+        "Verify loading indicator disappears when textures loaded",
+        "Verify Earth doesn't render with missing textures",
+        "Verify error message if texture download fails",
+        "Verify loading works on slow 3G connection simulation",
+        "Verify no flash of incomplete content"
+      ],
+      "acceptanceCriteria": [
+        "Loading overlay displayed while textures download",
+        "Progress indicator shows loading status (spinner or percentage)",
+        "Loading message indicates what's loading ('Loading Earth textures...')",
+        "Overlay fades out smoothly when loading complete",
+        "Error state shown if textures fail to load after timeout",
+        "Retry button available on error",
+        "Loading state prevents interaction with incomplete scene",
+        "Works correctly on first visit (no cached textures)"
+      ],
+      "passes": false
+    },
+    {
+      "id": "IMPROVEMENT-002",
+      "category": "Technical Improvement",
+      "priority": "high",
+      "description": "Add unit tests with Vitest",
+      "details": "Implement comprehensive unit tests for pure functions in the codebase using Vitest. Focus on testing astronomy calculations, coordinate conversions, and utility functions.",
+      "stepsToVerify": [
+        "Verify vitest and @testing-library packages in devDependencies",
+        "Verify test configuration in vitest.config.ts or vite.config.ts",
+        "Run 'pnpm test' and verify tests execute",
+        "Verify tests exist for astronomy calculations (sun position)",
+        "Verify tests exist for coordinate conversion (lat/lon to 3D)",
+        "Verify tests exist for time calculations (local time, day of year)",
+        "Verify tests achieve minimum 70% coverage on pure functions",
+        "Verify CI configuration runs tests on push (optional)"
+      ],
+      "acceptanceCriteria": [
+        "Vitest configured and runnable via 'pnpm test'",
+        "Tests for getDayOfYear() with edge cases (Jan 1, Dec 31, leap year)",
+        "Tests for getSunPosition() with known astronomical data",
+        "Tests for latLonToVector3() coordinate conversion",
+        "Tests for local time calculation from UTC + offset",
+        "Tests for equation of time calculation",
+        "Minimum 70% code coverage on src/scripts/earth/*.ts pure functions",
+        "Tests run in under 10 seconds",
+        "Test failure blocks build (optional CI integration)"
+      ],
+      "passes": false
+    },
+    {
+      "id": "IMPROVEMENT-003",
+      "category": "Technical Improvement",
+      "priority": "medium",
+      "description": "Optimize mobile touch gesture handling",
+      "details": "Improve touch interactions on mobile devices with better gesture handling for rotation, zoom (pinch), and marker selection. Prevent default scroll behavior during globe interaction.",
+      "stepsToVerify": [
+        "Test on mobile device or Chrome DevTools mobile emulation",
+        "Verify single-finger drag rotates Earth smoothly",
+        "Verify two-finger pinch zooms in/out correctly",
+        "Verify marker taps work reliably on touch screens",
+        "Verify no accidental page scroll during globe interaction",
+        "Verify touch momentum/inertia feels natural",
+        "Verify double-tap doesn't accidentally zoom page",
+        "Test on both iOS Safari and Android Chrome"
+      ],
+      "acceptanceCriteria": [
+        "Single-finger drag rotates globe smoothly",
+        "Two-finger pinch zoom works correctly with appropriate sensitivity",
+        "Tap on markers shows tooltip reliably",
+        "Page scroll prevented when interacting with canvas",
+        "Touch inertia provides natural feel after release",
+        "No double-tap zoom interference from browser",
+        "Touch targets minimum 44x44 pixels for accessibility",
+        "Works on iOS Safari 15+ and Android Chrome 90+"
+      ],
+      "passes": false
+    },
+    {
+      "id": "IMPROVEMENT-004",
+      "category": "Technical Improvement",
+      "priority": "medium",
+      "description": "Add accessibility features",
+      "details": "Implement accessibility features including keyboard navigation, screen reader support, ARIA labels, and focus indicators for all interactive elements.",
+      "stepsToVerify": [
+        "Navigate all controls using only keyboard (Tab, Enter, Arrow keys)",
+        "Verify focus indicators visible on all interactive elements",
+        "Test with screen reader (VoiceOver/NVDA) and verify announcements",
+        "Verify ARIA labels on all buttons and controls",
+        "Verify time slider accessible via keyboard",
+        "Verify color contrast meets WCAG AA standards",
+        "Verify reduced motion preference respected",
+        "Verify all images/canvas has appropriate alt text"
+      ],
+      "acceptanceCriteria": [
+        "All UI controls reachable via Tab key navigation",
+        "Visible focus indicators on focused elements",
+        "ARIA labels on all buttons, sliders, and toggles",
+        "Screen reader announces control purposes and states",
+        "Time slider adjustable with arrow keys",
+        "Date picker accessible via keyboard",
+        "Color contrast ratio minimum 4.5:1 (WCAG AA)",
+        "prefers-reduced-motion disables animations",
+        "Canvas has aria-label describing the visualization"
+      ],
+      "passes": false
+    },
+    {
+      "id": "IMPROVEMENT-005",
+      "category": "Technical Improvement",
+      "priority": "medium",
+      "description": "Add JSDoc documentation for all modules",
+      "details": "Add comprehensive JSDoc/TSDoc comments to all exported functions, interfaces, and modules. Generate documentation website from comments.",
+      "stepsToVerify": [
+        "Verify all exported functions have JSDoc comments",
+        "Verify JSDoc includes @param and @returns tags",
+        "Verify interfaces have property descriptions",
+        "Run documentation generator and verify output",
+        "Verify examples included for complex functions",
+        "Verify documentation covers all public APIs",
+        "Check for missing or incomplete documentation",
+        "Verify generated docs are readable and navigable"
+      ],
+      "acceptanceCriteria": [
+        "All exported functions have JSDoc with description",
+        "All function parameters have @param with type and description",
+        "All return values have @returns with type and description",
+        "All interfaces have property descriptions",
+        "Complex functions include @example code snippets",
+        "Documentation generator configured (TypeDoc or similar)",
+        "Generated docs deployable as static site",
+        "Minimum 90% of exports documented"
+      ],
+      "passes": false
+    },
+    {
+      "id": "IMPROVEMENT-006",
+      "category": "Technical Improvement",
+      "priority": "low",
+      "description": "Add WebGPU support for modern browsers",
+      "details": "Implement optional WebGPU rendering path for browsers that support it, providing better performance and enabling future advanced rendering features.",
+      "stepsToVerify": [
+        "Detect WebGPU support in browser",
+        "Verify WebGL fallback for unsupported browsers",
+        "Compare rendering output between WebGPU and WebGL",
+        "Measure performance improvement with WebGPU",
+        "Verify all features work identically in both renderers",
+        "Test in Chrome Canary or other WebGPU-enabled browser",
+        "Verify no visual differences between renderers",
+        "Verify graceful degradation if WebGPU context lost"
+      ],
+      "acceptanceCriteria": [
+        "WebGPU renderer detected and used when available",
+        "WebGL fallback automatic for unsupported browsers",
+        "Visual output identical between WebGPU and WebGL",
+        "Minimum 20% performance improvement with WebGPU on supported hardware",
+        "All shaders ported to WGSL for WebGPU path",
+        "No console errors in either rendering path",
+        "Feature detection logged for debugging",
+        "Three.js WebGPURenderer used for implementation"
+      ],
+      "passes": false
+    },
+    {
+      "id": "IMPROVEMENT-007",
+      "category": "Technical Improvement",
+      "priority": "low",
+      "description": "Add Progressive Web App (PWA) support",
+      "details": "Convert the application to a Progressive Web App with offline support, installability, and app-like experience on mobile devices.",
+      "stepsToVerify": [
+        "Verify manifest.json exists with app metadata",
+        "Verify service worker registered and caching assets",
+        "Verify app installable on Chrome/Edge (install prompt)",
+        "Disconnect network and verify app works offline",
+        "Verify app icon appears correctly when installed",
+        "Verify splash screen on app launch",
+        "Run Lighthouse PWA audit and verify passing score",
+        "Test installed app on Android and iOS"
+      ],
+      "acceptanceCriteria": [
+        "Web app manifest with name, icons, theme color, display mode",
+        "Service worker caches all critical assets (HTML, CSS, JS, textures)",
+        "App works fully offline after first load",
+        "Install prompt appears on supported browsers",
+        "App icons provided in multiple sizes (192px, 512px minimum)",
+        "Splash screen configured for app launch",
+        "Lighthouse PWA score 90+",
+        "Background sync for time updates when back online (optional)"
+      ],
+      "passes": false
+    },
+    {
+      "id": "PERF-001",
+      "category": "Performance",
+      "priority": "medium",
+      "description": "Implement Level-of-Detail (LOD) for Earth mesh",
+      "details": "Create multiple resolution versions of the Earth sphere and switch between them based on camera distance. Use lower polygon count when zoomed out, higher when zoomed in.",
+      "stepsToVerify": [
+        "Verify Earth renders with high detail when zoomed in",
+        "Verify Earth switches to lower detail when zoomed out",
+        "Verify transitions between LOD levels are not jarring",
+        "Measure polygon count at different zoom levels",
+        "Verify performance improvement when zoomed out",
+        "Verify textures also switch to lower resolution at distance",
+        "Verify LOD transitions are smooth (no popping)",
+        "Profile GPU usage at different LOD levels"
+      ],
+      "acceptanceCriteria": [
+        "Minimum 3 LOD levels for Earth sphere",
+        "High LOD: 128+ segments (zoomed in, camera < 15 units)",
+        "Medium LOD: 64 segments (medium zoom, camera 15-30 units)",
+        "Low LOD: 32 segments (zoomed out, camera > 30 units)",
+        "LOD transitions smooth using Three.js LOD object",
+        "Texture mipmapping enabled for automatic texture LOD",
+        "Performance improvement measurable (20%+ fewer draw calls at low LOD)",
+        "No visual popping during LOD transitions"
+      ],
+      "passes": false
+    },
+    {
+      "id": "PERF-002",
+      "category": "Performance",
+      "priority": "low",
+      "description": "Implement texture compression with KTX2/Basis",
+      "details": "Convert Earth textures to KTX2 format with Basis Universal compression for faster downloads and GPU-native decompression. Significantly reduces texture file sizes.",
+      "stepsToVerify": [
+        "Verify KTX2 loader configured in Three.js",
+        "Verify compressed textures load correctly",
+        "Compare file sizes: original vs compressed textures",
+        "Verify visual quality acceptable after compression",
+        "Verify textures load faster on slow connections",
+        "Verify fallback to PNG/JPG if KTX2 unsupported",
+        "Test on different GPUs (NVIDIA, AMD, Intel, mobile)",
+        "Verify no compression artifacts visible at normal zoom"
+      ],
+      "acceptanceCriteria": [
+        "Earth textures converted to KTX2 with Basis compression",
+        "File size reduction minimum 50% compared to JPEG",
+        "KTX2Loader integrated with Three.js texture loading",
+        "Visual quality indistinguishable at normal viewing distances",
+        "GPU-native decompression used (no CPU decode)",
+        "Fallback to original textures for unsupported browsers",
+        "Transcoder WASM files properly served",
+        "Texture loading time reduced by 30%+ on average connections"
+      ],
+      "passes": false
+    },
+    {
+      "id": "PERF-003",
+      "category": "Performance",
+      "priority": "low",
+      "description": "Implement GPU instancing for markers and particles",
+      "details": "Use GPU instancing for rendering multiple similar objects (city markers, stars, satellites) to reduce draw calls and improve performance with many objects.",
+      "stepsToVerify": [
+        "Verify city markers use instanced rendering",
+        "Verify star field uses instanced rendering",
+        "Measure draw call count before and after instancing",
+        "Verify 50+ markers render without frame drops",
+        "Verify 5000+ stars render efficiently",
+        "Profile GPU usage with instanced vs non-instanced",
+        "Verify marker interactions still work with instancing",
+        "Verify visual appearance unchanged after instancing"
+      ],
+      "acceptanceCriteria": [
+        "InstancedMesh used for city markers",
+        "InstancedBufferGeometry used for star particles",
+        "Draw calls for markers reduced to 1 (from N)",
+        "Draw calls for stars reduced to 1 (from N)",
+        "100+ markers renderable at 60fps",
+        "10000+ stars renderable at 60fps",
+        "Marker hover detection works with instanced rendering",
+        "Memory usage reduced compared to individual meshes"
+      ],
+      "passes": false
     }
   ],
   "summary": {
-    "totalRequirements": 12,
+    "totalRequirements": 33,
     "bugFixes": 5,
     "refactoring": 2,
-    "newFeatures": 5,
+    "newFeatures": 19,
+    "technicalImprovements": 7,
+    "performance": 3,
     "byPriority": {
-      "high": 4,
-      "medium": 6,
-      "low": 2
+      "high": 7,
+      "medium": 16,
+      "low": 10
     }
   },
   "implementationPhases": [
@@ -327,6 +1007,48 @@
       "name": "Visual Enhancements",
       "requirements": ["FEATURE-001", "FEATURE-004", "FEATURE-005"],
       "description": "Add stars background, city markers, and reference lines"
+    },
+    {
+      "phase": 5,
+      "name": "Critical Improvements",
+      "requirements": ["IMPROVEMENT-001", "IMPROVEMENT-002"],
+      "description": "Add loading indicator and unit tests for reliability"
+    },
+    {
+      "phase": 6,
+      "name": "Interactivity Enhancements",
+      "requirements": ["FEATURE-011", "FEATURE-012", "FEATURE-013", "FEATURE-015"],
+      "description": "Enhanced time controls, fly-to animations, expanded cities, and sunrise/sunset"
+    },
+    {
+      "phase": 7,
+      "name": "Astronomical Features",
+      "requirements": ["FEATURE-006", "FEATURE-016", "FEATURE-017"],
+      "description": "Moon visualization, solstice presets, and terminator line"
+    },
+    {
+      "phase": 8,
+      "name": "Visual Polish",
+      "requirements": ["FEATURE-007", "FEATURE-008", "FEATURE-010"],
+      "description": "Atmospheric glow, aurora effects, and animated clouds"
+    },
+    {
+      "phase": 9,
+      "name": "Advanced Features",
+      "requirements": ["FEATURE-009", "FEATURE-014", "FEATURE-018", "FEATURE-019"],
+      "description": "Satellite orbits, custom markers, eclipse visualization, timezone boundaries"
+    },
+    {
+      "phase": 10,
+      "name": "Accessibility & Documentation",
+      "requirements": ["IMPROVEMENT-003", "IMPROVEMENT-004", "IMPROVEMENT-005"],
+      "description": "Mobile optimization, accessibility features, and JSDoc documentation"
+    },
+    {
+      "phase": 11,
+      "name": "Performance & Future-proofing",
+      "requirements": ["PERF-001", "PERF-002", "PERF-003", "IMPROVEMENT-006", "IMPROVEMENT-007"],
+      "description": "LOD, texture compression, GPU instancing, WebGPU, and PWA support"
     }
   ]
 }
