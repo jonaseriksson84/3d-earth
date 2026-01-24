@@ -33,13 +33,23 @@
   - Removed unused uniform declarations from fragment shader
   - This reduces bandwidth usage and eliminates unnecessary texture downloads
 
+### BUG-005: Cache DOM element references for performance
+- **Status:** COMPLETED
+- **Date:** 2026-01-24
+- **Changes:** Cached the 'currentTime' DOM element reference to avoid repeated getElementById calls:
+  - Added `timeDisplayElement` global variable to store the cached reference
+  - Modified `initTimeControls()` to cache the element reference during initialization
+  - Updated `updateTimeDisplay()` to use the cached reference instead of calling `document.getElementById('currentTime')` on every update
+  - This eliminates unnecessary DOM queries during slider movement for improved performance
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
+- [x] BUG-001: Remove duplicate getDayOfYear function
 - [x] BUG-002: Add Subresource Integrity (SRI) for CDN scripts
 - [x] BUG-003: Fix potential XSS vulnerability in showError function
 - [x] BUG-004: Remove unused texture uniforms from shader
-- [ ] BUG-005: Cache DOM element references for performance
+- [x] BUG-005: Cache DOM element references for performance
 
 ### Phase 2 - Refactoring
 - [ ] REFACTOR-001: Migrate to Astro + TypeScript project structure
