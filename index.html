@@ -442,29 +442,6 @@
             clouds.rotation.x = 0;
         }
 
-        function getDayOfYear(date) {
-            try {
-                if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
-                    console.warn('Invalid date provided to getDayOfYear, using current date');
-                    date = new Date();
-                }
-                
-                const startUTC = Date.UTC(date.getUTCFullYear(), 0, 1);
-                const nowUTC = Date.UTC(
-                    date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),
-                    date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds()
-                );
-                const oneDay = 1000 * 60 * 60 * 24;
-                const dayOfYear = Math.floor((nowUTC - startUTC) / oneDay) + 1;
-                
-                // Validate result (should be 1-366)
-                return (dayOfYear >= 1 && dayOfYear <= 366) ? dayOfYear : 1;
-            } catch (error) {
-                console.error('Error calculating day of year:', error);
-                return 1; // Fallback to January 1st
-            }
-        }
-
         // ==========================================
         // ASTRONOMY & SUN POSITIONING
         // ==========================================
