@@ -104,6 +104,24 @@
   - Equinoxes (March 20, September 22) show terminator passing through both poles
   - Build completes without TypeScript errors
 
+### FEATURE-003: Add date picker for seasonal exploration
+- **Status:** COMPLETED
+- **Date:** 2026-01-24
+- **Changes:** Added date picker UI and connected it to sun position calculations:
+  - Date picker UI element already existed in index.astro
+  - TimeState interface already included `datePicker`, `lastDateValue`, and `selectedDate` fields
+  - Helper functions `formatDateForInput()` and `parseDateFromInput()` already in ui.ts
+  - Date picker initialization with current date as default already implemented
+  - Event listener for date changes already added, updating `selectedDate` in TimeState
+  - **Fixed bug:** `handleSunUpdate()` now passes `timeState.selectedDate` to `updateSunPosition()`
+  - **Fixed bug:** `handleSunUpdate()` now detects date changes via `lastDateValue` comparison
+  - Sun position now correctly updates when date is changed
+  - Solar declination changes based on selected date, affecting day/night patterns
+  - Time slider continues to work correctly in combination with date picker
+  - Selecting June 21 shows longer daylight in Northern Hemisphere
+  - Selecting December 21 shows shorter daylight in Northern Hemisphere
+  - Build completes without TypeScript errors
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -119,7 +137,7 @@
 
 ### Phase 3 - Core Features
 - [x] FEATURE-002: Implement Earth's axial tilt
-- [ ] FEATURE-003: Add date picker for seasonal exploration
+- [x] FEATURE-003: Add date picker for seasonal exploration
 
 ### Phase 4 - Visual Enhancements
 - [ ] FEATURE-001: Add stars background

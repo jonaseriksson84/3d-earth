@@ -34,6 +34,21 @@ canvas {
   margin: 8px 0;
 }
 
+.date-picker {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  color: white;
+  padding: 4px 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.date-picker::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+
 .time-display {
   font-size: 14px;
   margin: 5px 0;

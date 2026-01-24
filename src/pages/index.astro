@@ -1,5 +1,6 @@
 ---
 // 3D Earth Visualization - Main Page
+import '../styles/global.css';
 ---
 
 <!DOCTYPE html>
@@ -8,11 +9,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Earth</title>
-    <link rel="stylesheet" href="../styles/global.css" />
   </head>
 
   <body>
     <div class="controls">
+      <div class="slider-container">
+        <div class="slider-container-title">
+          <label for="datePicker">Date</label>
+          <input
+            type="date"
+            id="datePicker"
+            class="date-picker"
+          />
+        </div>
+      </div>
+
       <div class="slider-container">
         <div class="slider-container-title">
           <label for="timeSlider">Time control</label>

@@ -35,13 +35,14 @@ export interface SunPosition {
 }
 
 export function calculateSunPosition(
-  sliderMinutes: number
+  sliderMinutes: number,
+  selectedDate?: Date
 ): { position: SunPosition; date: Date } {
-  const today = new Date();
+  const baseDate = selectedDate ?? new Date();
   const now = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate(),
+    baseDate.getFullYear(),
+    baseDate.getMonth(),
+    baseDate.getDate(),
     Math.floor(sliderMinutes / 60),
     sliderMinutes % 60,
     0
@@ -90,9 +91,10 @@ export function calculateSunPosition(
 export function updateSunPosition(
   sliderMinutes: number,
   earthObjects: EarthObjects,
-  lightingObjects: LightingObjects
+  lightingObjects: LightingObjects,
+  selectedDate?: Date
 ): Date {
-  const { position, date } = calculateSunPosition(sliderMinutes);
+  const { position, date } = calculateSunPosition(sliderMinutes, selectedDate);
   const { earthMaterial } = earthObjects;
   const { directionalLight, ambientLight } = lightingObjects;
 

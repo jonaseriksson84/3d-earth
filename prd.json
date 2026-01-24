@@ -231,7 +231,7 @@
         "Default date is current date on initial page load",
         "Date selection persists during session (doesn't reset when time slider moves)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "FEATURE-004",

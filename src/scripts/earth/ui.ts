@@ -30,12 +30,34 @@ export function updateTimeDisplay(
 }
 
 export function createTimeState(): TimeState {
+  const today = new Date();
   return {
     timeSlider: null as unknown as HTMLInputElement,
+    datePicker: null as unknown as HTMLInputElement,
     lastSliderValue: '',
+    lastDateValue: '',
     needsSunUpdate: true,
     timeDisplayElement: null,
+    selectedDate: today,
   };
+}
+
+/**
+ * Format a Date object as YYYY-MM-DD for date input
+ */
+function formatDateForInput(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+/**
+ * Parse a YYYY-MM-DD string to a Date object
+ */
+function parseDateFromInput(dateString: string): Date {
+  const [year, month, day] = dateString.split('-').map(Number);
+  return new Date(year, month - 1, day);
 }
 
 export function initTimeControls(
@@ -44,15 +66,17 @@ export function initTimeControls(
   _lightingObjects: LightingObjects
 ): void {
   const timeSlider = document.getElementById('timeSlider') as HTMLInputElement | null;
+  const datePicker = document.getElementById('datePicker') as HTMLInputElement | null;
   const cloudToggle = document.getElementById('cloudToggle') as HTMLInputElement | null;
   const timeDisplayElement = document.getElementById('currentTime');
 
-  if (!timeSlider || !cloudToggle) {
-    console.error('Time slider or cloud toggle element not found');
+  if (!timeSlider || !cloudToggle || !datePicker) {
+    console.error('Required control elements not found');
     throw new Error('Required UI elements missing');
   }
 
   timeState.timeSlider = timeSlider;
+  timeState.datePicker = datePicker;
   timeState.timeDisplayElement = timeDisplayElement;
 
   // Configure slider
@@ -60,17 +84,21 @@ export function initTimeControls(
   timeSlider.max = String(CONFIG.MINUTES_PER_DAY);
   timeSlider.step = String(CONFIG.SLIDER_STEP);
 
-  // Initialize to current time
+  // Initialize to current date and time
   const initNow = new Date();
+  timeState.selectedDate = initNow;
+  datePicker.value = formatDateForInput(initNow);
+
   let initMinutes = initNow.getHours() * 60 + initNow.getMinutes();
   initMinutes = Math.max(0, Math.min(CONFIG.MINUTES_PER_DAY - 1, initMinutes));
   timeSlider.value = String(initMinutes);
 
   // Performance tracking
   timeState.lastSliderValue = timeSlider.value;
+  timeState.lastDateValue = datePicker.value;
   timeState.needsSunUpdate = true;
 
-  // Event listeners
+  // Time slider event listener
   timeSlider.addEventListener('input', (event: Event) => {
     try {
       const target = event.target as HTMLInputElement;
@@ -84,6 +112,19 @@ export function initTimeControls(
       timeState.needsSunUpdate = true;
     } catch (error) {
       console.error('Error handling slider input:', error);
+    }
+  });
+
+  // Date picker event listener
+  datePicker.addEventListener('change', (event: Event) => {
+    try {
+      const target = event.target as HTMLInputElement;
+      if (target.value) {
+        timeState.selectedDate = parseDateFromInput(target.value);
+        timeState.needsSunUpdate = true;
+      }
+    } catch (error) {
+      console.error('Error handling date picker change:', error);
     }
   });
 
@@ -106,11 +147,16 @@ export function handleSunUpdate(
   lightingObjects: LightingObjects
 ): void {
   const currentSliderValue = timeState.timeSlider.value;
-  if (timeState.needsSunUpdate || currentSliderValue !== timeState.lastSliderValue) {
+  const currentDateValue = timeState.datePicker.value;
+  const sliderChanged = currentSliderValue !== timeState.lastSliderValue;
+  const dateChanged = currentDateValue !== timeState.lastDateValue;
+
+  if (timeState.needsSunUpdate || sliderChanged || dateChanged) {
     const sliderMinutes = parseInt(timeState.timeSlider.value);
-    const date = updateSunPosition(sliderMinutes, earthObjects, lightingObjects);
+    const date = updateSunPosition(sliderMinutes, earthObjects, lightingObjects, timeState.selectedDate);
     updateTimeDisplay(date, timeState.timeDisplayElement);
     timeState.lastSliderValue = currentSliderValue;
+    timeState.lastDateValue = currentDateValue;
     timeState.needsSunUpdate = false;
   }
 }

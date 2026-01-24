@@ -56,9 +56,12 @@ export interface EarthUniforms {
 
 export interface TimeState {
   timeSlider: HTMLInputElement;
+  datePicker: HTMLInputElement;
   lastSliderValue: string;
+  lastDateValue: string;
   needsSunUpdate: boolean;
   timeDisplayElement: HTMLElement | null;
+  selectedDate: Date;
 }
 
 export interface LocationState {
