@@ -138,6 +138,23 @@
   - Build completes without TypeScript errors
   - No performance impact (particle systems are highly efficient)
 
+### FEATURE-005: Add toggle for Earth axis and reference lines visualization
+- **Status:** COMPLETED
+- **Date:** 2026-01-24
+- **Changes:** Implemented reference lines showing Earth's axis and latitude circles:
+  - Created new `src/scripts/earth/reflines.ts` module with full TypeScript types
+  - Added `ReferenceLinesState` interface to types.ts
+  - Axis line (blue, 0x00aaff) extends through North and South poles beyond Earth surface
+  - Equator line (orange, 0xffaa00) rendered as circle at 0 degrees latitude
+  - Arctic Circle (green, 0x88ff88) rendered at 66.5 degrees N latitude
+  - Antarctic Circle (green, 0x88ff88) rendered at 66.5 degrees S latitude
+  - All lines use semi-transparent material (opacity 0.4) to avoid obscuring Earth texture
+  - Reference lines grouped in THREE.Group with Earth's axial tilt applied
+  - Lines rotate with Earth mesh to maintain correct geographic positions
+  - Added UI toggle checkbox "Show reference lines" - disabled by default
+  - Updated index.ts exports and main.ts integration
+  - All TypeScript strict mode checks pass
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -158,4 +175,4 @@
 ### Phase 4 - Visual Enhancements
 - [x] FEATURE-001: Add stars background
 - [x] FEATURE-004: Add interactive location markers for major cities
-- [ ] FEATURE-005: Add toggle for Earth axis and reference lines
+- [x] FEATURE-005: Add toggle for Earth axis and reference lines

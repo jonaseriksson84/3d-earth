@@ -289,7 +289,7 @@
         "Reference lines disabled by default on page load",
         "Different colors for axis vs latitude circles for clarity"
       ],
-      "passes": false
+      "passes": true
     }
   ],
   "summary": {

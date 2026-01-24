@@ -84,6 +84,11 @@ export interface MarkerState {
   visible: boolean;
 }
 
+export interface ReferenceLinesState {
+  group: THREE.Group;
+  visible: boolean;
+}
+
 export interface AppState {
   scene: SceneObjects | null;
   earth: EarthObjects | null;

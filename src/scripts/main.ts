@@ -17,6 +17,9 @@ import {
   updateMarkersRotation,
   setMarkersVisible,
   initStars,
+  initReferenceLines,
+  updateReferenceLinesRotation,
+  setReferenceLinesVisible,
 } from './earth';
 import type {
   SceneObjects,
@@ -25,6 +28,7 @@ import type {
   TimeState,
   LocationState,
   MarkerState,
+  ReferenceLinesState,
 } from './earth';
 
 let sceneObjects: SceneObjects | null = null;
@@ -34,6 +38,7 @@ let controls: OrbitControls | null = null;
 let timeState: TimeState | null = null;
 let locationState: LocationState | null = null;
 let markerState: MarkerState | null = null;
+let refLinesState: ReferenceLinesState | null = null;
 
 /**
  * Wrapper to get location and update both Earth rotation and user marker
@@ -79,6 +84,11 @@ function animate(): void {
       updateMarkersRotation(markerState, earthObjects.earth.rotation.y);
     }
 
+    // Keep reference lines synced with Earth rotation
+    if (refLinesState && earthObjects) {
+      updateReferenceLinesRotation(refLinesState, earthObjects.earth.rotation.y);
+    }
+
     if (controls) controls.update();
     if (sceneObjects) {
       const { renderer, scene, camera } = sceneObjects;
@@ -111,6 +121,9 @@ export function initApp(): void {
     // Initialize markers
     markerState = initMarkers(sceneObjects);
 
+    // Initialize reference lines (disabled by default)
+    refLinesState = initReferenceLines(sceneObjects);
+
     // Set up marker toggle
     const markerToggle = document.getElementById('markerToggle') as HTMLInputElement | null;
     if (markerToggle) {
@@ -118,6 +131,17 @@ export function initApp(): void {
         const target = event.target as HTMLInputElement;
         if (markerState) {
           setMarkersVisible(markerState, target.checked);
+        }
+      });
+    }
+
+    // Set up reference lines toggle
+    const refLinesToggle = document.getElementById('refLinesToggle') as HTMLInputElement | null;
+    if (refLinesToggle) {
+      refLinesToggle.addEventListener('change', (event: Event) => {
+        const target = event.target as HTMLInputElement;
+        if (refLinesState) {
+          setReferenceLinesVisible(refLinesState, target.checked);
         }
       });
     }

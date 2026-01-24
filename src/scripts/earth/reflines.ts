@@ -1,0 +1,128 @@
+import * as THREE from 'three';
+import { CONFIG } from './config';
+import type { SceneObjects, ReferenceLinesState } from './types';
+
+const AXIS_COLOR = 0x00aaff; // Blue for axis
+const EQUATOR_COLOR = 0xffaa00; // Orange for equator
+const ARCTIC_COLOR = 0x88ff88; // Green for arctic/antarctic circles
+const LINE_OPACITY = 0.4;
+const AXIS_LENGTH_MULTIPLIER = 1.8; // Extend axis beyond Earth surface
+
+// Arctic/Antarctic circles at 66.5 degrees latitude
+const ARCTIC_LATITUDE = 66.5;
+
+/**
+ * Creates a circle geometry for latitude lines
+ */
+function createLatitudeCircle(
+  latitude: number,
+  color: number,
+  radius: number
+): THREE.Line {
+  const latRad = (latitude * Math.PI) / 180;
+  const circleRadius = radius * Math.cos(latRad);
+  const circleY = radius * Math.sin(latRad);
+
+  const points: THREE.Vector3[] = [];
+  const segments = 64;
+
+  for (let i = 0; i <= segments; i++) {
+    const theta = (i / segments) * Math.PI * 2;
+    const x = circleRadius * Math.cos(theta);
+    const z = circleRadius * Math.sin(theta);
+    points.push(new THREE.Vector3(x, circleY, z));
+  }
+
+  const geometry = new THREE.BufferGeometry().setFromPoints(points);
+  const material = new THREE.LineBasicMaterial({
+    color,
+    transparent: true,
+    opacity: LINE_OPACITY,
+  });
+
+  return new THREE.Line(geometry, material);
+}
+
+/**
+ * Creates the axis line through the poles
+ */
+function createAxisLine(radius: number): THREE.Line {
+  const axisLength = radius * AXIS_LENGTH_MULTIPLIER;
+  const points = [
+    new THREE.Vector3(0, -axisLength, 0),
+    new THREE.Vector3(0, axisLength, 0),
+  ];
+
+  const geometry = new THREE.BufferGeometry().setFromPoints(points);
+  const material = new THREE.LineBasicMaterial({
+    color: AXIS_COLOR,
+    transparent: true,
+    opacity: LINE_OPACITY + 0.1, // Slightly more visible
+  });
+
+  return new THREE.Line(geometry, material);
+}
+
+/**
+ * Initialize reference lines (axis and latitude circles)
+ */
+export function initReferenceLines(
+  sceneObjects: SceneObjects
+): ReferenceLinesState {
+  const { scene } = sceneObjects;
+  const radius = CONFIG.EARTH_RADIUS + 0.02; // Slightly above Earth surface
+
+  // Create a group to hold all reference lines
+  const group = new THREE.Group();
+
+  // Create axis line
+  const axisLine = createAxisLine(CONFIG.EARTH_RADIUS);
+  group.add(axisLine);
+
+  // Create equator (0 degrees latitude)
+  const equator = createLatitudeCircle(0, EQUATOR_COLOR, radius);
+  group.add(equator);
+
+  // Create Arctic Circle (66.5 degrees N)
+  const arcticCircle = createLatitudeCircle(ARCTIC_LATITUDE, ARCTIC_COLOR, radius);
+  group.add(arcticCircle);
+
+  // Create Antarctic Circle (66.5 degrees S)
+  const antarcticCircle = createLatitudeCircle(-ARCTIC_LATITUDE, ARCTIC_COLOR, radius);
+  group.add(antarcticCircle);
+
+  // Apply Earth's axial tilt to the reference lines group
+  const tiltRadians = (CONFIG.AXIAL_TILT * Math.PI) / 180;
+  group.rotation.z = tiltRadians;
+
+  // Start hidden by default
+  group.visible = false;
+
+  scene.add(group);
+
+  return {
+    group,
+    visible: false,
+  };
+}
+
+/**
+ * Update reference lines rotation to match Earth
+ */
+export function updateReferenceLinesRotation(
+  state: ReferenceLinesState,
+  earthRotationY: number
+): void {
+  state.group.rotation.y = earthRotationY;
+}
+
+/**
+ * Set visibility of reference lines
+ */
+export function setReferenceLinesVisible(
+  state: ReferenceLinesState,
+  visible: boolean
+): void {
+  state.group.visible = visible;
+  state.visible = visible;
+}
