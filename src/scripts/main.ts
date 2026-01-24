@@ -11,6 +11,11 @@ import {
   initTimeControls,
   initEventListeners,
   handleSunUpdate,
+  initMarkers,
+  updateUserMarker,
+  handleMarkerHover,
+  updateMarkersRotation,
+  setMarkersVisible,
 } from './earth';
 import type {
   SceneObjects,
@@ -18,6 +23,7 @@ import type {
   LightingObjects,
   TimeState,
   LocationState,
+  MarkerState,
 } from './earth';
 
 let sceneObjects: SceneObjects | null = null;
@@ -26,6 +32,37 @@ let lightingObjects: LightingObjects | null = null;
 let controls: OrbitControls | null = null;
 let timeState: TimeState | null = null;
 let locationState: LocationState | null = null;
+let markerState: MarkerState | null = null;
+
+/**
+ * Wrapper to get location and update both Earth rotation and user marker
+ */
+function getLocationWithMarkerUpdate(
+  locState: LocationState,
+  earthObjs: EarthObjects,
+  markers: MarkerState
+): void {
+  // First get location (which updates Earth rotation)
+  getLocation(locState, earthObjs);
+
+  // Then add/update the user marker after a delay to allow geolocation to complete
+  // Also add it immediately with default location
+  updateUserMarker(markers, locState);
+
+  // Update again when geolocation completes (if supported)
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      () => {
+        // Geolocation succeeded, locState has been updated by getLocation
+        updateUserMarker(markers, locState);
+      },
+      () => {
+        // Geolocation failed, but we already have the default marker
+      },
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
+    );
+  }
+}
 
 function animate(): void {
   try {
@@ -34,6 +71,11 @@ function animate(): void {
     // Only update sun position when slider changes (performance optimization)
     if (timeState && earthObjects && lightingObjects) {
       handleSunUpdate(timeState, earthObjects, lightingObjects);
+    }
+
+    // Keep markers synced with Earth rotation
+    if (markerState && earthObjects) {
+      updateMarkersRotation(markerState, earthObjects.earth.rotation.y);
     }
 
     if (controls) controls.update();
@@ -64,9 +106,31 @@ export function initApp(): void {
     initTimeControls(timeState, earthObjects, lightingObjects);
     initEventListeners(sceneObjects);
 
+    // Initialize markers
+    markerState = initMarkers(sceneObjects);
+
+    // Set up marker toggle
+    const markerToggle = document.getElementById('markerToggle') as HTMLInputElement | null;
+    if (markerToggle) {
+      markerToggle.addEventListener('change', (event: Event) => {
+        const target = event.target as HTMLInputElement;
+        if (markerState) {
+          setMarkersVisible(markerState, target.checked);
+        }
+      });
+    }
+
+    // Set up marker hover events
+    window.addEventListener('mousemove', (event: MouseEvent) => {
+      if (sceneObjects && markerState && timeState) {
+        const sliderMinutes = parseInt(timeState.timeSlider.value);
+        handleMarkerHover(event, sceneObjects, markerState, sliderMinutes);
+      }
+    });
+
     // Start location detection and animation
     locationState = createLocationState();
-    getLocation(locationState, earthObjects);
+    getLocationWithMarkerUpdate(locationState, earthObjects, markerState);
     animate();
 
     console.log('Application initialized successfully');

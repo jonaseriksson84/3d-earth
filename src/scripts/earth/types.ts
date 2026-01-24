@@ -65,6 +65,21 @@ export interface LocationState {
   userLatitude: number;
 }
 
+export interface CityData {
+  name: string;
+  lat: number;
+  lon: number;
+  timezone: number;
+}
+
+export interface MarkerState {
+  markersGroup: THREE.Group;
+  cityMarkers: Map<string, THREE.Sprite>;
+  userMarker: THREE.Sprite | null;
+  tooltip: HTMLDivElement | null;
+  visible: boolean;
+}
+
 export interface AppState {
   scene: SceneObjects | null;
   earth: EarthObjects | null;
@@ -72,4 +87,5 @@ export interface AppState {
   controls: OrbitControls | null;
   time: TimeState;
   location: LocationState;
+  markers: MarkerState | null;
 }

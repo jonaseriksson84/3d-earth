@@ -70,6 +70,26 @@
   - All imports use relative paths (../scripts/)
   - Removed old index.html
 
+### FEATURE-004: Add interactive location markers for major cities
+- **Status:** COMPLETED
+- **Date:** 2026-01-24
+- **Changes:** Implemented interactive city markers with tooltips showing local time:
+  - Created new `src/scripts/earth/markers.ts` module with full TypeScript types
+  - Added 12 major world cities: London, New York, Tokyo, Sydney, Dubai, São Paulo, Mumbai, Beijing, Paris, Los Angeles, Moscow, Cairo
+  - Each city has coordinates (lat/lon) and timezone offset for accurate local time calculation
+  - Markers use THREE.Sprite with canvas-generated textures for billboard rendering (always face camera)
+  - City markers are yellow (#ffcc00) filled circles with white borders
+  - User location marker is green (#00ff88) with ring design for distinction
+  - Implemented `latLonToPosition()` function for spherical coordinate conversion
+  - Tooltips show city name and calculated local time based on time slider position
+  - Local time calculation accounts for user's local timezone offset
+  - Added UI toggle checkbox "Show city markers" to show/hide all markers
+  - Markers rotate with Earth mesh to stay at correct geographic positions
+  - Added `CityData` and `MarkerState` interfaces to types.ts
+  - Updated index.ts exports and main.ts integration
+  - All TypeScript strict mode checks pass
+  - Build completes without errors
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -89,5 +109,5 @@
 
 ### Phase 4 - Visual Enhancements
 - [ ] FEATURE-001: Add stars background
-- [ ] FEATURE-004: Add interactive location markers for major cities
+- [x] FEATURE-004: Add interactive location markers for major cities
 - [ ] FEATURE-005: Add toggle for Earth axis and reference lines

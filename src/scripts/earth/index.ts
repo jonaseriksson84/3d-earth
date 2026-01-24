@@ -8,3 +8,4 @@ export * from './astronomy';
 export * from './controls';
 export * from './geolocation';
 export * from './ui';
+export * from './markers';
