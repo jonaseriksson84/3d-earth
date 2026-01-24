@@ -1,0 +1,66 @@
+body {
+  margin: 0;
+  overflow: hidden;
+  background: #000;
+  font-family: Arial, sans-serif;
+}
+
+canvas {
+  display: none;
+}
+
+.controls {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 15px;
+  border-radius: 8px;
+  color: white;
+  min-width: 300px;
+}
+
+.slider-container {
+  margin: 10px 0;
+}
+
+.slider-container-title {
+  justify-content: space-between;
+  display: flex;
+}
+
+.slider {
+  width: 100%;
+  margin: 8px 0;
+}
+
+.time-display {
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+.instructions {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 15px;
+  border-radius: 8px;
+  color: white;
+  font-size: 12px;
+  max-width: 200px;
+}
+
+.instructions h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+}
+
+.instructions ul {
+  margin: 0;
+  padding-left: 15px;
+}
+
+.instructions li {
+  margin: 4px 0;
+}

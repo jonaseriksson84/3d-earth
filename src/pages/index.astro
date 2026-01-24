@@ -1,0 +1,54 @@
+---
+// 3D Earth Visualization - Main Page
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Earth</title>
+    <link rel="stylesheet" href="../styles/global.css" />
+  </head>
+
+  <body>
+    <div class="controls">
+      <div class="slider-container">
+        <div class="slider-container-title">
+          <label for="timeSlider">Time control</label>
+          <span class="time-display">
+            <span id="currentTime">--:-- <span class="time-display-utc">(--:-- UTC)</span></span>
+          </span>
+        </div>
+        <input
+          type="range"
+          id="timeSlider"
+          class="slider"
+          min="0"
+          max="1440"
+          value="720"
+          step="15"
+        />
+      </div>
+
+      <div class="slider-container">
+        <label>
+          <input type="checkbox" id="cloudToggle" checked /> Show clouds
+        </label>
+      </div>
+    </div>
+
+    <div class="instructions">
+      <h4>Controls</h4>
+      <ul>
+        <li>Drag to rotate Earth</li>
+        <li>Scroll to zoom in/out</li>
+        <li>Use slider to change time</li>
+      </ul>
+    </div>
+
+    <script>
+      import '../scripts/main';
+    </script>
+  </body>
+</html>

@@ -42,6 +42,34 @@
   - Updated `updateTimeDisplay()` to use the cached reference instead of calling `document.getElementById('currentTime')` on every update
   - This eliminates unnecessary DOM queries during slider movement for improved performance
 
+### REFACTOR-001: Migrate to Astro + TypeScript project structure
+- **Status:** COMPLETED
+- **Date:** 2026-01-24
+- **Changes:** Converted single-file application to modular Astro project with TypeScript:
+  - Created package.json with pnpm, Astro 5.16, Three.js 0.128, TypeScript 5.9, and @astrojs/cloudflare adapter
+  - Created tsconfig.json with strict mode enabled and all strict checks
+  - Created astro.config.mjs with Cloudflare adapter for static output
+  - Created wrangler.toml with [assets] directory = "./dist" (per project guidelines)
+  - Migrated HTML to src/pages/index.astro
+  - Extracted CSS to src/styles/global.css
+  - Moved textures to public/textures/
+  - Created modular TypeScript architecture in src/scripts/earth/:
+    - types.ts: All TypeScript interfaces (EarthConfig, SceneObjects, EarthObjects, etc.)
+    - config.ts: Configuration constants with typed interface
+    - scene.ts: Scene initialization, WebGL support checking, error display
+    - earth.ts: Earth mesh, shader materials, cloud layer
+    - lighting.ts: Ambient and directional lighting
+    - astronomy.ts: NOAA sun position calculations, day of year
+    - controls.ts: OrbitControls initialization
+    - geolocation.ts: Browser geolocation handling
+    - ui.ts: Time controls, event listeners, display updates
+    - index.ts: Module re-exports
+  - Created src/scripts/main.ts as orchestrating entry point
+  - Build completes without TypeScript errors
+  - No 'any' types used
+  - All imports use relative paths (../scripts/)
+  - Removed old index.html
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -52,8 +80,8 @@
 - [x] BUG-005: Cache DOM element references for performance
 
 ### Phase 2 - Refactoring
-- [ ] REFACTOR-001: Migrate to Astro + TypeScript project structure
-- [ ] REFACTOR-002: Create modular code architecture
+- [x] REFACTOR-001: Migrate to Astro + TypeScript project structure
+- [x] REFACTOR-002: Create modular code architecture (completed as part of REFACTOR-001)
 
 ### Phase 3 - Core Features
 - [ ] FEATURE-002: Implement Earth's axial tilt

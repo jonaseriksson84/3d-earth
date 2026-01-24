@@ -1,0 +1,21 @@
+{
+  "name": "3d-earth",
+  "type": "module",
+  "version": "2.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "typecheck": "astro check && tsc --noEmit"
+  },
+  "dependencies": {
+    "astro": "^5.16.15",
+    "three": "^0.128.0"
+  },
+  "devDependencies": {
+    "@astrojs/cloudflare": "^12.4.0",
+    "@types/three": "^0.128.0",
+    "typescript": "^5.8.3"
+  }
+}
