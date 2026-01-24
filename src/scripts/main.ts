@@ -16,6 +16,7 @@ import {
   handleMarkerHover,
   updateMarkersRotation,
   setMarkersVisible,
+  initStars,
 } from './earth';
 import type {
   SceneObjects,
@@ -98,6 +99,7 @@ export function initApp(): void {
     // Initialize all systems
     initWebGL();
     sceneObjects = initScene();
+    initStars(sceneObjects);
     earthObjects = initEarth(sceneObjects);
     lightingObjects = initLighting(sceneObjects);
     controls = initControls(sceneObjects);

@@ -181,7 +181,7 @@
         "Stars scale appropriately on window resize",
         "Works on both desktop and mobile browsers"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "FEATURE-002",
