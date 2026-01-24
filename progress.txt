@@ -15,11 +15,20 @@
   - Three.js r128: `sha384-CI3ELBVUz9XQO+97x6nwMDPosPR5XvsxW2ua7N1Xeygeh1IxtgqtCkGfQY9WWdHu`
   - OrbitControls: `sha384-wagZhIFgY4hD+7awjQjR4e2E294y6J2HSnd8eTNc15ZubTeQeVRZwhQJ+W6hnBsf`
 
+### BUG-003: Fix potential XSS vulnerability in showError function
+- **Status:** COMPLETED
+- **Date:** 2026-01-24
+- **Changes:** Replaced unsafe `innerHTML` usage with safe DOM manipulation:
+  - Refactored `showError()` function to use `document.createElement()` and `textContent` instead of template literals with `innerHTML`
+  - Updated `initApp()` error handler to use safe DOM methods instead of `innerHTML +=`
+  - Updated error messages to use plain text (removed `<br>` tags that relied on HTML parsing)
+  - Malicious input is now escaped automatically since `textContent` treats all input as text
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
 - [x] BUG-002: Add Subresource Integrity (SRI) for CDN scripts
-- [ ] BUG-003: Fix potential XSS vulnerability in showError function
+- [x] BUG-003: Fix potential XSS vulnerability in showError function
 - [ ] BUG-004: Remove unused texture uniforms from shader
 - [ ] BUG-005: Cache DOM element references for performance
 

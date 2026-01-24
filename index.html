@@ -179,12 +179,24 @@
         }
 
         function showError(title, message) {
-            document.body.innerHTML = `
-                <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-                           text-align: center; color: white; font-family: Arial, sans-serif;">
-                    <h2>${title}</h2>
-                    <p>${message}</p>
-                </div>`;
+            // Clear existing content safely
+            document.body.textContent = '';
+
+            // Create container div
+            const container = document.createElement('div');
+            container.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white; font-family: Arial, sans-serif;';
+
+            // Create title element with safe textContent
+            const titleElement = document.createElement('h2');
+            titleElement.textContent = title;
+            container.appendChild(titleElement);
+
+            // Create message element with safe textContent
+            const messageElement = document.createElement('p');
+            messageElement.textContent = message;
+            container.appendChild(messageElement);
+
+            document.body.appendChild(container);
         }
 
         function getDayOfYear(date) {
@@ -216,9 +228,8 @@
 
         function initWebGL() {
             if (!checkWebGLSupport()) {
-                showError('WebGL Not Supported', 
-                         'This application requires WebGL to display 3D graphics.<br>' +
-                         'Please update your browser or enable WebGL in settings.');
+                showError('WebGL Not Supported',
+                         'This application requires WebGL to display 3D graphics. Please update your browser or enable WebGL in settings.');
                 throw new Error('WebGL not supported');
             }
         }
@@ -241,8 +252,7 @@
             } catch (error) {
                 console.error('Failed to initialize WebGL renderer:', error);
                 showError('Graphics Initialization Failed',
-                         'Unable to start the 3D graphics system.<br>' +
-                         'Please refresh the page or try a different browser.');
+                         'Unable to start the 3D graphics system. Please refresh the page or try a different browser.');
                 throw error;
             }
         }
@@ -637,12 +647,13 @@
                 console.log('Application initialized successfully');
             } catch (error) {
                 console.error('Failed to initialize application:', error);
-                document.body.innerHTML += `
-                    <div style="position: fixed; bottom: 20px; left: 20px; 
-                               background: rgba(255, 0, 0, 0.8); color: white; 
-                               padding: 10px; border-radius: 5px; font-family: Arial, sans-serif;">
-                        <strong>Error:</strong> Application failed to start. Check console for details.
-                    </div>`;
+                const errorDiv = document.createElement('div');
+                errorDiv.style.cssText = 'position: fixed; bottom: 20px; left: 20px; background: rgba(255, 0, 0, 0.8); color: white; padding: 10px; border-radius: 5px; font-family: Arial, sans-serif;';
+                const strongEl = document.createElement('strong');
+                strongEl.textContent = 'Error:';
+                errorDiv.appendChild(strongEl);
+                errorDiv.appendChild(document.createTextNode(' Application failed to start. Check console for details.'));
+                document.body.appendChild(errorDiv);
             }
         }
 
