@@ -1,0 +1,332 @@
+{
+  "projectName": "3D Earth Visualization Enhancement",
+  "version": "2.0.0",
+  "createdAt": "2026-01-24",
+  "repository": "git@github.com:jonaseriksson84/3d-earth.git",
+  "requirements": [
+    {
+      "id": "BUG-001",
+      "category": "Bug Fix",
+      "priority": "high",
+      "description": "Remove duplicate getDayOfYear function",
+      "details": "The function getDayOfYear is defined twice in index.html (lines 190-211 and 445-466) with identical implementation. Remove the duplicate to eliminate code redundancy.",
+      "stepsToVerify": [
+        "Search for 'function getDayOfYear' in the codebase",
+        "Confirm only one definition exists",
+        "Run the application and verify time slider still works correctly",
+        "Verify sun position changes appropriately when adjusting time"
+      ],
+      "acceptanceCriteria": [
+        "Only one getDayOfYear function exists in the codebase",
+        "Application loads without JavaScript errors",
+        "Time slider updates day/night visualization correctly"
+      ],
+      "passes": false
+    },
+    {
+      "id": "BUG-002",
+      "category": "Bug Fix",
+      "priority": "high",
+      "description": "Add Subresource Integrity (SRI) for CDN scripts",
+      "details": "Three.js and OrbitControls are loaded from CDN without integrity verification. Add SRI hashes to prevent supply chain attacks.",
+      "stepsToVerify": [
+        "Verify script tags include 'integrity' attribute with correct SHA-384 hash",
+        "Verify script tags include 'crossorigin=\"anonymous\"' attribute",
+        "Load page in browser and confirm Three.js loads successfully",
+        "Check browser console for any SRI-related errors"
+      ],
+      "acceptanceCriteria": [
+        "Both CDN script tags have integrity attribute with valid SHA-384 hash",
+        "Both CDN script tags have crossorigin=\"anonymous\" attribute",
+        "Application loads and renders Earth correctly",
+        "No console errors related to integrity checks"
+      ],
+      "passes": false
+    },
+    {
+      "id": "BUG-003",
+      "category": "Bug Fix",
+      "priority": "medium",
+      "description": "Fix potential XSS vulnerability in showError function",
+      "details": "The showError function uses innerHTML with unsanitized title and message parameters. Replace with safe DOM manipulation using textContent or createElement.",
+      "stepsToVerify": [
+        "Verify showError function uses textContent or createElement instead of innerHTML",
+        "Test with malicious input: showError('<script>alert(1)</script>', 'test')",
+        "Confirm no script execution occurs",
+        "Verify error messages still display correctly for legitimate errors"
+      ],
+      "acceptanceCriteria": [
+        "showError function does not use innerHTML with unsanitized input",
+        "Malicious HTML/script tags are escaped or not executed",
+        "Error messages display readable text to users",
+        "WebGL not supported error displays correctly"
+      ],
+      "passes": false
+    },
+    {
+      "id": "BUG-004",
+      "category": "Bug Fix",
+      "priority": "medium",
+      "description": "Remove unused texture uniforms from shader",
+      "details": "normalTexture and specularTexture are loaded and passed to shader uniforms but never used in the fragment shader. Remove the unused code to save bandwidth and reduce confusion.",
+      "stepsToVerify": [
+        "Verify normalTexture and specularTexture are not loaded",
+        "Verify uniforms for these textures are not declared in shader material",
+        "Confirm no console warnings about unused textures",
+        "Verify Earth renders correctly without these textures"
+      ],
+      "acceptanceCriteria": [
+        "No unused texture uniforms exist in shader material",
+        "No unused texture loading code exists (earth_normal.jpg, earth_specular.jpg)",
+        "Earth renders correctly without console errors",
+        "Reduced initial load time due to fewer texture downloads"
+      ],
+      "passes": false
+    },
+    {
+      "id": "BUG-005",
+      "category": "Bug Fix",
+      "priority": "low",
+      "description": "Cache DOM element references for performance",
+      "details": "document.getElementById('currentTime') is called on every time display update instead of caching the reference once during initialization.",
+      "stepsToVerify": [
+        "Verify timeElement reference is stored during initTimeControls()",
+        "Verify updateTimeDisplay() uses cached reference instead of querying DOM",
+        "Run application and confirm time display updates correctly",
+        "Use browser DevTools Performance tab to confirm no repeated getElementById calls during slider movement"
+      ],
+      "acceptanceCriteria": [
+        "DOM element reference for 'currentTime' is cached in a variable",
+        "updateTimeDisplay() does not call getElementById()",
+        "Time display updates smoothly when slider is moved",
+        "No performance regression"
+      ],
+      "passes": false
+    },
+    {
+      "id": "REFACTOR-001",
+      "category": "Refactoring",
+      "priority": "high",
+      "description": "Migrate to Astro + TypeScript project structure",
+      "details": "Convert single-file application to modular Astro project with TypeScript for type safety, separate CSS, and proper build pipeline. Use pnpm for package management and configure for Cloudflare Workers deployment.",
+      "stepsToVerify": [
+        "Verify package.json exists with Astro, Three.js, @types/three, and TypeScript dependencies",
+        "Verify tsconfig.json exists with strict mode enabled",
+        "Verify astro.config.mjs exists with Cloudflare adapter (not mode: 'advanced')",
+        "Verify wrangler.toml uses [assets] directory = './dist' (not [site] bucket)",
+        "Verify src/scripts/ contains modular TypeScript files",
+        "Run 'pnpm install' successfully",
+        "Run 'pnpm build' successfully without TypeScript errors",
+        "Run 'pnpm dev' and verify application works in development",
+        "Deploy to Cloudflare and verify production build works"
+      ],
+      "acceptanceCriteria": [
+        "Project uses pnpm for package management",
+        "All JavaScript converted to TypeScript with proper types",
+        "No 'any' types except where absolutely necessary",
+        "CSS extracted to separate file(s)",
+        "Build completes without errors or warnings",
+        "Application functionality identical to original",
+        "wrangler.toml configured per project guidelines (assets directory, not site bucket)",
+        "Script imports use relative paths (../scripts/) not absolute (/src/scripts/)"
+      ],
+      "passes": false
+    },
+    {
+      "id": "REFACTOR-002",
+      "category": "Refactoring",
+      "priority": "medium",
+      "description": "Create modular code architecture with single-responsibility modules",
+      "details": "Split monolithic code into focused TypeScript modules: config, scene, earth, lighting, astronomy, controls, geolocation, ui, and types.",
+      "stepsToVerify": [
+        "Verify src/scripts/earth/config.ts contains CONFIG object with TypeScript interface",
+        "Verify src/scripts/earth/scene.ts contains scene initialization logic",
+        "Verify src/scripts/earth/earth.ts contains Earth mesh and shader materials",
+        "Verify src/scripts/earth/astronomy.ts contains NOAA sun position calculations",
+        "Verify src/scripts/earth/types.ts contains all TypeScript interfaces",
+        "Verify each module exports only necessary functions/types",
+        "Verify main.ts imports and orchestrates all modules correctly",
+        "Run TypeScript compiler with --noEmit to verify no circular dependencies"
+      ],
+      "acceptanceCriteria": [
+        "Minimum 6 separate TypeScript modules exist",
+        "Each module has single responsibility",
+        "No circular dependencies between modules",
+        "All modules have proper TypeScript exports/imports",
+        "Application works identically after modularization",
+        "Code is easier to test (pure functions where possible)"
+      ],
+      "passes": false
+    },
+    {
+      "id": "FEATURE-001",
+      "category": "New Feature",
+      "priority": "medium",
+      "description": "Add stars background for immersive space environment",
+      "details": "Implement a space background with stars using either a skybox texture or particle system to create an immersive environment surrounding the Earth.",
+      "stepsToVerify": [
+        "Verify stars are visible around the Earth in all directions",
+        "Rotate camera 360 degrees around Earth and confirm stars visible at all angles",
+        "Verify stars do not interfere with Earth visibility (correct z-depth)",
+        "Verify stars render behind Earth and clouds",
+        "Check performance: FPS should remain above 30 on average hardware",
+        "Verify stars display correctly on mobile devices",
+        "Resize browser window and verify stars scale appropriately"
+      ],
+      "acceptanceCriteria": [
+        "Stars visible in space background surrounding Earth",
+        "Stars render at correct depth (always behind Earth and clouds)",
+        "No visible seams or artifacts in star field",
+        "Performance impact less than 5ms per frame on average hardware",
+        "Stars scale appropriately on window resize",
+        "Works on both desktop and mobile browsers"
+      ],
+      "passes": false
+    },
+    {
+      "id": "FEATURE-002",
+      "category": "New Feature",
+      "priority": "medium",
+      "description": "Implement Earth's axial tilt for accurate seasonal visualization",
+      "details": "Add Earth's 23.4 degree axial tilt to accurately represent seasonal day/night patterns. The tilt should affect how the day/night terminator appears at different times of year.",
+      "stepsToVerify": [
+        "Verify Earth is tilted approximately 23.4 degrees from vertical",
+        "Add date picker or use June 21: verify Arctic region has near-24h daylight",
+        "Set date to December 21: verify Arctic region has near-24h darkness",
+        "Set date to March 20 or September 22: verify day/night terminator passes through poles",
+        "Verify clouds layer has same tilt as Earth",
+        "Verify day/night shader correctly accounts for tilt"
+      ],
+      "acceptanceCriteria": [
+        "Earth mesh rotated 23.4 degrees on appropriate axis",
+        "Cloud layer matches Earth's tilt exactly",
+        "Day/night terminator accurately reflects seasonal sun positions",
+        "Summer solstice (June 21) shows midnight sun effect in Arctic",
+        "Winter solstice (December 21) shows polar night in Arctic",
+        "Equinoxes show day/night terminator passing through both poles"
+      ],
+      "passes": false
+    },
+    {
+      "id": "FEATURE-003",
+      "category": "New Feature",
+      "priority": "medium",
+      "description": "Add date picker for seasonal exploration",
+      "details": "Allow users to select any date (not just time of day) to explore how sun position and day/night patterns change throughout the year.",
+      "stepsToVerify": [
+        "Verify date picker UI element exists in controls panel",
+        "Select different dates and verify sun position updates accordingly",
+        "Select June 21 and verify northern hemisphere has visibly longer daylight",
+        "Select December 21 and verify southern hemisphere has visibly longer daylight",
+        "Verify time slider continues to work in combination with date picker",
+        "Verify date defaults to current date on page load",
+        "Change date multiple times and verify no memory leaks or performance degradation"
+      ],
+      "acceptanceCriteria": [
+        "Date picker input (type='date') added to UI controls panel",
+        "Date selection correctly updates solar declination in astronomy calculations",
+        "Sun position visibly changes when date is changed",
+        "Time slider continues to function correctly with any selected date",
+        "UI clearly shows currently selected date",
+        "Default date is current date on initial page load",
+        "Date selection persists during session (doesn't reset when time slider moves)"
+      ],
+      "passes": false
+    },
+    {
+      "id": "FEATURE-004",
+      "category": "New Feature",
+      "priority": "high",
+      "description": "Add interactive location markers for major cities",
+      "details": "Display interactive markers on Earth's surface for major world cities. Each marker should show the city name and calculated local time based on the current time slider position.",
+      "stepsToVerify": [
+        "Verify markers appear on Earth surface at geographically correct positions",
+        "Click on a marker and verify tooltip/popup shows city name",
+        "Verify displayed local time for each city is correct based on timezone",
+        "Move time slider and verify all city local times update correctly",
+        "Verify minimum 10 major cities included (London, New York, Tokyo, Sydney, Dubai, Sao Paulo, Mumbai, Beijing, Paris, Los Angeles)",
+        "Verify user's current location marker is visually distinct (different color or pulsing)",
+        "Rotate Earth and verify markers stay correctly attached to surface positions",
+        "Verify markers use billboard effect (always face camera)"
+      ],
+      "acceptanceCriteria": [
+        "Minimum 10 city markers displayed on Earth at correct lat/lon positions",
+        "Markers correctly positioned using spherical coordinate conversion",
+        "Clicking/hovering marker shows city name and local time in tooltip",
+        "Local time correctly calculated using city timezone offset",
+        "Local time updates immediately when time slider changes",
+        "User's geolocation marked with distinct visual style",
+        "UI toggle exists to show/hide all markers",
+        "Markers use billboard rendering (face camera at all angles)",
+        "No significant performance degradation (< 2ms per frame impact)"
+      ],
+      "passes": false
+    },
+    {
+      "id": "FEATURE-005",
+      "category": "New Feature",
+      "priority": "low",
+      "description": "Add toggle for Earth axis and reference lines visualization",
+      "details": "Add optional visualization showing Earth's rotational axis line, equator, and Arctic/Antarctic circles to help users understand Earth's geometry and tilt.",
+      "stepsToVerify": [
+        "Verify toggle checkbox exists in UI controls to show/hide reference lines",
+        "Enable toggle and verify axis line passes through North and South poles",
+        "Verify equator line renders as circle at 0 degrees latitude",
+        "Verify Arctic circle renders at approximately 66.5 degrees N latitude",
+        "Verify Antarctic circle renders at approximately 66.5 degrees S latitude",
+        "Rotate Earth and verify all lines rotate together with Earth mesh",
+        "Verify lines are semi-transparent and don't obscure Earth texture details",
+        "Verify lines are disabled by default"
+      ],
+      "acceptanceCriteria": [
+        "Toggle checkbox labeled 'Show reference lines' in UI controls",
+        "Axis line extends visibly through both North and South poles",
+        "Equator line rendered as complete circle at 0 degrees latitude",
+        "Arctic circle rendered at 66.5 degrees N latitude",
+        "Antarctic circle rendered at 66.5 degrees S latitude",
+        "All reference lines rotate correctly with Earth mesh",
+        "Lines have appropriate opacity (visible but not dominant, 0.3-0.5 alpha)",
+        "Reference lines disabled by default on page load",
+        "Different colors for axis vs latitude circles for clarity"
+      ],
+      "passes": false
+    }
+  ],
+  "summary": {
+    "totalRequirements": 12,
+    "bugFixes": 5,
+    "refactoring": 2,
+    "newFeatures": 5,
+    "byPriority": {
+      "high": 4,
+      "medium": 6,
+      "low": 2
+    }
+  },
+  "implementationPhases": [
+    {
+      "phase": 1,
+      "name": "Foundation - Bug Fixes",
+      "requirements": ["BUG-001", "BUG-002", "BUG-003", "BUG-004", "BUG-005"],
+      "description": "Fix all identified bugs and security issues in the current codebase"
+    },
+    {
+      "phase": 2,
+      "name": "Architecture - Refactoring",
+      "requirements": ["REFACTOR-001", "REFACTOR-002"],
+      "description": "Migrate to Astro + TypeScript with modular architecture"
+    },
+    {
+      "phase": 3,
+      "name": "Core Features",
+      "requirements": ["FEATURE-002", "FEATURE-003"],
+      "description": "Add axial tilt and date picker (foundational for seasonal accuracy)"
+    },
+    {
+      "phase": 4,
+      "name": "Visual Enhancements",
+      "requirements": ["FEATURE-001", "FEATURE-004", "FEATURE-005"],
+      "description": "Add stars background, city markers, and reference lines"
+    }
+  ]
+}
