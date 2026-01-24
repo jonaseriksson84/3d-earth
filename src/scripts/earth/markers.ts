@@ -169,6 +169,11 @@ export function calculateLocalTime(
 export function initMarkers(sceneObjects: SceneObjects): MarkerState {
   const markersGroup = new THREE.Group();
   markersGroup.name = 'cityMarkers';
+
+  // Apply Earth's axial tilt to markers group to match Earth rotation
+  const tiltRadians = (CONFIG.AXIAL_TILT * Math.PI) / 180;
+  markersGroup.rotation.z = tiltRadians;
+
   sceneObjects.scene.add(markersGroup);
 
   const cityMarkers = new Map<string, THREE.Sprite>();
