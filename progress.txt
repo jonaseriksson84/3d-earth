@@ -1,0 +1,37 @@
+# 3D Earth Visualization - Implementation Progress
+
+## Completed Tasks
+
+### BUG-001: Remove duplicate getDayOfYear function
+- **Status:** COMPLETED
+- **Date:** 2026-01-24
+- **Commit:** 3887624
+- **Changes:** Removed duplicate `getDayOfYear` function from index.html. The function was defined twice (originally at lines 190 and 445) with identical implementation. Kept the first definition and removed the duplicate.
+
+### BUG-002: Add Subresource Integrity (SRI) for CDN scripts
+- **Status:** COMPLETED
+- **Date:** 2026-01-24
+- **Changes:** Added SRI `integrity` and `crossorigin="anonymous"` attributes to both CDN script tags:
+  - Three.js r128: `sha384-CI3ELBVUz9XQO+97x6nwMDPosPR5XvsxW2ua7N1Xeygeh1IxtgqtCkGfQY9WWdHu`
+  - OrbitControls: `sha384-wagZhIFgY4hD+7awjQjR4e2E294y6J2HSnd8eTNc15ZubTeQeVRZwhQJ+W6hnBsf`
+
+## Pending Tasks
+
+### Phase 1 - Bug Fixes
+- [x] BUG-002: Add Subresource Integrity (SRI) for CDN scripts
+- [ ] BUG-003: Fix potential XSS vulnerability in showError function
+- [ ] BUG-004: Remove unused texture uniforms from shader
+- [ ] BUG-005: Cache DOM element references for performance
+
+### Phase 2 - Refactoring
+- [ ] REFACTOR-001: Migrate to Astro + TypeScript project structure
+- [ ] REFACTOR-002: Create modular code architecture
+
+### Phase 3 - Core Features
+- [ ] FEATURE-002: Implement Earth's axial tilt
+- [ ] FEATURE-003: Add date picker for seasonal exploration
+
+### Phase 4 - Visual Enhancements
+- [ ] FEATURE-001: Add stars background
+- [ ] FEATURE-004: Add interactive location markers for major cities
+- [ ] FEATURE-005: Add toggle for Earth axis and reference lines
