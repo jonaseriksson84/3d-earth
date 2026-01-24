@@ -88,6 +88,12 @@
             </div>
             <input type="range" id="timeSlider" class="slider" min="0" max="1440" value="720" step="15">
         </div>
+
+        <div class="slider-container">
+            <label>
+                <input type="checkbox" id="cloudToggle" checked> Show clouds
+            </label>
+        </div>
     </div>
 
     <div class="instructions">
@@ -274,21 +280,21 @@
             
             const earthGeometry = new THREE.SphereGeometry(CONFIG.EARTH_RADIUS, segments, segments);
 
-            // Load Earth textures
+            // Load Earth textures - High Resolution local files
             const dayTexture = textureLoader.load(
-                'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg',
+                'textures/earth_day.jpg',
                 undefined, undefined, (err) => console.warn('Day texture failed')
             );
             const normalTexture = textureLoader.load(
-                'https://threejs.org/examples/textures/planets/earth_normal_2048.jpg',
+                'textures/earth_normal.jpg',
                 undefined, undefined, (err) => console.warn('Normal texture failed')
             );
             const specularTexture = textureLoader.load(
-                'https://threejs.org/examples/textures/planets/earth_specular_2048.jpg',
+                'textures/earth_specular.jpg',
                 undefined, undefined, (err) => console.warn('Specular texture failed')
             );
             const nightTexture = textureLoader.load(
-                'https://threejs.org/examples/textures/planets/earth_lights_2048.png',
+                'textures/earth_night.jpg',
                 undefined, undefined, (err) => console.warn('Night lights texture failed')
             );
 
@@ -345,7 +351,7 @@
             // Clouds
             const cloudsGeometry = new THREE.SphereGeometry(CONFIG.CLOUD_RADIUS, segments, segments);
             const cloudTexture = textureLoader.load(
-                'https://threejs.org/examples/textures/planets/earth_clouds_1024.png',
+                'textures/earth_clouds.jpg',
                 undefined, undefined, (err) => console.warn('Cloud texture failed')
             );
             const cloudsMaterial = new THREE.MeshLambertMaterial({
@@ -539,9 +545,10 @@
 
         function initTimeControls() {
             timeSlider = document.getElementById('timeSlider');
+            const cloudToggle = document.getElementById('cloudToggle');
             
-            if (!timeSlider) {
-                console.error('Time slider element not found');
+            if (!timeSlider || !cloudToggle) {
+                console.error('Time slider or cloud toggle element not found');
                 throw new Error('Required UI elements missing');
             }
             
@@ -571,6 +578,17 @@
                     needsSunUpdate = true;
                 } catch (error) {
                     console.error('Error handling slider input:', error);
+                }
+            });
+
+            // Cloud toggle event listener
+            cloudToggle.addEventListener('change', (event) => {
+                try {
+                    if (clouds) {
+                        clouds.visible = event.target.checked;
+                    }
+                } catch (error) {
+                    console.error('Error handling cloud toggle:', error);
                 }
             });
         }
