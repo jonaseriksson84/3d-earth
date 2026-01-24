@@ -4,6 +4,7 @@ import type { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js
 export interface EarthConfig {
   EARTH_RADIUS: number;
   CLOUD_RADIUS: number;
+  AXIAL_TILT: number;
   UTC_NOON_MINUTES: number;
   MINUTES_PER_DAY: number;
   DEGREES_PER_MINUTE: number;

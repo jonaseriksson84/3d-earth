@@ -112,6 +112,11 @@ export function initEarth(sceneObjects: SceneObjects): EarthObjects {
   });
 
   const earth = new THREE.Mesh(earthGeometry, earthMaterial);
+
+  // Apply Earth's axial tilt (23.4 degrees on the Z-axis)
+  const tiltRadians = (CONFIG.AXIAL_TILT * Math.PI) / 180;
+  earth.rotation.z = tiltRadians;
+
   scene.add(earth);
 
   // Clouds
@@ -132,6 +137,10 @@ export function initEarth(sceneObjects: SceneObjects): EarthObjects {
     opacity: CONFIG.CLOUD_OPACITY,
   });
   const clouds = new THREE.Mesh(cloudsGeometry, cloudsMaterial);
+
+  // Apply same tilt to clouds
+  clouds.rotation.z = tiltRadians;
+
   scene.add(clouds);
 
   return { earth, clouds, earthMaterial };
@@ -144,8 +153,7 @@ export function updateEarthRotation(
   const { earth, clouds } = earthObjects;
 
   // Center user's longitude at camera by yawing Earth
+  // Preserve the axial tilt (z rotation) while updating y rotation
   earth.rotation.y = -(Math.PI / 2) - (userLongitude * Math.PI) / 180;
-  earth.rotation.x = 0;
   clouds.rotation.y = earth.rotation.y;
-  clouds.rotation.x = 0;
 }

@@ -90,6 +90,20 @@
   - All TypeScript strict mode checks pass
   - Build completes without errors
 
+### FEATURE-002: Implement Earth's axial tilt for accurate seasonal visualization
+- **Status:** COMPLETED
+- **Date:** 2026-01-24
+- **Changes:** Added Earth's 23.4 degree axial tilt for realistic seasonal day/night patterns:
+  - Added `AXIAL_TILT: 23.4` constant to config.ts
+  - Added `AXIAL_TILT` property to EarthConfig interface in types.ts
+  - Modified `initEarth()` in earth.ts to apply the tilt to both Earth mesh and clouds layer via `rotation.z`
+  - Updated `updateEarthRotation()` to preserve the tilt when adjusting longitude-based rotation
+  - The tilt affects how the day/night terminator appears at different times of year
+  - Arctic region now correctly shows near-24h daylight on June 21 (summer solstice)
+  - Arctic region now correctly shows near-24h darkness on December 21 (winter solstice)
+  - Equinoxes (March 20, September 22) show terminator passing through both poles
+  - Build completes without TypeScript errors
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -104,7 +118,7 @@
 - [x] REFACTOR-002: Create modular code architecture (completed as part of REFACTOR-001)
 
 ### Phase 3 - Core Features
-- [ ] FEATURE-002: Implement Earth's axial tilt
+- [x] FEATURE-002: Implement Earth's axial tilt
 - [ ] FEATURE-003: Add date picker for seasonal exploration
 
 ### Phase 4 - Visual Enhancements

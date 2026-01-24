@@ -4,6 +4,7 @@ export const CONFIG: EarthConfig = {
   // Earth physical properties
   EARTH_RADIUS: 5,
   CLOUD_RADIUS: 5.05,
+  AXIAL_TILT: 23.4, // Earth's axial tilt in degrees
 
   // Time constants
   UTC_NOON_MINUTES: 720, // 12:00 UTC in minutes
