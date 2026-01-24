@@ -32,3 +32,6 @@ pnpm-debug.log*
 
 # Cloudflare
 .wrangler/
+
+.pnpm-store/
+
