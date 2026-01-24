@@ -295,14 +295,6 @@
                 'textures/earth_day.jpg',
                 undefined, undefined, (err) => console.warn('Day texture failed')
             );
-            const normalTexture = textureLoader.load(
-                'textures/earth_normal.jpg',
-                undefined, undefined, (err) => console.warn('Normal texture failed')
-            );
-            const specularTexture = textureLoader.load(
-                'textures/earth_specular.jpg',
-                undefined, undefined, (err) => console.warn('Specular texture failed')
-            );
             const nightTexture = textureLoader.load(
                 'textures/earth_night.jpg',
                 undefined, undefined, (err) => console.warn('Night lights texture failed')
@@ -313,8 +305,6 @@
                 uniforms: {
                     dayTexture: { value: dayTexture },
                     nightTexture: { value: nightTexture },
-                    normalTexture: { value: normalTexture },
-                    specularTexture: { value: specularTexture },
                     sunDirection: { value: new THREE.Vector3(1, 0, 0) }
                 },
                 vertexShader: `
@@ -332,8 +322,6 @@
                 fragmentShader: `
                     uniform sampler2D dayTexture;
                     uniform sampler2D nightTexture;
-                    uniform sampler2D normalTexture;
-                    uniform sampler2D specularTexture;
                     uniform vec3 sunDirection;
                     
                     varying vec2 vUv;

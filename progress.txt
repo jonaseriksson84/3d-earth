@@ -24,12 +24,21 @@
   - Updated error messages to use plain text (removed `<br>` tags that relied on HTML parsing)
   - Malicious input is now escaped automatically since `textContent` treats all input as text
 
+### BUG-004: Remove unused texture uniforms from shader
+- **Status:** COMPLETED
+- **Date:** 2026-01-24
+- **Changes:** Removed unused `normalTexture` and `specularTexture` that were loaded but never used in the fragment shader:
+  - Removed texture loading for `textures/earth_normal.jpg` and `textures/earth_specular.jpg`
+  - Removed `normalTexture` and `specularTexture` uniforms from ShaderMaterial
+  - Removed unused uniform declarations from fragment shader
+  - This reduces bandwidth usage and eliminates unnecessary texture downloads
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
 - [x] BUG-002: Add Subresource Integrity (SRI) for CDN scripts
 - [x] BUG-003: Fix potential XSS vulnerability in showError function
-- [ ] BUG-004: Remove unused texture uniforms from shader
+- [x] BUG-004: Remove unused texture uniforms from shader
 - [ ] BUG-005: Cache DOM element references for performance
 
 ### Phase 2 - Refactoring
