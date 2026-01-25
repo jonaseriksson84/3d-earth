@@ -11,6 +11,7 @@ import {
   initTimeControls,
   initEventListeners,
   handleSunUpdate,
+  updatePlayback,
   initMarkers,
   updateUserMarker,
   handleMarkerHover,
@@ -77,6 +78,11 @@ function getLocationWithMarkerUpdate(
 function animate(): void {
   try {
     requestAnimationFrame(animate);
+
+    // Update time during playback
+    if (timeState) {
+      updatePlayback(timeState);
+    }
 
     // Only update sun position when slider changes (performance optimization)
     if (timeState && earthObjects && lightingObjects) {

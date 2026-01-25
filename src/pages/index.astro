@@ -59,6 +59,21 @@ import '../styles/global.css';
           value="720"
           step="15"
         />
+        <div class="playback-controls">
+          <button id="playPauseBtn" class="playback-btn" title="Play/Pause (Space)">
+            <span id="playIcon">▶</span>
+            <span id="pauseIcon" style="display: none;">⏸</span>
+          </button>
+          <div class="speed-controls">
+            <label for="speedSelect">Speed:</label>
+            <select id="speedSelect" class="speed-select">
+              <option value="1">1×</option>
+              <option value="10">10×</option>
+              <option value="60" selected>60×</option>
+              <option value="360">360×</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       <div class="slider-container">
@@ -86,6 +101,8 @@ import '../styles/global.css';
         <li>Drag to rotate Earth</li>
         <li>Scroll to zoom in/out</li>
         <li>Use slider to change time</li>
+        <li>Space: Play/Pause</li>
+        <li>← → Arrow keys: Step time</li>
       </ul>
     </div>
 

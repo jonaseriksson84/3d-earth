@@ -202,6 +202,35 @@
   - Tests run in under 500ms
   - Build continues to work without errors
 
+### FEATURE-011: Add time scrubber for full day visualization
+- **Status:** COMPLETED
+- **Date:** 2026-01-25
+- **Changes:** Enhanced time controls with play/pause functionality and speed controls:
+  - Updated `TimeState` interface in types.ts with playback properties:
+    - `isPlaying`: boolean to track playback state
+    - `playbackSpeed`: number (1, 10, 60, 360 multipliers)
+    - `lastPlaybackTime`: timestamp for calculating elapsed time
+  - Added playback UI in index.astro:
+    - Play/pause button with ▶ and ⏸ icons
+    - Speed selector dropdown with 1×, 10×, 60× (default), and 360× options
+  - Implemented playback logic in ui.ts:
+    - `togglePlayback()`: toggle play/pause state and update UI
+    - `setPlaybackSpeed()`: change playback speed multiplier
+    - `stepTime()`: step forward/backward by slider step amount
+    - `updatePlayback()`: calculate and apply time progression during playback
+    - `updatePlaybackUI()`: sync play/pause icons with state
+  - Added keyboard shortcuts:
+    - Space: Play/Pause
+    - Left Arrow: Step time backward
+    - Right Arrow: Step time forward
+  - Updated main.ts animate loop to call `updatePlayback()` each frame
+  - Added CSS styles for playback controls:
+    - Circular play/pause button with hover/active states
+    - Speed selector styled to match other controls
+  - Time wraps around at midnight (1440 minutes)
+  - All 60 existing tests pass
+  - Build completes without TypeScript errors
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -227,3 +256,6 @@
 ### Phase 5 - Critical Improvements
 - [x] IMPROVEMENT-001: Add loading indicator for texture downloads
 - [x] IMPROVEMENT-002: Add unit tests with Vitest
+
+### Phase 6 - Interactivity Enhancements
+- [x] FEATURE-011: Add time scrubber for full day visualization

@@ -54,6 +54,65 @@ canvas {
   margin: 5px 0;
 }
 
+/* Playback Controls */
+.playback-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 8px;
+}
+
+.playback-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: #4da6ff;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.playback-btn:hover {
+  background: #3d8fdb;
+  transform: scale(1.05);
+}
+
+.playback-btn:active {
+  background: #2d7cc4;
+  transform: scale(0.95);
+}
+
+.speed-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.speed-controls label {
+  font-size: 13px;
+  color: #aaa;
+}
+
+.speed-select {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  color: white;
+  padding: 4px 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.speed-select option {
+  background: #333;
+  color: white;
+}
+
 .instructions {
   position: absolute;
   bottom: 20px;

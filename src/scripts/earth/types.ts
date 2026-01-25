@@ -62,6 +62,10 @@ export interface TimeState {
   needsSunUpdate: boolean;
   timeDisplayElement: HTMLElement | null;
   selectedDate: Date;
+  // Playback state
+  isPlaying: boolean;
+  playbackSpeed: number; // 1, 10, 60, 360 (multiplier)
+  lastPlaybackTime: number; // Timestamp for calculating elapsed time
 }
 
 export interface LocationState {

@@ -459,7 +459,7 @@
         "Scrubber handle shows current position during playback",
         "Keyboard shortcuts: Space for play/pause, arrow keys for step"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "FEATURE-012",

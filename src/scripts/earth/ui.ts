@@ -39,6 +39,9 @@ export function createTimeState(): TimeState {
     needsSunUpdate: true,
     timeDisplayElement: null,
     selectedDate: today,
+    isPlaying: false,
+    playbackSpeed: 60, // Default to 60x speed
+    lastPlaybackTime: 0,
   };
 }
 
@@ -60,6 +63,81 @@ function parseDateFromInput(dateString: string): Date {
   return new Date(year, month - 1, day);
 }
 
+/**
+ * Toggle play/pause state
+ */
+export function togglePlayback(timeState: TimeState): void {
+  timeState.isPlaying = !timeState.isPlaying;
+  timeState.lastPlaybackTime = performance.now();
+  updatePlaybackUI(timeState.isPlaying);
+}
+
+/**
+ * Set playback speed
+ */
+export function setPlaybackSpeed(timeState: TimeState, speed: number): void {
+  timeState.playbackSpeed = speed;
+}
+
+/**
+ * Step time forward or backward
+ */
+export function stepTime(timeState: TimeState, direction: number): void {
+  const currentValue = parseInt(timeState.timeSlider.value);
+  const step = CONFIG.SLIDER_STEP * direction;
+  let newValue = currentValue + step;
+
+  // Wrap around at day boundaries
+  if (newValue >= CONFIG.MINUTES_PER_DAY) {
+    newValue = newValue - CONFIG.MINUTES_PER_DAY;
+  } else if (newValue < 0) {
+    newValue = CONFIG.MINUTES_PER_DAY + newValue;
+  }
+
+  timeState.timeSlider.value = String(newValue);
+  timeState.needsSunUpdate = true;
+}
+
+/**
+ * Update playback UI elements
+ */
+function updatePlaybackUI(isPlaying: boolean): void {
+  const playIcon = document.getElementById('playIcon');
+  const pauseIcon = document.getElementById('pauseIcon');
+
+  if (playIcon && pauseIcon) {
+    playIcon.style.display = isPlaying ? 'none' : 'inline';
+    pauseIcon.style.display = isPlaying ? 'inline' : 'none';
+  }
+}
+
+/**
+ * Handle time progression during playback
+ */
+export function updatePlayback(timeState: TimeState): void {
+  if (!timeState.isPlaying) return;
+
+  const now = performance.now();
+  const elapsed = now - timeState.lastPlaybackTime;
+  timeState.lastPlaybackTime = now;
+
+  // Calculate how many minutes to advance
+  // At 1x speed, 1 real second = 1 simulated minute
+  // Elapsed is in ms, so divide by 1000 to get seconds
+  const minutesToAdd = (elapsed / 1000) * timeState.playbackSpeed;
+
+  const currentValue = parseFloat(timeState.timeSlider.value);
+  let newValue = currentValue + minutesToAdd;
+
+  // Wrap around at midnight
+  if (newValue >= CONFIG.MINUTES_PER_DAY) {
+    newValue = newValue - CONFIG.MINUTES_PER_DAY;
+  }
+
+  timeState.timeSlider.value = String(Math.floor(newValue));
+  timeState.needsSunUpdate = true;
+}
+
 export function initTimeControls(
   timeState: TimeState,
   earthObjects: EarthObjects,
@@ -69,6 +147,8 @@ export function initTimeControls(
   const datePicker = document.getElementById('datePicker') as HTMLInputElement | null;
   const cloudToggle = document.getElementById('cloudToggle') as HTMLInputElement | null;
   const timeDisplayElement = document.getElementById('currentTime');
+  const playPauseBtn = document.getElementById('playPauseBtn');
+  const speedSelect = document.getElementById('speedSelect') as HTMLSelectElement | null;
 
   if (!timeSlider || !cloudToggle || !datePicker) {
     console.error('Required control elements not found');
@@ -137,6 +217,47 @@ export function initTimeControls(
       }
     } catch (error) {
       console.error('Error handling cloud toggle:', error);
+    }
+  });
+
+  // Play/Pause button event listener
+  if (playPauseBtn) {
+    playPauseBtn.addEventListener('click', () => {
+      togglePlayback(timeState);
+    });
+  }
+
+  // Speed select event listener
+  if (speedSelect) {
+    // Set initial speed from select value
+    timeState.playbackSpeed = parseInt(speedSelect.value);
+
+    speedSelect.addEventListener('change', (event: Event) => {
+      const target = event.target as HTMLSelectElement;
+      setPlaybackSpeed(timeState, parseInt(target.value));
+    });
+  }
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (event: KeyboardEvent) => {
+    // Ignore if user is typing in an input field
+    if (event.target instanceof HTMLInputElement || event.target instanceof HTMLSelectElement) {
+      return;
+    }
+
+    switch (event.code) {
+      case 'Space':
+        event.preventDefault();
+        togglePlayback(timeState);
+        break;
+      case 'ArrowLeft':
+        event.preventDefault();
+        stepTime(timeState, -1);
+        break;
+      case 'ArrowRight':
+        event.preventDefault();
+        stepTime(timeState, 1);
+        break;
     }
   });
 }
