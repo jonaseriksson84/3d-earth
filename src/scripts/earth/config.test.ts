@@ -83,6 +83,27 @@ describe('CONFIG', () => {
     });
   });
 
+  describe('Atmosphere glow effect', () => {
+    it('ATMOSPHERE_RADIUS is greater than CLOUD_RADIUS', () => {
+      expect(CONFIG.ATMOSPHERE_RADIUS).toBeGreaterThan(CONFIG.CLOUD_RADIUS);
+    });
+
+    it('ATMOSPHERE_COLOR is a valid hex color', () => {
+      expect(CONFIG.ATMOSPHERE_COLOR).toBeGreaterThanOrEqual(0);
+      expect(CONFIG.ATMOSPHERE_COLOR).toBeLessThanOrEqual(0xffffff);
+    });
+
+    it('ATMOSPHERE_GLOW_INTENSITY is positive and reasonable', () => {
+      expect(CONFIG.ATMOSPHERE_GLOW_INTENSITY).toBeGreaterThan(0);
+      expect(CONFIG.ATMOSPHERE_GLOW_INTENSITY).toBeLessThanOrEqual(2);
+    });
+
+    it('ATMOSPHERE_FRESNEL_POWER is positive and reasonable', () => {
+      expect(CONFIG.ATMOSPHERE_FRESNEL_POWER).toBeGreaterThan(0);
+      expect(CONFIG.ATMOSPHERE_FRESNEL_POWER).toBeLessThanOrEqual(10);
+    });
+  });
+
   describe('Default location', () => {
     it('DEFAULT_LONGITUDE is valid (-180 to 180)', () => {
       expect(CONFIG.DEFAULT_LONGITUDE).toBeGreaterThanOrEqual(-180);

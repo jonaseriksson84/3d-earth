@@ -4,6 +4,7 @@ import type { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js
 export interface EarthConfig {
   EARTH_RADIUS: number;
   CLOUD_RADIUS: number;
+  ATMOSPHERE_RADIUS: number;
   AXIAL_TILT: number;
   UTC_NOON_MINUTES: number;
   MINUTES_PER_DAY: number;
@@ -26,6 +27,9 @@ export interface EarthConfig {
     min: number;
     max: number;
   };
+  ATMOSPHERE_COLOR: number;
+  ATMOSPHERE_GLOW_INTENSITY: number;
+  ATMOSPHERE_FRESNEL_POWER: number;
   DEFAULT_LONGITUDE: number;
   DEFAULT_LATITUDE: number;
   DAMPING_FACTOR: number;
@@ -90,6 +94,12 @@ export interface MarkerState {
 
 export interface ReferenceLinesState {
   group: THREE.Group;
+  visible: boolean;
+}
+
+export interface AtmosphereState {
+  mesh: THREE.Mesh;
+  material: THREE.ShaderMaterial;
   visible: boolean;
 }
 

@@ -4,6 +4,7 @@ export const CONFIG: EarthConfig = {
   // Earth physical properties
   EARTH_RADIUS: 5,
   CLOUD_RADIUS: 5.05,
+  ATMOSPHERE_RADIUS: 5.15, // Slightly larger than clouds for glow effect
   AXIAL_TILT: 23.4, // Earth's axial tilt in degrees
 
   // Time constants
@@ -33,6 +34,11 @@ export const CONFIG: EarthConfig = {
   // Visual effects
   CLOUD_OPACITY: 0.3,
   DAY_NIGHT_TRANSITION: { min: -0.1, max: 0.1 }, // smoothstep range
+
+  // Atmosphere glow effect
+  ATMOSPHERE_COLOR: 0x88ccff, // Sky blue for realistic atmosphere
+  ATMOSPHERE_GLOW_INTENSITY: 0.6, // Subtle glow
+  ATMOSPHERE_FRESNEL_POWER: 3.0, // Controls edge sharpness (2-5 range)
 
   // Default location (Stockholm)
   DEFAULT_LONGITUDE: 18,

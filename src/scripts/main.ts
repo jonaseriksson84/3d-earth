@@ -28,6 +28,9 @@ import {
   startFlyTo,
   updateFlyTo,
   cancelFlyTo,
+  initAtmosphere,
+  updateAtmosphereRotation,
+  setAtmosphereVisible,
 } from './earth';
 import type {
   SceneObjects,
@@ -39,6 +42,7 @@ import type {
   ReferenceLinesState,
   LoadingState,
   FlyToState,
+  AtmosphereState,
 } from './earth';
 
 let sceneObjects: SceneObjects | null = null;
@@ -51,6 +55,7 @@ let markerState: MarkerState | null = null;
 let refLinesState: ReferenceLinesState | null = null;
 let loadingState: LoadingState | null = null;
 let flyToState: FlyToState | null = null;
+let atmosphereState: AtmosphereState | null = null;
 
 /**
  * Wrapper to get location and update both Earth rotation and user marker
@@ -111,6 +116,11 @@ function animate(): void {
       updateReferenceLinesRotation(refLinesState, earthObjects.earth.rotation.y);
     }
 
+    // Keep atmosphere synced with Earth rotation
+    if (atmosphereState && earthObjects) {
+      updateAtmosphereRotation(atmosphereState, earthObjects.earth.rotation.y);
+    }
+
     if (controls) controls.update();
     if (sceneObjects) {
       const { renderer, scene, camera } = sceneObjects;
@@ -143,6 +153,7 @@ export function initApp(): void {
       markerState = null;
       refLinesState = null;
       flyToState = null;
+      atmosphereState = null;
 
       // Clear the scene
       const canvas = document.querySelector('canvas');
@@ -175,6 +186,9 @@ export function initApp(): void {
     // Initialize reference lines (disabled by default)
     refLinesState = initReferenceLines(sceneObjects);
 
+    // Initialize atmosphere glow effect (enabled by default)
+    atmosphereState = initAtmosphere(sceneObjects);
+
     // Set up marker toggle
     const markerToggle = document.getElementById('markerToggle') as HTMLInputElement | null;
     if (markerToggle) {
@@ -193,6 +207,17 @@ export function initApp(): void {
         const target = event.target as HTMLInputElement;
         if (refLinesState) {
           setReferenceLinesVisible(refLinesState, target.checked);
+        }
+      });
+    }
+
+    // Set up atmosphere toggle
+    const atmosphereToggle = document.getElementById('atmosphereToggle') as HTMLInputElement | null;
+    if (atmosphereToggle) {
+      atmosphereToggle.addEventListener('change', (event: Event) => {
+        const target = event.target as HTMLInputElement;
+        if (atmosphereState) {
+          setAtmosphereVisible(atmosphereState, target.checked);
         }
       });
     }

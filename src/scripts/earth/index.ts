@@ -13,3 +13,4 @@ export * from './stars';
 export * from './reflines';
 export * from './loading';
 export * from './flyTo';
+export * from './atmosphere';

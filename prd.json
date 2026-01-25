@@ -345,7 +345,7 @@
         "Performance impact less than 1ms per frame",
         "Optional UI toggle to enable/disable atmosphere effect"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "FEATURE-008",

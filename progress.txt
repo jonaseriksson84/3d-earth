@@ -256,6 +256,33 @@
   - All 81 tests pass
   - Build completes without TypeScript errors
 
+### FEATURE-007: Add atmospheric glow effect at Earth's edge
+- **Status:** COMPLETED
+- **Date:** 2026-01-25
+- **Changes:** Implemented atmospheric glow using Fresnel shader for realistic limb effect:
+  - Created new `src/scripts/earth/atmosphere.ts` module with full TypeScript types:
+    - `AtmosphereState` interface for managing atmosphere mesh and visibility
+    - `initAtmosphere()` creates sphere with Fresnel shader material
+    - `updateAtmosphereRotation()` syncs atmosphere with Earth rotation
+    - `setAtmosphereVisible()` toggles visibility
+  - Fresnel shader creates blue glow at Earth's edge (limb effect):
+    - Vertex shader computes world position for view direction calculation
+    - Fragment shader uses Fresnel equation: stronger glow at edges
+    - Uses `THREE.BackSide` rendering for glow effect
+    - Uses `THREE.AdditiveBlending` for light accumulation
+  - Added atmosphere configuration constants to config.ts:
+    - `ATMOSPHERE_RADIUS: 5.15` (slightly larger than clouds)
+    - `ATMOSPHERE_COLOR: 0x88ccff` (sky blue)
+    - `ATMOSPHERE_GLOW_INTENSITY: 0.6` (subtle glow)
+    - `ATMOSPHERE_FRESNEL_POWER: 3.0` (controls edge sharpness)
+  - Added `AtmosphereState` interface to types.ts
+  - Added UI toggle checkbox "Show atmosphere" (enabled by default)
+  - Atmosphere rotates with Earth mesh
+  - Updated index.ts exports and main.ts integration
+  - Added 4 unit tests for atmosphere config validation
+  - All 85 tests pass
+  - Build completes without TypeScript errors
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
