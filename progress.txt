@@ -176,6 +176,32 @@
   - Canvas remains hidden until all textures are loaded (no flash of incomplete content)
   - Build completes without TypeScript errors
 
+### IMPROVEMENT-002: Add unit tests with Vitest
+- **Status:** COMPLETED
+- **Date:** 2026-01-25
+- **Changes:** Implemented comprehensive unit test suite using Vitest:
+  - Added `vitest` and `@vitest/coverage-v8` to devDependencies
+  - Created `vitest.config.ts` with test configuration and coverage thresholds
+  - Added test scripts: `pnpm test`, `pnpm test:watch`, `pnpm test:coverage`
+  - Created test files:
+    - `src/scripts/earth/astronomy.test.ts`: 17 tests for getDayOfYear() and calculateSunPosition()
+      - Edge cases: Jan 1, Dec 31, leap year handling
+      - Sun position calculations with known astronomical data
+      - Summer/winter solstice declination verification
+      - Equinox declination near-zero verification
+    - `src/scripts/earth/markers.test.ts`: 23 tests for latLonToPosition() and calculateLocalTime()
+      - Coordinate conversion for poles, equator, cities
+      - Position magnitude verification
+      - Local time calculation with various timezone offsets
+      - Day rollover handling, fractional timezones (India UTC+5:30)
+      - CITIES constant validation
+    - `src/scripts/earth/config.test.ts`: 20 tests for CONFIG constant validation
+      - Physical properties, time constants, camera settings
+      - Lighting, visual effects, default location, controls
+  - All 60 tests pass
+  - Tests run in under 500ms
+  - Build continues to work without errors
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -197,3 +223,7 @@
 - [x] FEATURE-001: Add stars background
 - [x] FEATURE-004: Add interactive location markers for major cities
 - [x] FEATURE-005: Add toggle for Earth axis and reference lines
+
+### Phase 5 - Critical Improvements
+- [x] IMPROVEMENT-001: Add loading indicator for texture downloads
+- [x] IMPROVEMENT-002: Add unit tests with Vitest

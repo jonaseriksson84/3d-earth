@@ -7,7 +7,10 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "typecheck": "astro check && tsc --noEmit"
+    "typecheck": "astro check && tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "astro": "^5.16.15",
@@ -16,6 +19,8 @@
   "devDependencies": {
     "@astrojs/cloudflare": "^12.4.0",
     "@types/three": "^0.128.0",
-    "typescript": "^5.8.3"
+    "@vitest/coverage-v8": "^2.1.0",
+    "typescript": "^5.8.3",
+    "vitest": "^2.1.0"
   }
 }
