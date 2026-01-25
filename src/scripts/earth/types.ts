@@ -93,6 +93,15 @@ export interface ReferenceLinesState {
   visible: boolean;
 }
 
+export interface FlyToState {
+  isAnimating: boolean;
+  startPosition: THREE.Vector3;
+  endPosition: THREE.Vector3;
+  startTime: number;
+  duration: number; // in milliseconds
+  targetCity: CityData | null;
+}
+
 export interface LoadingState {
   overlay: HTMLElement | null;
   progressBar: HTMLElement | null;

@@ -257,3 +257,8 @@ canvas {
 .retry-button:active {
   background: #2d7cc4;
 }
+
+/* Marker cursor styles */
+canvas.clickable-marker {
+  cursor: pointer;
+}

@@ -15,6 +15,7 @@ import {
   initMarkers,
   updateUserMarker,
   handleMarkerHover,
+  handleMarkerClick,
   updateMarkersRotation,
   setMarkersVisible,
   initStars,
@@ -23,6 +24,10 @@ import {
   setReferenceLinesVisible,
   createLoadingState,
   setupRetryButton,
+  createFlyToState,
+  startFlyTo,
+  updateFlyTo,
+  cancelFlyTo,
 } from './earth';
 import type {
   SceneObjects,
@@ -33,6 +38,7 @@ import type {
   MarkerState,
   ReferenceLinesState,
   LoadingState,
+  FlyToState,
 } from './earth';
 
 let sceneObjects: SceneObjects | null = null;
@@ -44,6 +50,7 @@ let locationState: LocationState | null = null;
 let markerState: MarkerState | null = null;
 let refLinesState: ReferenceLinesState | null = null;
 let loadingState: LoadingState | null = null;
+let flyToState: FlyToState | null = null;
 
 /**
  * Wrapper to get location and update both Earth rotation and user marker
@@ -89,6 +96,11 @@ function animate(): void {
       handleSunUpdate(timeState, earthObjects, lightingObjects);
     }
 
+    // Update fly-to animation
+    if (flyToState && sceneObjects && controls) {
+      updateFlyTo(flyToState, sceneObjects, controls);
+    }
+
     // Keep markers synced with Earth rotation
     if (markerState && earthObjects) {
       updateMarkersRotation(markerState, earthObjects.earth.rotation.y);
@@ -130,6 +142,7 @@ export function initApp(): void {
       locationState = null;
       markerState = null;
       refLinesState = null;
+      flyToState = null;
 
       // Clear the scene
       const canvas = document.querySelector('canvas');
@@ -155,6 +168,9 @@ export function initApp(): void {
 
     // Initialize markers
     markerState = initMarkers(sceneObjects);
+
+    // Initialize fly-to state
+    flyToState = createFlyToState();
 
     // Initialize reference lines (disabled by default)
     refLinesState = initReferenceLines(sceneObjects);
@@ -186,6 +202,38 @@ export function initApp(): void {
       if (sceneObjects && markerState && timeState) {
         const sliderMinutes = parseInt(timeState.timeSlider.value);
         handleMarkerHover(event, sceneObjects, markerState, sliderMinutes);
+      }
+    });
+
+    // Set up marker click events for fly-to animation
+    window.addEventListener('click', (event: MouseEvent) => {
+      if (sceneObjects && markerState && flyToState && controls) {
+        const cityData = handleMarkerClick(event, sceneObjects, markerState);
+        if (cityData) {
+          startFlyTo(cityData, sceneObjects, flyToState, controls);
+        }
+      }
+    });
+
+    // Allow user interaction to cancel fly-to animation
+    window.addEventListener('mousedown', (event: MouseEvent) => {
+      // Cancel if user starts dragging during fly-to (but not if clicking marker)
+      if (flyToState && flyToState.isAnimating && controls) {
+        // Check if this is a marker click
+        if (sceneObjects && markerState) {
+          const cityData = handleMarkerClick(event, sceneObjects, markerState);
+          if (!cityData) {
+            // Not clicking a marker, so cancel the animation
+            cancelFlyTo(flyToState, controls);
+          }
+        }
+      }
+    });
+
+    // Also cancel on scroll/zoom
+    window.addEventListener('wheel', () => {
+      if (flyToState && flyToState.isAnimating && controls) {
+        cancelFlyTo(flyToState, controls);
       }
     });
 

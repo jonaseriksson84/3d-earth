@@ -231,6 +231,31 @@
   - All 60 existing tests pass
   - Build completes without TypeScript errors
 
+### FEATURE-012: Add fly-to animation for city markers
+- **Status:** COMPLETED
+- **Date:** 2026-01-25
+- **Changes:** Implemented smooth camera fly-to animation when clicking city markers:
+  - Created new `src/scripts/earth/flyTo.ts` module with full TypeScript types:
+    - `FlyToState` interface for managing animation state
+    - `createFlyToState()` to initialize animation state
+    - `startFlyTo()` to begin camera animation to a city
+    - `updateFlyTo()` to update animation each frame
+    - `cancelFlyTo()` to interrupt animation on user interaction
+    - `isFlyingTo()` helper to check animation status
+  - Camera follows curved path using spherical interpolation (not straight line)
+  - Animation duration 2-3 seconds based on angular distance
+  - Ease-in-out cubic easing for smooth motion
+  - Added click handler for city markers in main.ts
+  - Added `handleMarkerClick()` function in markers.ts
+  - User can interrupt animation via mouse drag or scroll wheel
+  - Clicking another marker during animation starts new fly-to
+  - Added tooltip hint "Click to fly to" on marker hover
+  - Added pointer cursor style when hovering over markers
+  - Controls disabled during animation, re-enabled on completion
+  - Added 21 unit tests for fly-to functionality
+  - All 81 tests pass
+  - Build completes without TypeScript errors
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -259,3 +284,4 @@
 
 ### Phase 6 - Interactivity Enhancements
 - [x] FEATURE-011: Add time scrubber for full day visualization
+- [x] FEATURE-012: Add fly-to animation for city markers
