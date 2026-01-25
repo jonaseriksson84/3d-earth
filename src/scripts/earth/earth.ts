@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { CONFIG } from './config';
-import type { EarthObjects, SceneObjects } from './types';
+import type { EarthObjects, SceneObjects, LoadingState } from './types';
+import { createTextureLoadingManager, showErrorOverlay } from './loading';
 
 function getVertexShader(): string {
   return `
@@ -61,21 +62,23 @@ function getSegments(): number {
   return segments;
 }
 
-export function initEarth(sceneObjects: SceneObjects): EarthObjects {
-  const { scene } = sceneObjects;
+export function initEarth(
+  sceneObjects: SceneObjects,
+  loadingState: LoadingState
+): EarthObjects {
+  const { scene, renderer } = sceneObjects;
 
-  const loadingManager = new THREE.LoadingManager();
-  const renderer = sceneObjects.renderer;
-
-  loadingManager.onLoad = () => {
-    console.log('All textures loaded successfully');
-    renderer.domElement.style.display = 'block';
-  };
-
-  loadingManager.onError = (url: string) => {
-    console.error('Failed to load texture:', url);
-    renderer.domElement.style.display = 'block';
-  };
+  const loadingManager = createTextureLoadingManager(
+    loadingState,
+    () => {
+      // On complete - show the canvas
+      renderer.domElement.style.display = 'block';
+    },
+    (url: string) => {
+      // On error - show error overlay
+      showErrorOverlay(loadingState, `Failed to load texture: ${url}`);
+    }
+  );
 
   const textureLoader = new THREE.TextureLoader(loadingManager);
   const segments = getSegments();

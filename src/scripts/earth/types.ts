@@ -89,6 +89,19 @@ export interface ReferenceLinesState {
   visible: boolean;
 }
 
+export interface LoadingState {
+  overlay: HTMLElement | null;
+  progressBar: HTMLElement | null;
+  statusText: HTMLElement | null;
+  loadingText: HTMLElement | null;
+  errorOverlay: HTMLElement | null;
+  errorMessage: HTMLElement | null;
+  retryButton: HTMLElement | null;
+  totalItems: number;
+  loadedItems: number;
+  hasError: boolean;
+}
+
 export interface AppState {
   scene: SceneObjects | null;
   earth: EarthObjects | null;

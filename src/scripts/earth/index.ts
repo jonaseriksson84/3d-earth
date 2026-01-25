@@ -11,3 +11,4 @@ export * from './ui';
 export * from './markers';
 export * from './stars';
 export * from './reflines';
+export * from './loading';

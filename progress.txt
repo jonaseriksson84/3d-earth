@@ -155,6 +155,27 @@
   - Updated index.ts exports and main.ts integration
   - All TypeScript strict mode checks pass
 
+### IMPROVEMENT-001: Add loading indicator for texture downloads
+- **Status:** COMPLETED
+- **Date:** 2026-01-25
+- **Changes:** Implemented a comprehensive loading system with progress tracking and error recovery:
+  - Created loading overlay UI in index.astro with spinner animation and progress bar
+  - Added CSS styles for loading indicator with fade-out animation and error state
+  - Created new `src/scripts/earth/loading.ts` module with full TypeScript types:
+    - `LoadingState` interface for managing loading UI state
+    - `createLoadingState()` to initialize loading state from DOM elements
+    - `createTextureLoadingManager()` to create THREE.LoadingManager with progress tracking
+    - `updateLoadingProgress()` for real-time progress updates
+    - `hideLoadingOverlay()` with smooth fade-out animation
+    - `showErrorOverlay()` and `hideErrorOverlay()` for error handling
+    - `setupRetryButton()` for error recovery functionality
+  - Modified `initEarth()` in earth.ts to accept LoadingState and use the loading manager
+  - Updated main.ts to initialize loading state and wire up retry functionality
+  - Loading overlay shows percentage progress during texture downloads
+  - Error overlay displays when texture loading fails with retry button
+  - Canvas remains hidden until all textures are loaded (no flash of incomplete content)
+  - Build completes without TypeScript errors
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes

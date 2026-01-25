@@ -79,3 +79,122 @@ canvas {
 .instructions li {
   margin: 4px 0;
 }
+
+/* Loading Overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  transition: opacity 0.5s ease-out;
+}
+
+.loading-overlay.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-content {
+  text-align: center;
+  color: white;
+}
+
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #4da6ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  font-size: 18px;
+  margin: 0 0 15px;
+  color: #ccc;
+}
+
+.loading-progress-container {
+  width: 200px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.loading-progress {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #4da6ff, #00d4ff);
+  border-radius: 3px;
+  transition: width 0.3s ease-out;
+}
+
+.loading-status {
+  font-size: 14px;
+  margin: 10px 0 0;
+  color: #888;
+}
+
+/* Error Overlay */
+.error-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+}
+
+.error-content {
+  text-align: center;
+  color: white;
+}
+
+.error-icon {
+  font-size: 48px;
+  margin: 0 0 15px;
+}
+
+.error-message {
+  font-size: 16px;
+  color: #ff6b6b;
+  margin: 0 0 20px;
+}
+
+.retry-button {
+  background: #4da6ff;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.retry-button:hover {
+  background: #3d8fdb;
+}
+
+.retry-button:active {
+  background: #2d7cc4;
+}

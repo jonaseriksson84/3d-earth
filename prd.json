@@ -713,7 +713,7 @@
         "Loading state prevents interaction with incomplete scene",
         "Works correctly on first visit (no cached textures)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "IMPROVEMENT-002",

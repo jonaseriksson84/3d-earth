@@ -20,6 +20,8 @@ import {
   initReferenceLines,
   updateReferenceLinesRotation,
   setReferenceLinesVisible,
+  createLoadingState,
+  setupRetryButton,
 } from './earth';
 import type {
   SceneObjects,
@@ -29,6 +31,7 @@ import type {
   LocationState,
   MarkerState,
   ReferenceLinesState,
+  LoadingState,
 } from './earth';
 
 let sceneObjects: SceneObjects | null = null;
@@ -39,6 +42,7 @@ let timeState: TimeState | null = null;
 let locationState: LocationState | null = null;
 let markerState: MarkerState | null = null;
 let refLinesState: ReferenceLinesState | null = null;
+let loadingState: LoadingState | null = null;
 
 /**
  * Wrapper to get location and update both Earth rotation and user marker
@@ -106,11 +110,36 @@ export function initApp(): void {
   try {
     console.log('Initializing 3D Earth visualization...');
 
+    // Initialize loading state first
+    loadingState = createLoadingState();
+
+    // Set up retry button for error recovery
+    setupRetryButton(loadingState, () => {
+      // Reset state and reinitialize
+      sceneObjects = null;
+      earthObjects = null;
+      lightingObjects = null;
+      controls = null;
+      timeState = null;
+      locationState = null;
+      markerState = null;
+      refLinesState = null;
+
+      // Clear the scene
+      const canvas = document.querySelector('canvas');
+      if (canvas) {
+        canvas.remove();
+      }
+
+      // Reinitialize
+      initApp();
+    });
+
     // Initialize all systems
     initWebGL();
     sceneObjects = initScene();
     initStars(sceneObjects);
-    earthObjects = initEarth(sceneObjects);
+    earthObjects = initEarth(sceneObjects, loadingState);
     lightingObjects = initLighting(sceneObjects);
     controls = initControls(sceneObjects);
 
