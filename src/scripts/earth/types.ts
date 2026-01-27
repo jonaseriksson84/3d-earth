@@ -126,6 +126,13 @@ export interface LoadingState {
   hasError: boolean;
 }
 
+export interface CitySearchState {
+  input: HTMLInputElement;
+  results: HTMLDivElement;
+  clearButton: HTMLButtonElement;
+  debounceTimer: ReturnType<typeof setTimeout> | null;
+}
+
 export interface AppState {
   scene: SceneObjects | null;
   earth: EarthObjects | null;

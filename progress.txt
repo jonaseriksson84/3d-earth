@@ -283,6 +283,30 @@
   - All 85 tests pass
   - Build completes without TypeScript errors
 
+### FEATURE-013: Expand city markers to 50+ locations with search
+- **Status:** COMPLETED
+- **Date:** 2026-01-27
+- **Changes:** Expanded city markers from 12 to 55 cities and added search functionality:
+  - Expanded CITIES array to 55 cities spanning all continents:
+    - Europe (14): London, Paris, Berlin, Madrid, Rome, Amsterdam, Stockholm, Athens, Istanbul, Moscow, Warsaw, Lisbon, Dublin, Helsinki
+    - North America (9): New York, Los Angeles, Chicago, Toronto, Mexico City, Vancouver, Miami, San Francisco, Houston
+    - South America (6): São Paulo, Buenos Aires, Rio de Janeiro, Lima, Bogotá, Santiago
+    - Asia (15): Tokyo, Beijing, Shanghai, Mumbai, Delhi, Dubai, Singapore, Hong Kong, Seoul, Bangkok, Jakarta, Taipei, Riyadh, Tehran, Karachi
+    - Africa (7): Cairo, Lagos, Nairobi, Johannesburg, Casablanca, Cape Town, Addis Ababa
+    - Oceania (4): Sydney, Melbourne, Auckland, Perth
+  - Added city search input with autocomplete dropdown in controls panel
+  - Search is case-insensitive and supports partial matching
+  - Search results debounced at 200ms for performance
+  - Selecting a search result triggers fly-to animation to the city
+  - Clear button to reset search input
+  - Results limited to 8 matches in dropdown
+  - Added `CitySearchState` interface to types.ts
+  - Added `searchCities()`, `initCitySearch()`, `updateSearchResults()`, `clearCitySearch()` functions to markers.ts
+  - Added CSS styles for search input, results dropdown, and clear button
+  - Added 6 unit tests for `searchCities()` function
+  - All 91 tests pass
+  - TypeScript compiles without errors
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -312,3 +336,4 @@
 ### Phase 6 - Interactivity Enhancements
 - [x] FEATURE-011: Add time scrubber for full day visualization
 - [x] FEATURE-012: Add fly-to animation for city markers
+- [x] FEATURE-013: Expand city markers to 50+ locations with search

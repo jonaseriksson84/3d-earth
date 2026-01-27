@@ -516,7 +516,7 @@
         "Performance: 50+ markers render without dropping below 30fps",
         "Optional: group nearby markers when zoomed out (clustering)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "FEATURE-014",

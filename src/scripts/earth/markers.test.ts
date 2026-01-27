@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { latLonToPosition, calculateLocalTime, CITIES } from './markers';
+import { latLonToPosition, calculateLocalTime, searchCities, CITIES } from './markers';
 
 // Mock THREE.Vector3 for testing without full Three.js
 vi.mock('three', () => ({
@@ -160,9 +160,43 @@ describe('calculateLocalTime', () => {
   });
 });
 
+describe('searchCities', () => {
+  it('returns empty array for empty query', () => {
+    expect(searchCities('')).toEqual([]);
+    expect(searchCities('   ')).toEqual([]);
+  });
+
+  it('finds cities by exact name', () => {
+    const results = searchCities('London');
+    expect(results.length).toBe(1);
+    expect(results[0].name).toBe('London');
+  });
+
+  it('finds cities by partial name', () => {
+    const results = searchCities('Lon');
+    expect(results.some(c => c.name === 'London')).toBe(true);
+  });
+
+  it('is case-insensitive', () => {
+    const results = searchCities('tokyo');
+    expect(results.length).toBe(1);
+    expect(results[0].name).toBe('Tokyo');
+  });
+
+  it('returns multiple matches for common substrings', () => {
+    const results = searchCities('New');
+    expect(results.some(c => c.name === 'New York')).toBe(true);
+  });
+
+  it('returns empty array when no match found', () => {
+    const results = searchCities('xyznonexistent');
+    expect(results).toEqual([]);
+  });
+});
+
 describe('CITIES constant', () => {
-  it('contains at least 10 cities', () => {
-    expect(CITIES.length).toBeGreaterThanOrEqual(10);
+  it('contains at least 50 cities', () => {
+    expect(CITIES.length).toBeGreaterThanOrEqual(50);
   });
 
   it('all cities have required properties', () => {

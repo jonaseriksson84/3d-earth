@@ -86,6 +86,17 @@ import '../styles/global.css';
         <label>
           <input type="checkbox" id="markerToggle" checked /> Show city markers
         </label>
+        <div class="city-search-container">
+          <input
+            type="text"
+            id="citySearch"
+            class="city-search-input"
+            placeholder="Search cities..."
+            autocomplete="off"
+          />
+          <button id="citySearchClear" class="city-search-clear" style="display: none;" title="Clear search">✕</button>
+          <div id="citySearchResults" class="city-search-results"></div>
+        </div>
       </div>
 
       <div class="slider-container">

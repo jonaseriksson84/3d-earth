@@ -258,6 +258,88 @@ canvas {
   background: #2d7cc4;
 }
 
+/* City Search */
+.city-search-container {
+  position: relative;
+  margin-top: 8px;
+}
+
+.city-search-input {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  color: white;
+  padding: 6px 28px 6px 8px;
+  font-size: 13px;
+}
+
+.city-search-input::placeholder {
+  color: #888;
+}
+
+.city-search-input:focus {
+  outline: none;
+  border-color: #4da6ff;
+}
+
+.city-search-clear {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 4px;
+  line-height: 1;
+}
+
+.city-search-clear:hover {
+  color: white;
+}
+
+.city-search-results {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(30, 30, 30, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  margin-top: 2px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+.city-search-item {
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #ddd;
+}
+
+.city-search-item:hover {
+  background: rgba(77, 166, 255, 0.3);
+  color: white;
+}
+
+.city-search-item.no-results {
+  color: #888;
+  cursor: default;
+  font-style: italic;
+}
+
+.city-search-item.no-results:hover {
+  background: none;
+  color: #888;
+}
+
 /* Marker cursor styles */
 canvas.clickable-marker {
   cursor: pointer;

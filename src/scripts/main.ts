@@ -18,6 +18,9 @@ import {
   handleMarkerClick,
   updateMarkersRotation,
   setMarkersVisible,
+  initCitySearch,
+  updateSearchResults,
+  clearCitySearch,
   initStars,
   initReferenceLines,
   updateReferenceLinesRotation,
@@ -43,6 +46,7 @@ import type {
   LoadingState,
   FlyToState,
   AtmosphereState,
+  CitySearchState,
 } from './earth';
 
 let sceneObjects: SceneObjects | null = null;
@@ -56,6 +60,7 @@ let refLinesState: ReferenceLinesState | null = null;
 let loadingState: LoadingState | null = null;
 let flyToState: FlyToState | null = null;
 let atmosphereState: AtmosphereState | null = null;
+let citySearchState: CitySearchState | null = null;
 
 /**
  * Wrapper to get location and update both Earth rotation and user marker
@@ -154,6 +159,7 @@ export function initApp(): void {
       refLinesState = null;
       flyToState = null;
       atmosphereState = null;
+      citySearchState = null;
 
       // Clear the scene
       const canvas = document.querySelector('canvas');
@@ -197,6 +203,46 @@ export function initApp(): void {
         if (markerState) {
           setMarkersVisible(markerState, target.checked);
         }
+      });
+    }
+
+    // Set up city search
+    citySearchState = initCitySearch();
+    if (citySearchState) {
+      const searchInput = citySearchState.input;
+      const searchStateRef = citySearchState;
+
+      let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+      searchInput.addEventListener('input', () => {
+        if (debounceTimer) clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          updateSearchResults(searchStateRef, searchInput.value, (city) => {
+            if (sceneObjects && flyToState && controls) {
+              startFlyTo(city, sceneObjects, flyToState, controls);
+            }
+          });
+        }, 200);
+      });
+
+      searchInput.addEventListener('blur', () => {
+        // Delay to allow click on result
+        setTimeout(() => {
+          searchStateRef.results.style.display = 'none';
+        }, 150);
+      });
+
+      searchInput.addEventListener('focus', () => {
+        if (searchInput.value.trim()) {
+          updateSearchResults(searchStateRef, searchInput.value, (city) => {
+            if (sceneObjects && flyToState && controls) {
+              startFlyTo(city, sceneObjects, flyToState, controls);
+            }
+          });
+        }
+      });
+
+      searchStateRef.clearButton.addEventListener('click', () => {
+        clearCitySearch(searchStateRef);
       });
     }
 

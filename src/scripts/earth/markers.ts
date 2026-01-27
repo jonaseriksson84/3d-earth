@@ -1,21 +1,70 @@
 import * as THREE from 'three';
 import { CONFIG } from './config';
-import type { SceneObjects, LocationState, CityData, MarkerState } from './types';
+import type { SceneObjects, LocationState, CityData, MarkerState, CitySearchState } from './types';
 
 // Major world cities with coordinates and timezone offsets
 export const CITIES: CityData[] = [
+  // Europe
   { name: 'London', lat: 51.5074, lon: -0.1278, timezone: 0 },
-  { name: 'New York', lat: 40.7128, lon: -74.006, timezone: -5 },
-  { name: 'Tokyo', lat: 35.6762, lon: 139.6503, timezone: 9 },
-  { name: 'Sydney', lat: -33.8688, lon: 151.2093, timezone: 11 },
-  { name: 'Dubai', lat: 25.2048, lon: 55.2708, timezone: 4 },
-  { name: 'São Paulo', lat: -23.5505, lon: -46.6333, timezone: -3 },
-  { name: 'Mumbai', lat: 19.076, lon: 72.8777, timezone: 5.5 },
-  { name: 'Beijing', lat: 39.9042, lon: 116.4074, timezone: 8 },
   { name: 'Paris', lat: 48.8566, lon: 2.3522, timezone: 1 },
-  { name: 'Los Angeles', lat: 34.0522, lon: -118.2437, timezone: -8 },
+  { name: 'Berlin', lat: 52.52, lon: 13.405, timezone: 1 },
+  { name: 'Madrid', lat: 40.4168, lon: -3.7038, timezone: 1 },
+  { name: 'Rome', lat: 41.9028, lon: 12.4964, timezone: 1 },
+  { name: 'Amsterdam', lat: 52.3676, lon: 4.9041, timezone: 1 },
+  { name: 'Stockholm', lat: 59.3293, lon: 18.0686, timezone: 1 },
+  { name: 'Athens', lat: 37.9838, lon: 23.7275, timezone: 2 },
+  { name: 'Istanbul', lat: 41.0082, lon: 28.9784, timezone: 3 },
   { name: 'Moscow', lat: 55.7558, lon: 37.6173, timezone: 3 },
+  { name: 'Warsaw', lat: 52.2297, lon: 21.0122, timezone: 1 },
+  { name: 'Lisbon', lat: 38.7223, lon: -9.1393, timezone: 0 },
+  { name: 'Dublin', lat: 53.3498, lon: -6.2603, timezone: 0 },
+  { name: 'Helsinki', lat: 60.1699, lon: 24.9384, timezone: 2 },
+  // North America
+  { name: 'New York', lat: 40.7128, lon: -74.006, timezone: -5 },
+  { name: 'Los Angeles', lat: 34.0522, lon: -118.2437, timezone: -8 },
+  { name: 'Chicago', lat: 41.8781, lon: -87.6298, timezone: -6 },
+  { name: 'Toronto', lat: 43.6532, lon: -79.3832, timezone: -5 },
+  { name: 'Mexico City', lat: 19.4326, lon: -99.1332, timezone: -6 },
+  { name: 'Vancouver', lat: 49.2827, lon: -123.1207, timezone: -8 },
+  { name: 'Miami', lat: 25.7617, lon: -80.1918, timezone: -5 },
+  { name: 'San Francisco', lat: 37.7749, lon: -122.4194, timezone: -8 },
+  { name: 'Houston', lat: 29.7604, lon: -95.3698, timezone: -6 },
+  // South America
+  { name: 'São Paulo', lat: -23.5505, lon: -46.6333, timezone: -3 },
+  { name: 'Buenos Aires', lat: -34.6037, lon: -58.3816, timezone: -3 },
+  { name: 'Rio de Janeiro', lat: -22.9068, lon: -43.1729, timezone: -3 },
+  { name: 'Lima', lat: -12.0464, lon: -77.0428, timezone: -5 },
+  { name: 'Bogotá', lat: 4.711, lon: -74.0721, timezone: -5 },
+  { name: 'Santiago', lat: -33.4489, lon: -70.6693, timezone: -4 },
+  // Asia
+  { name: 'Tokyo', lat: 35.6762, lon: 139.6503, timezone: 9 },
+  { name: 'Beijing', lat: 39.9042, lon: 116.4074, timezone: 8 },
+  { name: 'Shanghai', lat: 31.2304, lon: 121.4737, timezone: 8 },
+  { name: 'Mumbai', lat: 19.076, lon: 72.8777, timezone: 5.5 },
+  { name: 'Delhi', lat: 28.7041, lon: 77.1025, timezone: 5.5 },
+  { name: 'Dubai', lat: 25.2048, lon: 55.2708, timezone: 4 },
+  { name: 'Singapore', lat: 1.3521, lon: 103.8198, timezone: 8 },
+  { name: 'Hong Kong', lat: 22.3193, lon: 114.1694, timezone: 8 },
+  { name: 'Seoul', lat: 37.5665, lon: 126.978, timezone: 9 },
+  { name: 'Bangkok', lat: 13.7563, lon: 100.5018, timezone: 7 },
+  { name: 'Jakarta', lat: -6.2088, lon: 106.8456, timezone: 7 },
+  { name: 'Taipei', lat: 25.033, lon: 121.5654, timezone: 8 },
+  { name: 'Riyadh', lat: 24.7136, lon: 46.6753, timezone: 3 },
+  { name: 'Tehran', lat: 35.6892, lon: 51.389, timezone: 3.5 },
+  { name: 'Karachi', lat: 24.8607, lon: 67.0011, timezone: 5 },
+  // Africa
   { name: 'Cairo', lat: 30.0444, lon: 31.2357, timezone: 2 },
+  { name: 'Lagos', lat: 6.5244, lon: 3.3792, timezone: 1 },
+  { name: 'Nairobi', lat: -1.2921, lon: 36.8219, timezone: 3 },
+  { name: 'Johannesburg', lat: -26.2041, lon: 28.0473, timezone: 2 },
+  { name: 'Casablanca', lat: 33.5731, lon: -7.5898, timezone: 1 },
+  { name: 'Cape Town', lat: -33.9249, lon: 18.4241, timezone: 2 },
+  { name: 'Addis Ababa', lat: 9.0054, lon: 38.7636, timezone: 3 },
+  // Oceania
+  { name: 'Sydney', lat: -33.8688, lon: 151.2093, timezone: 11 },
+  { name: 'Melbourne', lat: -37.8136, lon: 144.9631, timezone: 11 },
+  { name: 'Auckland', lat: -36.8485, lon: 174.7633, timezone: 13 },
+  { name: 'Perth', lat: -31.9505, lon: 115.8605, timezone: 8 },
 ];
 
 /**
@@ -360,4 +409,85 @@ export function handleMarkerClick(
   }
 
   return null;
+}
+
+/**
+ * Search cities by name (case-insensitive, partial match)
+ */
+export function searchCities(query: string): CityData[] {
+  if (!query.trim()) return [];
+  const lowerQuery = query.toLowerCase();
+  return CITIES.filter((city) => city.name.toLowerCase().includes(lowerQuery));
+}
+
+/**
+ * Initialize the city search UI
+ */
+export function initCitySearch(): CitySearchState | null {
+  const input = document.getElementById('citySearch') as HTMLInputElement | null;
+  const results = document.getElementById('citySearchResults') as HTMLDivElement | null;
+  const clearButton = document.getElementById('citySearchClear') as HTMLButtonElement | null;
+
+  if (!input || !results || !clearButton) return null;
+
+  return {
+    input,
+    results,
+    clearButton,
+    debounceTimer: null,
+  };
+}
+
+/**
+ * Update the search results dropdown
+ */
+export function updateSearchResults(
+  searchState: CitySearchState,
+  query: string,
+  onSelect: (city: CityData) => void
+): void {
+  const { results, clearButton } = searchState;
+
+  if (!query.trim()) {
+    results.style.display = 'none';
+    clearButton.style.display = 'none';
+    return;
+  }
+
+  clearButton.style.display = 'block';
+  const matches = searchCities(query);
+
+  if (matches.length === 0) {
+    results.innerHTML = '';
+    const noResult = document.createElement('div');
+    noResult.className = 'city-search-item no-results';
+    noResult.textContent = 'No cities found';
+    results.appendChild(noResult);
+    results.style.display = 'block';
+    return;
+  }
+
+  results.innerHTML = '';
+  for (const city of matches.slice(0, 8)) {
+    const item = document.createElement('div');
+    item.className = 'city-search-item';
+    item.textContent = city.name;
+    item.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      onSelect(city);
+      searchState.input.value = city.name;
+      results.style.display = 'none';
+    });
+    results.appendChild(item);
+  }
+  results.style.display = 'block';
+}
+
+/**
+ * Clear the search input and results
+ */
+export function clearCitySearch(searchState: CitySearchState): void {
+  searchState.input.value = '';
+  searchState.results.style.display = 'none';
+  searchState.clearButton.style.display = 'none';
 }
