@@ -65,6 +65,57 @@ function parseDateFromInput(dateString: string): Date {
 }
 
 /**
+ * Get solstice and equinox dates for a given year.
+ * Uses approximate dates that are accurate for most years.
+ */
+export function getAstronomicalPresets(year: number): { id: string; date: Date }[] {
+  return [
+    { id: 'presetSpringEquinox', date: new Date(year, 2, 20) },    // March 20
+    { id: 'presetSummerSolstice', date: new Date(year, 5, 21) },   // June 21
+    { id: 'presetAutumnEquinox', date: new Date(year, 8, 22) },    // September 22
+    { id: 'presetWinterSolstice', date: new Date(year, 11, 21) },  // December 21
+  ];
+}
+
+/**
+ * Set date to preset and update UI
+ */
+function applyPresetDate(timeState: TimeState, presetDate: Date): void {
+  timeState.selectedDate = presetDate;
+  timeState.datePicker.value = formatDateForInput(presetDate);
+  // Set time to noon UTC for best visualization
+  timeState.timeSlider.value = String(CONFIG.UTC_NOON_MINUTES);
+  timeState.currentTime = CONFIG.UTC_NOON_MINUTES;
+  timeState.needsSunUpdate = true;
+}
+
+/**
+ * Update active state on preset buttons
+ */
+function updatePresetActiveState(activeId: string): void {
+  const presets = getAstronomicalPresets(new Date().getFullYear());
+  for (const preset of presets) {
+    const btn = document.getElementById(preset.id);
+    if (btn) {
+      btn.classList.toggle('active', preset.id === activeId);
+    }
+  }
+}
+
+/**
+ * Clear active state from all preset buttons
+ */
+export function clearPresetActiveState(): void {
+  const presets = getAstronomicalPresets(new Date().getFullYear());
+  for (const preset of presets) {
+    const btn = document.getElementById(preset.id);
+    if (btn) {
+      btn.classList.remove('active');
+    }
+  }
+}
+
+/**
  * Toggle play/pause state
  */
 export function togglePlayback(timeState: TimeState): void {
@@ -213,11 +264,25 @@ export function initTimeControls(
       if (target.value) {
         timeState.selectedDate = parseDateFromInput(target.value);
         timeState.needsSunUpdate = true;
+        clearPresetActiveState();
       }
     } catch (error) {
       console.error('Error handling date picker change:', error);
     }
   });
+
+  // Solstice/Equinox preset buttons
+  const year = new Date().getFullYear();
+  const presets = getAstronomicalPresets(year);
+  for (const preset of presets) {
+    const btn = document.getElementById(preset.id);
+    if (btn) {
+      btn.addEventListener('click', () => {
+        applyPresetDate(timeState, preset.date);
+        updatePresetActiveState(preset.id);
+      });
+    }
+  }
 
   // Cloud toggle event listener
   cloudToggle.addEventListener('change', (event: Event) => {

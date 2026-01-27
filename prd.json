@@ -601,7 +601,7 @@
         "Buttons styled consistently with other UI controls",
         "Optional: animate date transition when clicking preset"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "FEATURE-017",

@@ -307,6 +307,24 @@
   - All 91 tests pass
   - TypeScript compiles without errors
 
+### FEATURE-016: Add solstice and equinox preset buttons
+- **Status:** COMPLETED
+- **Date:** 2026-01-27
+- **Changes:** Added quick-access preset buttons for astronomically significant dates:
+  - Added four preset buttons below the date picker: Spring Eq, Summer Sol, Autumn Eq, Winter Sol
+  - Spring Equinox sets date to March 20 of current year
+  - Summer Solstice sets date to June 21 of current year
+  - Autumn Equinox sets date to September 22 of current year
+  - Winter Solstice sets date to December 21 of current year
+  - Clicking a preset sets the date and time to noon UTC for optimal visualization
+  - Active preset button is visually highlighted with blue border and background
+  - Active state clears when user manually changes the date picker
+  - Each button has a tooltip explaining the astronomical significance
+  - Added `getAstronomicalPresets()` exported function for testability
+  - Buttons styled consistently with existing UI controls
+  - All 91 existing tests pass
+  - Build completes without TypeScript errors
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -337,3 +355,6 @@
 - [x] FEATURE-011: Add time scrubber for full day visualization
 - [x] FEATURE-012: Add fly-to animation for city markers
 - [x] FEATURE-013: Expand city markers to 50+ locations with search
+
+### Phase 7 - Astronomical Features
+- [x] FEATURE-016: Add solstice and equinox preset buttons
