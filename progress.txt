@@ -375,6 +375,49 @@
   - All 101 tests pass
   - TypeScript compiles without errors
 
+### FEATURE-015: Display sunrise and sunset times for locations
+- **Status:** COMPLETED
+- **Date:** 2026-01-27
+- **Changes:** Implemented sunrise/sunset calculation and display for all locations:
+  - Created new `src/scripts/earth/sunrise.ts` module with full TypeScript types:
+    - `SunTimes` interface for sunrise/sunset data with polar day/night flags
+    - `calculateSunriseSunset()` uses NOAA algorithm with solar hour angle calculation
+    - `formatSunTimesForTooltip()` formats sun times for marker tooltips
+    - `updateSunTimesDisplay()` renders sunrise/sunset panel in UI
+  - Algorithm details:
+    - Uses NOAA equation of time and solar declination (same as astronomy.ts)
+    - Calculates solar hour angle at sunrise/sunset using zenith angle 90.8333°
+    - Accounts for atmospheric refraction and solar disk radius
+    - Detects polar day (cosHourAngle < -1) and polar night (cosHourAngle > 1)
+    - Converts UTC sunrise/sunset to local timezone
+  - Updated marker tooltip in markers.ts to show sunrise/sunset times
+    - `handleMarkerHover()` now accepts `selectedDate` parameter
+    - Tooltip shows "Sun: ↑HH:MM ↓HH:MM" or polar day/night message
+  - Added sunrise/sunset info panel in controls sidebar (index.astro)
+    - Shows user location sunrise/sunset times
+    - Shows selected city sunrise/sunset when clicking a city marker
+    - Automatically updates when date changes
+    - Styled with sunrise (gold) and sunset (orange) colors
+  - Added CSS styles for sun times display in global.css
+  - Updated main.ts integration:
+    - Passes selectedDate to marker hover handler
+    - Tracks selected city for sun times panel
+    - Refreshes panel when date changes or city is clicked
+  - Added 14 unit tests for sunrise calculations:
+    - Normal mid-latitude locations
+    - Sunrise before sunset verification
+    - Arctic polar day (Tromsø, June 21)
+    - Arctic polar night (Tromsø, December 21)
+    - Antarctic polar day and night
+    - Equator equinox accuracy (~6:00 sunrise, ~18:00 sunset)
+    - Timezone offset handling (Tokyo +9)
+    - Fractional timezone (India +5:30)
+    - Summer vs winter day length comparison
+    - HH:MM format validation
+    - Tooltip formatting for all cases
+  - All 115 tests pass
+  - TypeScript compiles without errors
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -405,6 +448,7 @@
 - [x] FEATURE-011: Add time scrubber for full day visualization
 - [x] FEATURE-012: Add fly-to animation for city markers
 - [x] FEATURE-013: Expand city markers to 50+ locations with search
+- [x] FEATURE-015: Display sunrise and sunset times for locations
 
 ### Phase 7 - Astronomical Features
 - [x] FEATURE-006: Add Moon visualization with orbital position and phases

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { CONFIG } from './config';
 import type { SceneObjects, LocationState, CityData, MarkerState, CitySearchState } from './types';
+import { calculateSunriseSunset, formatSunTimesForTooltip } from './sunrise';
 
 // Major world cities with coordinates and timezone offsets
 export const CITIES: CityData[] = [
@@ -302,7 +303,8 @@ export function handleMarkerHover(
   event: MouseEvent,
   sceneObjects: SceneObjects,
   markerState: MarkerState,
-  sliderMinutes: number
+  sliderMinutes: number,
+  selectedDate?: Date
 ): void {
   if (!markerState.visible || !markerState.tooltip) return;
 
@@ -336,10 +338,14 @@ export function handleMarkerHover(
     if (cityData) {
       const localTime = calculateLocalTime(sliderMinutes, cityData.timezone);
       const isUserLocation = cityData.name === 'Your Location';
+      const date = selectedDate ?? new Date();
+      const sunTimes = calculateSunriseSunset(cityData.lat, cityData.lon, date, cityData.timezone);
+      const sunTimesText = formatSunTimesForTooltip(sunTimes);
 
       markerState.tooltip.innerHTML = `
         <strong>${cityData.name}</strong>${isUserLocation ? ' 📍' : ''}<br>
         <span style="color: #aaa;">Local time:</span> ${localTime}<br>
+        <span style="color: #aaa;">Sun:</span> ${sunTimesText}<br>
         <span style="color: #888; font-size: 11px;">Click to fly to</span>
       `;
       markerState.tooltip.style.display = 'block';

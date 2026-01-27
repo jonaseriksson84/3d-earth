@@ -573,7 +573,7 @@
         "Times displayed in local timezone for each location",
         "Optional: highlight golden hour period on time scrubber"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "FEATURE-016",

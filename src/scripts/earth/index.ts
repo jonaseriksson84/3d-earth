@@ -16,3 +16,4 @@ export * from './flyTo';
 export * from './atmosphere';
 export * from './terminator';
 export * from './moon';
+export * from './sunrise';

@@ -40,6 +40,7 @@ import {
   initMoon,
   updateMoonPosition,
   setMoonVisible,
+  updateSunTimesDisplay,
 } from './earth';
 import type {
   SceneObjects,
@@ -55,6 +56,7 @@ import type {
   CitySearchState,
   TerminatorState,
   MoonState,
+  CityData,
 } from './earth';
 
 let sceneObjects: SceneObjects | null = null;
@@ -71,6 +73,8 @@ let atmosphereState: AtmosphereState | null = null;
 let terminatorState: TerminatorState | null = null;
 let citySearchState: CitySearchState | null = null;
 let moonState: MoonState | null = null;
+let selectedCityForSunTimes: CityData | null = null;
+let lastSunTimesDate: string = '';
 
 /**
  * Wrapper to get location and update both Earth rotation and user marker
@@ -102,6 +106,18 @@ function getLocationWithMarkerUpdate(
   }
 }
 
+function refreshSunTimesPanel(): void {
+  if (!locationState || !timeState) return;
+  const userTimezone = -new Date().getTimezoneOffset() / 60;
+  updateSunTimesDisplay(
+    locationState.userLatitude,
+    locationState.userLongitude,
+    timeState.selectedDate,
+    userTimezone,
+    selectedCityForSunTimes ?? undefined
+  );
+}
+
 function animate(): void {
   try {
     requestAnimationFrame(animate);
@@ -114,6 +130,13 @@ function animate(): void {
     // Only update sun position when slider changes (performance optimization)
     if (timeState && earthObjects && lightingObjects) {
       handleSunUpdate(timeState, earthObjects, lightingObjects);
+
+      // Update sunrise/sunset panel when date changes
+      const currentDateStr = timeState.datePicker.value;
+      if (currentDateStr !== lastSunTimesDate) {
+        lastSunTimesDate = currentDateStr;
+        refreshSunTimesPanel();
+      }
     }
 
     // Update fly-to animation
@@ -189,6 +212,8 @@ export function initApp(): void {
       terminatorState = null;
       moonState = null;
       citySearchState = null;
+      selectedCityForSunTimes = null;
+      lastSunTimesDate = '';
 
       // Clear the scene
       const canvas = document.querySelector('canvas');
@@ -345,7 +370,7 @@ export function initApp(): void {
     window.addEventListener('mousemove', (event: MouseEvent) => {
       if (sceneObjects && markerState && timeState) {
         const sliderMinutes = parseInt(timeState.timeSlider.value);
-        handleMarkerHover(event, sceneObjects, markerState, sliderMinutes);
+        handleMarkerHover(event, sceneObjects, markerState, sliderMinutes, timeState.selectedDate);
       }
     });
 
@@ -355,6 +380,8 @@ export function initApp(): void {
         const cityData = handleMarkerClick(event, sceneObjects, markerState);
         if (cityData) {
           startFlyTo(cityData, sceneObjects, flyToState, controls);
+          selectedCityForSunTimes = cityData;
+          refreshSunTimesPanel();
         }
       }
     });
@@ -384,6 +411,7 @@ export function initApp(): void {
     // Start location detection and animation
     locationState = createLocationState();
     getLocationWithMarkerUpdate(locationState, earthObjects, markerState);
+    refreshSunTimesPanel();
     animate();
 
     console.log('Application initialized successfully');
