@@ -70,6 +70,7 @@ export interface TimeState {
   isPlaying: boolean;
   playbackSpeed: number; // 1, 10, 60, 360 (multiplier)
   lastPlaybackTime: number; // Timestamp for calculating elapsed time
+  currentTime: number; // Precise current time in minutes (source of truth during playback)
 }
 
 export interface LocationState {

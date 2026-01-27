@@ -42,6 +42,7 @@ export function createTimeState(): TimeState {
     isPlaying: false,
     playbackSpeed: 60, // Default to 60x speed
     lastPlaybackTime: 0,
+    currentTime: 0,
   };
 }
 
@@ -69,6 +70,10 @@ function parseDateFromInput(dateString: string): Date {
 export function togglePlayback(timeState: TimeState): void {
   timeState.isPlaying = !timeState.isPlaying;
   timeState.lastPlaybackTime = performance.now();
+  // Sync currentTime from slider when starting playback
+  if (timeState.isPlaying) {
+    timeState.currentTime = parseInt(timeState.timeSlider.value);
+  }
   updatePlaybackUI(timeState.isPlaying);
 }
 
@@ -95,6 +100,7 @@ export function stepTime(timeState: TimeState, direction: number): void {
   }
 
   timeState.timeSlider.value = String(newValue);
+  timeState.currentTime = newValue;
   timeState.needsSunUpdate = true;
 }
 
@@ -126,16 +132,20 @@ export function updatePlayback(timeState: TimeState): void {
   // Elapsed is in ms, so divide by 1000 to get seconds
   const minutesToAdd = (elapsed / 1000) * timeState.playbackSpeed;
 
-  const currentValue = parseFloat(timeState.timeSlider.value);
-  let newValue = currentValue + minutesToAdd;
+  // Advance precise time (not limited by slider step)
+  timeState.currentTime += minutesToAdd;
 
   // Wrap around at midnight
-  if (newValue >= CONFIG.MINUTES_PER_DAY) {
-    newValue = newValue - CONFIG.MINUTES_PER_DAY;
+  if (timeState.currentTime >= CONFIG.MINUTES_PER_DAY) {
+    timeState.currentTime -= CONFIG.MINUTES_PER_DAY;
   }
 
-  timeState.timeSlider.value = String(Math.floor(newValue));
-  timeState.needsSunUpdate = true;
+  // Sync slider to the nearest whole minute
+  const sliderValue = Math.floor(timeState.currentTime);
+  if (timeState.timeSlider.value !== String(sliderValue)) {
+    timeState.timeSlider.value = String(sliderValue);
+    timeState.needsSunUpdate = true;
+  }
 }
 
 export function initTimeControls(
@@ -189,6 +199,7 @@ export function initTimeControls(
           Math.max(0, Math.min(CONFIG.MINUTES_PER_DAY - 1, value || 0))
         );
       }
+      timeState.currentTime = parseInt(target.value);
       timeState.needsSunUpdate = true;
     } catch (error) {
       console.error('Error handling slider input:', error);
@@ -273,7 +284,10 @@ export function handleSunUpdate(
   const dateChanged = currentDateValue !== timeState.lastDateValue;
 
   if (timeState.needsSunUpdate || sliderChanged || dateChanged) {
-    const sliderMinutes = parseInt(timeState.timeSlider.value);
+    // During playback, use precise currentTime; otherwise use slider value
+    const sliderMinutes = timeState.isPlaying
+      ? Math.floor(timeState.currentTime)
+      : parseInt(timeState.timeSlider.value);
     const date = updateSunPosition(sliderMinutes, earthObjects, lightingObjects, timeState.selectedDate);
     updateTimeDisplay(date, timeState.timeDisplayElement);
     timeState.lastSliderValue = currentSliderValue;
