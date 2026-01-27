@@ -112,6 +112,12 @@ export interface TerminatorState {
   radius: number;
 }
 
+export interface MoonState {
+  mesh: THREE.Mesh;
+  material: THREE.ShaderMaterial;
+  visible: boolean;
+}
+
 export interface FlyToState {
   isAnimating: boolean;
   startPosition: THREE.Vector3;

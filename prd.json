@@ -317,7 +317,7 @@
         "Performance impact less than 2ms per frame",
         "Optional UI toggle to show/hide Moon"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "FEATURE-007",

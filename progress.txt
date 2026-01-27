@@ -348,6 +348,33 @@
   - All 91 tests pass
   - Build completes without TypeScript errors
 
+### FEATURE-006: Add Moon visualization with correct orbital position and phases
+- **Status:** COMPLETED
+- **Date:** 2026-01-27
+- **Changes:** Implemented Moon with orbital position calculation and phase lighting:
+  - Created new `src/scripts/earth/moon.ts` module with full TypeScript types:
+    - `calculateMoonPhaseAngle()` computes Moon phase using synodic period (29.53 days)
+    - `calculateMoonPosition()` positions Moon relative to Sun-Earth line
+    - `initMoon()` creates Moon mesh with custom shader for phase illumination
+    - `updateMoonPosition()` updates position and lighting each frame
+    - `setMoonVisible()` toggles visibility
+  - Moon uses Lambertian lighting shader illuminated by sun direction for accurate phases:
+    - New moon: Moon between Earth and Sun (dark face toward Earth)
+    - Full moon: Earth between Moon and Sun (lit face toward Earth)
+  - Orbital mechanics:
+    - Phase angle calculated from reference new moon (Jan 6, 2000)
+    - Orbital inclination of 5.14 degrees applied
+    - Moon distance = 12x Earth radius (compressed from real 60x for visibility)
+    - Moon radius = 0.2724x Earth radius (accurate ratio)
+  - Tidal locking implemented: Moon always faces Earth (lookAt origin)
+  - Added `MoonState` interface to types.ts
+  - Added UI toggle checkbox "Show Moon" (disabled by default)
+  - Moon position updates in real-time as time/date changes
+  - Updated index.ts exports and main.ts integration
+  - Added 10 unit tests for moon phase and position calculations
+  - All 101 tests pass
+  - TypeScript compiles without errors
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -380,5 +407,6 @@
 - [x] FEATURE-013: Expand city markers to 50+ locations with search
 
 ### Phase 7 - Astronomical Features
+- [x] FEATURE-006: Add Moon visualization with orbital position and phases
 - [x] FEATURE-016: Add solstice and equinox preset buttons
 - [x] FEATURE-017: Highlight the day/night terminator line

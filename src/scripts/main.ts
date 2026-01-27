@@ -37,6 +37,9 @@ import {
   initTerminator,
   updateTerminatorPosition,
   setTerminatorVisible,
+  initMoon,
+  updateMoonPosition,
+  setMoonVisible,
 } from './earth';
 import type {
   SceneObjects,
@@ -51,6 +54,7 @@ import type {
   AtmosphereState,
   CitySearchState,
   TerminatorState,
+  MoonState,
 } from './earth';
 
 let sceneObjects: SceneObjects | null = null;
@@ -66,6 +70,7 @@ let flyToState: FlyToState | null = null;
 let atmosphereState: AtmosphereState | null = null;
 let terminatorState: TerminatorState | null = null;
 let citySearchState: CitySearchState | null = null;
+let moonState: MoonState | null = null;
 
 /**
  * Wrapper to get location and update both Earth rotation and user marker
@@ -142,6 +147,12 @@ function animate(): void {
       }
     }
 
+    // Update Moon position based on date and sun direction
+    if (moonState && moonState.visible && earthObjects && timeState) {
+      const sunDir = earthObjects.earthMaterial.uniforms.sunDirection.value;
+      updateMoonPosition(moonState, timeState.selectedDate, sunDir.x, sunDir.y, sunDir.z);
+    }
+
     if (controls) controls.update();
     if (sceneObjects) {
       const { renderer, scene, camera } = sceneObjects;
@@ -176,6 +187,7 @@ export function initApp(): void {
       flyToState = null;
       atmosphereState = null;
       terminatorState = null;
+      moonState = null;
       citySearchState = null;
 
       // Clear the scene
@@ -214,6 +226,9 @@ export function initApp(): void {
 
     // Initialize terminator line (disabled by default)
     terminatorState = initTerminator(sceneObjects);
+
+    // Initialize Moon (disabled by default)
+    moonState = initMoon(sceneObjects);
 
     // Set up marker toggle
     const markerToggle = document.getElementById('markerToggle') as HTMLInputElement | null;
@@ -300,6 +315,28 @@ export function initApp(): void {
         const target = event.target as HTMLInputElement;
         if (atmosphereState) {
           setAtmosphereVisible(atmosphereState, target.checked);
+        }
+      });
+    }
+
+    // Set up Moon toggle
+    const moonToggle = document.getElementById('moonToggle') as HTMLInputElement | null;
+    if (moonToggle) {
+      moonToggle.addEventListener('change', (event: Event) => {
+        const target = event.target as HTMLInputElement;
+        if (moonState) {
+          setMoonVisible(moonState, target.checked);
+          // Immediately update position when enabled
+          if (target.checked && earthObjects && timeState) {
+            const sunDir = earthObjects.earthMaterial.uniforms.sunDirection.value;
+            updateMoonPosition(
+              moonState,
+              timeState.selectedDate,
+              sunDir.x,
+              sunDir.y,
+              sunDir.z
+            );
+          }
         }
       });
     }
