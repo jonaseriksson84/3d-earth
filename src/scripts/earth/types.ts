@@ -104,6 +104,14 @@ export interface AtmosphereState {
   visible: boolean;
 }
 
+export interface TerminatorState {
+  group: THREE.Group;
+  line: THREE.Line;
+  glowLine: THREE.Line;
+  visible: boolean;
+  radius: number;
+}
+
 export interface FlyToState {
   isAnimating: boolean;
   startPosition: THREE.Vector3;

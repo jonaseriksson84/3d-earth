@@ -34,6 +34,9 @@ import {
   initAtmosphere,
   updateAtmosphereRotation,
   setAtmosphereVisible,
+  initTerminator,
+  updateTerminatorPosition,
+  setTerminatorVisible,
 } from './earth';
 import type {
   SceneObjects,
@@ -47,6 +50,7 @@ import type {
   FlyToState,
   AtmosphereState,
   CitySearchState,
+  TerminatorState,
 } from './earth';
 
 let sceneObjects: SceneObjects | null = null;
@@ -60,6 +64,7 @@ let refLinesState: ReferenceLinesState | null = null;
 let loadingState: LoadingState | null = null;
 let flyToState: FlyToState | null = null;
 let atmosphereState: AtmosphereState | null = null;
+let terminatorState: TerminatorState | null = null;
 let citySearchState: CitySearchState | null = null;
 
 /**
@@ -126,6 +131,17 @@ function animate(): void {
       updateAtmosphereRotation(atmosphereState, earthObjects.earth.rotation.y);
     }
 
+    // Update terminator line position based on sun direction
+    if (terminatorState && earthObjects) {
+      // Keep terminator synced with Earth rotation
+      terminatorState.group.rotation.y = earthObjects.earth.rotation.y;
+
+      if (terminatorState.visible) {
+        const sunDir = earthObjects.earthMaterial.uniforms.sunDirection.value;
+        updateTerminatorPosition(terminatorState, sunDir.x, sunDir.y, sunDir.z);
+      }
+    }
+
     if (controls) controls.update();
     if (sceneObjects) {
       const { renderer, scene, camera } = sceneObjects;
@@ -159,6 +175,7 @@ export function initApp(): void {
       refLinesState = null;
       flyToState = null;
       atmosphereState = null;
+      terminatorState = null;
       citySearchState = null;
 
       // Clear the scene
@@ -194,6 +211,9 @@ export function initApp(): void {
 
     // Initialize atmosphere glow effect (enabled by default)
     atmosphereState = initAtmosphere(sceneObjects);
+
+    // Initialize terminator line (disabled by default)
+    terminatorState = initTerminator(sceneObjects);
 
     // Set up marker toggle
     const markerToggle = document.getElementById('markerToggle') as HTMLInputElement | null;
@@ -253,6 +273,22 @@ export function initApp(): void {
         const target = event.target as HTMLInputElement;
         if (refLinesState) {
           setReferenceLinesVisible(refLinesState, target.checked);
+        }
+      });
+    }
+
+    // Set up terminator line toggle
+    const terminatorToggle = document.getElementById('terminatorToggle') as HTMLInputElement | null;
+    if (terminatorToggle) {
+      terminatorToggle.addEventListener('change', (event: Event) => {
+        const target = event.target as HTMLInputElement;
+        if (terminatorState) {
+          setTerminatorVisible(terminatorState, target.checked);
+          // Immediately update position when enabled
+          if (target.checked && earthObjects) {
+            const sunDir = earthObjects.earthMaterial.uniforms.sunDirection.value;
+            updateTerminatorPosition(terminatorState, sunDir.x, sunDir.y, sunDir.z);
+          }
         }
       });
     }

@@ -325,6 +325,29 @@
   - All 91 existing tests pass
   - Build completes without TypeScript errors
 
+### FEATURE-017: Highlight the day/night terminator line
+- **Status:** COMPLETED
+- **Date:** 2026-01-27
+- **Changes:** Implemented visible terminator line at the day/night boundary with glow effect:
+  - Created new `src/scripts/earth/terminator.ts` module with full TypeScript types:
+    - `generateTerminatorPoints()` computes great circle points perpendicular to sun direction
+    - `initTerminator()` creates the line geometry and glow line
+    - `updateTerminatorPosition()` updates geometry each frame based on sun direction
+    - `setTerminatorVisible()` toggles visibility
+  - Terminator is the great circle where `dot(surfaceNormal, sunDirection) = 0`
+  - Algorithm constructs orthonormal basis (U, V) in the plane perpendicular to sun direction
+  - Points generated as `R * (cos(t) * U + sin(t) * V)` for 128 segments
+  - Main line uses orange/gold color (0xffaa44) at 0.7 opacity
+  - Glow line uses deeper orange (0xff8822) at 0.25 opacity behind the main line
+  - Added `TerminatorState` interface to types.ts
+  - Added UI toggle checkbox "Show terminator line" (disabled by default)
+  - Terminator rotates with Earth mesh (same coordinate space as shader)
+  - Earth's axial tilt applied to terminator group
+  - Line updates in real-time as time/date changes
+  - Updated index.ts exports and main.ts integration
+  - All 91 tests pass
+  - Build completes without TypeScript errors
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -358,3 +381,4 @@
 
 ### Phase 7 - Astronomical Features
 - [x] FEATURE-016: Add solstice and equinox preset buttons
+- [x] FEATURE-017: Highlight the day/night terminator line

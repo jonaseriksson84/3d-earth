@@ -629,7 +629,7 @@
         "Line has slight glow effect for visibility",
         "Performance impact minimal (< 1ms per frame)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "FEATURE-018",
