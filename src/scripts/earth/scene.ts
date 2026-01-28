@@ -58,6 +58,8 @@ export function initScene(): SceneObjects {
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x000000, 1);
+    renderer.domElement.setAttribute('role', 'img');
+    renderer.domElement.setAttribute('aria-label', 'Interactive 3D Earth visualization. Use mouse to rotate and scroll to zoom.');
     document.body.appendChild(renderer.domElement);
 
     console.log('Scene initialized successfully');

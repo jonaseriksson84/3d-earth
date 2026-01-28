@@ -521,6 +521,7 @@ export function updateSearchResults(
   for (const city of matches.slice(0, 8)) {
     const item = document.createElement('div');
     item.className = 'city-search-item';
+    item.setAttribute('role', 'option');
     item.textContent = city.name;
     item.addEventListener('mousedown', (e) => {
       e.preventDefault();
@@ -539,11 +540,9 @@ export function updateSearchResults(
 function updateActiveHighlight(searchState: CitySearchState): void {
   const items = searchState.results.querySelectorAll('.city-search-item:not(.no-results)');
   items.forEach((item, i) => {
-    if (i === searchState.activeIndex) {
-      item.classList.add('active');
-    } else {
-      item.classList.remove('active');
-    }
+    const isActive = i === searchState.activeIndex;
+    item.classList.toggle('active', isActive);
+    item.setAttribute('aria-selected', String(isActive));
   });
 }
 

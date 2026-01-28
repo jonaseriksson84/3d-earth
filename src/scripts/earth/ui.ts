@@ -21,6 +21,12 @@ export function updateTimeDisplay(
     if (timeDisplayElement) {
       timeDisplayElement.textContent = `${localTime} (${utcTime} UTC)`;
     }
+
+    // Update slider aria-valuetext for screen readers
+    const timeSlider = document.getElementById('timeSlider');
+    if (timeSlider) {
+      timeSlider.setAttribute('aria-valuetext', `${localTime}, ${utcTime} UTC`);
+    }
   } catch (error) {
     console.error('Error updating time display:', error);
     if (timeDisplayElement) {
@@ -161,10 +167,15 @@ export function stepTime(timeState: TimeState, direction: number): void {
 function updatePlaybackUI(isPlaying: boolean): void {
   const playIcon = document.getElementById('playIcon');
   const pauseIcon = document.getElementById('pauseIcon');
+  const playPauseBtn = document.getElementById('playPauseBtn');
 
   if (playIcon && pauseIcon) {
     playIcon.style.display = isPlaying ? 'none' : 'inline';
     pauseIcon.style.display = isPlaying ? 'inline' : 'none';
+  }
+
+  if (playPauseBtn) {
+    playPauseBtn.setAttribute('aria-label', isPlaying ? 'Pause time animation' : 'Play time animation');
   }
 }
 

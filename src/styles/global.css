@@ -394,7 +394,7 @@ canvas {
 }
 
 .sun-times-display .sun-times-loading {
-  color: #666;
+  color: #999;
   font-style: italic;
 }
 
@@ -425,6 +425,62 @@ canvas {
 /* Marker cursor styles */
 canvas.clickable-marker {
   cursor: pointer;
+}
+
+/* Accessibility: Focus indicators for keyboard navigation */
+.controls *:focus-visible {
+  outline: 2px solid #4da6ff;
+  outline-offset: 2px;
+}
+
+.preset-btn:focus-visible {
+  outline: 2px solid #4da6ff;
+  outline-offset: 2px;
+  background: rgba(77, 166, 255, 0.2);
+}
+
+.playback-btn:focus-visible {
+  outline: 2px solid #4da6ff;
+  outline-offset: 2px;
+}
+
+.retry-button:focus-visible {
+  outline: 2px solid #4da6ff;
+  outline-offset: 2px;
+}
+
+.city-search-input:focus-visible {
+  outline: 2px solid #4da6ff;
+  outline-offset: 1px;
+  border-color: #4da6ff;
+}
+
+.city-search-clear:focus-visible {
+  outline: 2px solid #4da6ff;
+  outline-offset: 2px;
+  color: white;
+}
+
+/* Accessibility: Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .loading-spinner {
+    animation: none;
+    border-top-color: #4da6ff;
+    opacity: 0.7;
+  }
+
+  .loading-overlay.fade-out {
+    transition: none;
+  }
+
+  .loading-progress {
+    transition: none;
+  }
+
+  .preset-btn,
+  .playback-btn {
+    transition: none;
+  }
 }
 
 /* Mobile touch target sizes - ensure minimum 44x44px for interactive elements */

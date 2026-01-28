@@ -799,7 +799,7 @@
         "prefers-reduced-motion disables animations",
         "Canvas has aria-label describing the visualization"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "IMPROVEMENT-005",

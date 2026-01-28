@@ -489,6 +489,42 @@
   - TypeScript compiles without errors
   - Build completes successfully
 
+### IMPROVEMENT-004: Add accessibility features
+- **Status:** COMPLETED
+- **Date:** 2026-01-28
+- **Changes:** Implemented comprehensive accessibility features for keyboard, screen reader, and reduced motion support:
+  - Updated `src/pages/index.astro`:
+    - Added `role="alert"` and `aria-live="polite"` to loading overlay
+    - Added `role="progressbar"` with `aria-valuenow/min/max` to progress bar
+    - Added `role="alert"` and `aria-live="assertive"` to error overlay
+    - Added `role="region"` and `aria-label` to controls panel
+    - Added `aria-label` to all checkboxes (clouds, markers, reference lines, terminator, moon, satellites, atmosphere)
+    - Added `aria-label` to date picker, time slider, play/pause button, speed select
+    - Added `aria-valuetext` to time slider for screen reader time announcements
+    - Added `aria-hidden="true"` to decorative elements (spinner, error icon, play/pause icons)
+    - Added `role="search"` and `aria-label` to city search container
+    - Added `aria-autocomplete="list"` and `aria-controls` to search input
+    - Added `role="listbox"` to search results container
+    - Added `role="group"` and `aria-label` to preset buttons container
+    - Added `aria-label` to each preset button
+    - Added `aria-live="polite"` to time display and sun times display
+    - Added `role="complementary"` to instructions panel
+  - Updated `src/styles/global.css`:
+    - Added `:focus-visible` styles with `2px solid #4da6ff` outline for all interactive elements
+    - Added `@media (prefers-reduced-motion: reduce)` to disable loading spinner animation, fade transitions, and button transitions
+    - Fixed color contrast: `.sun-times-loading` changed from `#666` to `#999` for WCAG AA compliance
+  - Updated `src/scripts/earth/scene.ts`:
+    - Added `role="img"` and `aria-label` to canvas element describing the 3D visualization
+  - Updated `src/scripts/earth/ui.ts`:
+    - Play/pause button `aria-label` updates dynamically based on playback state
+    - Time slider `aria-valuetext` updates with human-readable time on every display update
+  - Updated `src/scripts/earth/markers.ts`:
+    - Search result items have `role="option"` attribute
+    - Active search result items have `aria-selected="true"` attribute
+  - All 149 tests pass
+  - TypeScript compiles without errors
+  - Build completes successfully
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -531,3 +567,4 @@
 
 ### Phase 10 - Accessibility & Documentation
 - [x] IMPROVEMENT-003: Optimize mobile touch gesture handling
+- [x] IMPROVEMENT-004: Add accessibility features
