@@ -1,5 +1,7 @@
+// @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { latLonToPosition, calculateLocalTime, searchCities, CITIES } from './markers';
+import { latLonToPosition, calculateLocalTime, searchCities, CITIES, handleSearchKeydown } from './markers';
+import type { CitySearchState, CityData } from './types';
 
 // Mock THREE.Vector3 for testing without full Three.js
 vi.mock('three', () => ({
@@ -239,5 +241,125 @@ describe('CITIES constant', () => {
     expect(cityNames).toContain('New York');
     expect(cityNames).toContain('Tokyo');
     expect(cityNames).toContain('Sydney');
+  });
+});
+
+describe('handleSearchKeydown', () => {
+  const cities: CityData[] = [
+    { name: 'London', lat: 51.5074, lon: -0.1278, timezone: 0 },
+    { name: 'Los Angeles', lat: 34.0522, lon: -118.2437, timezone: -8 },
+    { name: 'Lima', lat: -12.0464, lon: -77.0428, timezone: -5 },
+  ];
+
+  function createMockSearchState(): CitySearchState {
+    const results = document.createElement('div');
+    // Add city items to the results div
+    cities.forEach((city) => {
+      const item = document.createElement('div');
+      item.className = 'city-search-item';
+      item.textContent = city.name;
+      results.appendChild(item);
+    });
+
+    return {
+      input: document.createElement('input'),
+      results,
+      clearButton: document.createElement('button'),
+      debounceTimer: null,
+      activeIndex: -1,
+    };
+  }
+
+  it('ArrowDown from -1 moves activeIndex to 0', () => {
+    const state = createMockSearchState();
+    const onSelect = vi.fn();
+    handleSearchKeydown('ArrowDown', state, cities, onSelect);
+    expect(state.activeIndex).toBe(0);
+    expect(onSelect).not.toHaveBeenCalled();
+  });
+
+  it('ArrowDown from 0 moves to 1', () => {
+    const state = createMockSearchState();
+    state.activeIndex = 0;
+    handleSearchKeydown('ArrowDown', state, cities, vi.fn());
+    expect(state.activeIndex).toBe(1);
+  });
+
+  it('ArrowDown at last item stays at last item', () => {
+    const state = createMockSearchState();
+    state.activeIndex = 2;
+    handleSearchKeydown('ArrowDown', state, cities, vi.fn());
+    expect(state.activeIndex).toBe(2);
+  });
+
+  it('ArrowUp from 1 moves to 0', () => {
+    const state = createMockSearchState();
+    state.activeIndex = 1;
+    handleSearchKeydown('ArrowUp', state, cities, vi.fn());
+    expect(state.activeIndex).toBe(0);
+  });
+
+  it('ArrowUp from 0 stays at 0', () => {
+    const state = createMockSearchState();
+    state.activeIndex = 0;
+    handleSearchKeydown('ArrowUp', state, cities, vi.fn());
+    expect(state.activeIndex).toBe(0);
+  });
+
+  it('Enter with activeIndex >= 0 calls onSelect with correct city and returns it', () => {
+    const state = createMockSearchState();
+    state.activeIndex = 1;
+    const onSelect = vi.fn();
+    const result = handleSearchKeydown('Enter', state, cities, onSelect);
+    expect(onSelect).toHaveBeenCalledWith(cities[1]);
+    expect(result).toBe(cities[1]);
+    expect(state.input.value).toBe('Los Angeles');
+    expect(state.results.style.display).toBe('none');
+  });
+
+  it('Enter with activeIndex -1 does nothing and returns null', () => {
+    const state = createMockSearchState();
+    const onSelect = vi.fn();
+    const result = handleSearchKeydown('Enter', state, cities, onSelect);
+    expect(onSelect).not.toHaveBeenCalled();
+    expect(result).toBeNull();
+  });
+
+  it('other keys return null and do not change activeIndex', () => {
+    const state = createMockSearchState();
+    state.activeIndex = 1;
+    const result = handleSearchKeydown('a', state, cities, vi.fn());
+    expect(result).toBeNull();
+    expect(state.activeIndex).toBe(1);
+  });
+
+  it('ArrowDown returns null', () => {
+    const state = createMockSearchState();
+    const result = handleSearchKeydown('ArrowDown', state, cities, vi.fn());
+    expect(result).toBeNull();
+  });
+
+  it('ArrowUp returns null', () => {
+    const state = createMockSearchState();
+    state.activeIndex = 1;
+    const result = handleSearchKeydown('ArrowUp', state, cities, vi.fn());
+    expect(result).toBeNull();
+  });
+
+  it('adds active class to the highlighted item', () => {
+    const state = createMockSearchState();
+    handleSearchKeydown('ArrowDown', state, cities, vi.fn());
+    const items = state.results.querySelectorAll('.city-search-item');
+    expect(items[0].classList.contains('active')).toBe(true);
+    expect(items[1].classList.contains('active')).toBe(false);
+  });
+
+  it('moves active class when navigating down', () => {
+    const state = createMockSearchState();
+    handleSearchKeydown('ArrowDown', state, cities, vi.fn());
+    handleSearchKeydown('ArrowDown', state, cities, vi.fn());
+    const items = state.results.querySelectorAll('.city-search-item');
+    expect(items[0].classList.contains('active')).toBe(false);
+    expect(items[1].classList.contains('active')).toBe(true);
   });
 });

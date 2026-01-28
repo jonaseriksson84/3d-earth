@@ -157,3 +157,12 @@ export function cancelFlyTo(
 export function isFlyingTo(flyToState: FlyToState): boolean {
   return flyToState.isAnimating;
 }
+
+/**
+ * Determine whether a mousedown target should cancel an in-progress fly-to.
+ * Only canvas clicks (i.e. globe interaction) should cancel; UI element clicks should not.
+ */
+export function shouldCancelFlyTo(target: EventTarget | null): boolean {
+  if (!target || !(target instanceof HTMLElement)) return false;
+  return target.tagName === 'CANVAS';
+}

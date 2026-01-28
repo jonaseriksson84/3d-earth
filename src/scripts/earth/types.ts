@@ -145,6 +145,7 @@ export interface CitySearchState {
   results: HTMLDivElement;
   clearButton: HTMLButtonElement;
   debounceTimer: ReturnType<typeof setTimeout> | null;
+  activeIndex: number; // -1 means no selection
 }
 
 export interface AppState {

@@ -441,6 +441,7 @@ export function initCitySearch(): CitySearchState | null {
     results,
     clearButton,
     debounceTimer: null,
+    activeIndex: -1,
   };
 }
 
@@ -461,6 +462,7 @@ export function updateSearchResults(
   }
 
   clearButton.style.display = 'block';
+  searchState.activeIndex = -1;
   const matches = searchCities(query);
 
   if (matches.length === 0) {
@@ -487,6 +489,56 @@ export function updateSearchResults(
     results.appendChild(item);
   }
   results.style.display = 'block';
+}
+
+/**
+ * Update the active/highlighted item in the search results dropdown
+ */
+function updateActiveHighlight(searchState: CitySearchState): void {
+  const items = searchState.results.querySelectorAll('.city-search-item:not(.no-results)');
+  items.forEach((item, i) => {
+    if (i === searchState.activeIndex) {
+      item.classList.add('active');
+    } else {
+      item.classList.remove('active');
+    }
+  });
+}
+
+/**
+ * Handle keyboard navigation in the city search dropdown.
+ * Returns the selected city on Enter, or null otherwise.
+ */
+export function handleSearchKeydown(
+  key: string,
+  searchState: CitySearchState,
+  matches: CityData[],
+  onSelect: (city: CityData) => void
+): CityData | null {
+  if (key === 'ArrowDown') {
+    searchState.activeIndex = Math.min(searchState.activeIndex + 1, matches.length - 1);
+    updateActiveHighlight(searchState);
+    return null;
+  }
+
+  if (key === 'ArrowUp') {
+    searchState.activeIndex = Math.max(searchState.activeIndex - 1, 0);
+    updateActiveHighlight(searchState);
+    return null;
+  }
+
+  if (key === 'Enter') {
+    if (searchState.activeIndex >= 0 && searchState.activeIndex < matches.length) {
+      const city = matches[searchState.activeIndex];
+      onSelect(city);
+      searchState.input.value = city.name;
+      searchState.results.style.display = 'none';
+      return city;
+    }
+    return null;
+  }
+
+  return null;
 }
 
 /**

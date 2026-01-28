@@ -362,7 +362,8 @@ canvas {
   color: #ddd;
 }
 
-.city-search-item:hover {
+.city-search-item:hover,
+.city-search-item.active {
   background: rgba(77, 166, 255, 0.3);
   color: white;
 }

@@ -1,6 +1,7 @@
+// @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as THREE from 'three';
-import { createFlyToState, startFlyTo, updateFlyTo, cancelFlyTo, isFlyingTo } from './flyTo';
+import { createFlyToState, startFlyTo, updateFlyTo, cancelFlyTo, isFlyingTo, shouldCancelFlyTo } from './flyTo';
 import type { SceneObjects, CityData, FlyToState } from './types';
 
 // Mock performance.now
@@ -253,5 +254,26 @@ describe('updateFlyTo', () => {
       expect(distance).toBeGreaterThan(10);
       expect(distance).toBeLessThan(20);
     });
+  });
+});
+
+describe('shouldCancelFlyTo', () => {
+  it('returns true when target is a canvas element', () => {
+    const canvas = document.createElement('canvas');
+    expect(shouldCancelFlyTo(canvas)).toBe(true);
+  });
+
+  it('returns false when target is null', () => {
+    expect(shouldCancelFlyTo(null)).toBe(false);
+  });
+
+  it('returns false when target is a non-canvas HTMLElement', () => {
+    const div = document.createElement('div');
+    expect(shouldCancelFlyTo(div)).toBe(false);
+  });
+
+  it('returns false when target is a button element', () => {
+    const button = document.createElement('button');
+    expect(shouldCancelFlyTo(button)).toBe(false);
   });
 });

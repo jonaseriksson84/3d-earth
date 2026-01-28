@@ -31,6 +31,9 @@ import {
   startFlyTo,
   updateFlyTo,
   cancelFlyTo,
+  shouldCancelFlyTo,
+  searchCities,
+  handleSearchKeydown,
   initAtmosphere,
   updateAtmosphereRotation,
   setAtmosphereVisible,
@@ -284,6 +287,22 @@ export function initApp(): void {
         }, 200);
       });
 
+      searchInput.addEventListener('keydown', (event: KeyboardEvent) => {
+        if (['ArrowDown', 'ArrowUp', 'Enter'].includes(event.key)) {
+          event.preventDefault();
+          const matches = searchCities(searchInput.value).slice(0, 8);
+          const city = handleSearchKeydown(event.key, searchStateRef, matches, (c) => {
+            if (sceneObjects && flyToState && controls) {
+              startFlyTo(c, sceneObjects, flyToState, controls);
+            }
+          });
+          if (city) {
+            selectedCityForSunTimes = city;
+            refreshSunTimesPanel();
+          }
+        }
+      });
+
       searchInput.addEventListener('blur', () => {
         // Delay to allow click on result
         setTimeout(() => {
@@ -388,8 +407,8 @@ export function initApp(): void {
 
     // Allow user interaction to cancel fly-to animation
     window.addEventListener('mousedown', (event: MouseEvent) => {
-      // Cancel if user starts dragging during fly-to (but not if clicking marker)
-      if (flyToState && flyToState.isAnimating && controls) {
+      // Only cancel fly-to when clicking on the canvas (globe interaction)
+      if (flyToState && flyToState.isAnimating && controls && shouldCancelFlyTo(event.target)) {
         // Check if this is a marker click
         if (sceneObjects && markerState) {
           const cityData = handleMarkerClick(event, sceneObjects, markerState);
