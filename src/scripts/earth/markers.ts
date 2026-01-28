@@ -308,57 +308,20 @@ export function handleMarkerHover(
 ): void {
   if (!markerState.visible || !markerState.tooltip) return;
 
-  const { camera } = sceneObjects;
-  const raycaster = new THREE.Raycaster();
-  const mouse = new THREE.Vector2();
-
-  // Calculate mouse position in normalized device coordinates
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-  raycaster.setFromCamera(mouse, camera);
-
-  // Get all sprites in the markers group
-  const sprites: THREE.Sprite[] = [];
-  markerState.markersGroup.traverse((object) => {
-    if (object instanceof THREE.Sprite) {
-      sprites.push(object);
-    }
-  });
-
-  const intersects = raycaster.intersectObjects(sprites, false);
+  const cityData = detectMarkerAtPosition(event.clientX, event.clientY, sceneObjects, markerState);
 
   // Get canvas element for cursor styling
   const canvas = document.querySelector('canvas');
 
-  if (intersects.length > 0) {
-    const marker = intersects[0].object as THREE.Sprite;
-    const cityData = marker.userData.city as CityData;
+  if (cityData) {
+    showMarkerTooltip(cityData, event.clientX, event.clientY, markerState, sliderMinutes, selectedDate);
 
-    if (cityData) {
-      const localTime = calculateLocalTime(sliderMinutes, cityData.timezone);
-      const isUserLocation = cityData.name === 'Your Location';
-      const date = selectedDate ?? new Date();
-      const sunTimes = calculateSunriseSunset(cityData.lat, cityData.lon, date, cityData.timezone);
-      const sunTimesText = formatSunTimesForTooltip(sunTimes);
-
-      markerState.tooltip.innerHTML = `
-        <strong>${cityData.name}</strong>${isUserLocation ? ' 📍' : ''}<br>
-        <span style="color: #aaa;">Local time:</span> ${localTime}<br>
-        <span style="color: #aaa;">Sun:</span> ${sunTimesText}<br>
-        <span style="color: #888; font-size: 11px;">Click to fly to</span>
-      `;
-      markerState.tooltip.style.display = 'block';
-      markerState.tooltip.style.left = `${event.clientX + 15}px`;
-      markerState.tooltip.style.top = `${event.clientY + 15}px`;
-
-      // Set pointer cursor
-      if (canvas) {
-        canvas.classList.add('clickable-marker');
-      }
+    // Set pointer cursor
+    if (canvas) {
+      canvas.classList.add('clickable-marker');
     }
   } else {
-    markerState.tooltip.style.display = 'none';
+    hideMarkerTooltip(markerState);
 
     // Reset cursor
     if (canvas) {
@@ -415,6 +378,85 @@ export function handleMarkerClick(
   }
 
   return null;
+}
+
+/**
+ * Detect a marker at the given screen coordinates (used for touch events).
+ * Returns the CityData if a marker is found at those coordinates, null otherwise.
+ */
+export function detectMarkerAtPosition(
+  clientX: number,
+  clientY: number,
+  sceneObjects: SceneObjects,
+  markerState: MarkerState
+): CityData | null {
+  if (!markerState.visible) return null;
+
+  const { camera } = sceneObjects;
+  const raycaster = new THREE.Raycaster();
+  const coords = new THREE.Vector2();
+
+  coords.x = (clientX / window.innerWidth) * 2 - 1;
+  coords.y = -(clientY / window.innerHeight) * 2 + 1;
+
+  raycaster.setFromCamera(coords, camera);
+
+  const sprites: THREE.Sprite[] = [];
+  markerState.markersGroup.traverse((object) => {
+    if (object instanceof THREE.Sprite) {
+      sprites.push(object);
+    }
+  });
+
+  const intersects = raycaster.intersectObjects(sprites, false);
+
+  if (intersects.length > 0) {
+    const marker = intersects[0].object as THREE.Sprite;
+    const cityData = marker.userData.city as CityData;
+    return cityData || null;
+  }
+
+  return null;
+}
+
+/**
+ * Show the marker tooltip at a given screen position.
+ * Used by both mouse hover and touch tap.
+ */
+export function showMarkerTooltip(
+  cityData: CityData,
+  clientX: number,
+  clientY: number,
+  markerState: MarkerState,
+  sliderMinutes: number,
+  selectedDate?: Date
+): void {
+  if (!markerState.tooltip) return;
+
+  const localTime = calculateLocalTime(sliderMinutes, cityData.timezone);
+  const isUserLocation = cityData.name === 'Your Location';
+  const date = selectedDate ?? new Date();
+  const sunTimes = calculateSunriseSunset(cityData.lat, cityData.lon, date, cityData.timezone);
+  const sunTimesText = formatSunTimesForTooltip(sunTimes);
+
+  markerState.tooltip.innerHTML = `
+    <strong>${cityData.name}</strong>${isUserLocation ? ' 📍' : ''}<br>
+    <span style="color: #aaa;">Local time:</span> ${localTime}<br>
+    <span style="color: #aaa;">Sun:</span> ${sunTimesText}<br>
+    <span style="color: #888; font-size: 11px;">Click to fly to</span>
+  `;
+  markerState.tooltip.style.display = 'block';
+  markerState.tooltip.style.left = `${clientX + 15}px`;
+  markerState.tooltip.style.top = `${clientY + 15}px`;
+}
+
+/**
+ * Hide the marker tooltip.
+ */
+export function hideMarkerTooltip(markerState: MarkerState): void {
+  if (markerState.tooltip) {
+    markerState.tooltip.style.display = 'none';
+  }
 }
 
 /**

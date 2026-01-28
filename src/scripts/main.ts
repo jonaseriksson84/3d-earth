@@ -5,6 +5,7 @@ import {
   initEarth,
   initLighting,
   initControls,
+  setupCanvasTouchHandling,
   createLocationState,
   getLocation,
   createTimeState,
@@ -16,6 +17,9 @@ import {
   updateUserMarker,
   handleMarkerHover,
   handleMarkerClick,
+  detectMarkerAtPosition,
+  showMarkerTooltip,
+  hideMarkerTooltip,
   updateMarkersRotation,
   setMarkersVisible,
   initCitySearch,
@@ -252,6 +256,9 @@ export function initApp(): void {
     lightingObjects = initLighting(sceneObjects);
     controls = initControls(sceneObjects);
 
+    // Set up touch handling on canvas to prevent default browser behaviors
+    setupCanvasTouchHandling(sceneObjects.renderer.domElement);
+
     timeState = createTimeState();
     initTimeControls(timeState, earthObjects, lightingObjects);
     initEventListeners(sceneObjects);
@@ -462,6 +469,85 @@ export function initApp(): void {
         cancelFlyTo(flyToState, controls);
       }
     });
+
+    // Touch event handling for marker taps on mobile devices
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchStartTime = 0;
+    const TAP_THRESHOLD = 15; // max pixels moved to count as tap
+    const TAP_TIMEOUT = 300; // max ms for a tap
+
+    window.addEventListener('touchstart', (event: TouchEvent) => {
+      if (event.touches.length === 1) {
+        const touch = event.touches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+        touchStartTime = performance.now();
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchend', (event: TouchEvent) => {
+      // Only process single-finger taps (not pinch-zoom releases)
+      if (event.changedTouches.length !== 1) return;
+
+      const touch = event.changedTouches[0];
+      const dx = touch.clientX - touchStartX;
+      const dy = touch.clientY - touchStartY;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      const elapsed = performance.now() - touchStartTime;
+
+      // Determine if this was a tap (short distance, short time)
+      if (distance > TAP_THRESHOLD || elapsed > TAP_TIMEOUT) return;
+
+      // Check if the tap target is the canvas
+      if (!(touch.target instanceof HTMLElement) || touch.target.tagName !== 'CANVAS') return;
+
+      if (!sceneObjects || !markerState || !timeState) return;
+
+      const cityData = detectMarkerAtPosition(
+        touch.clientX,
+        touch.clientY,
+        sceneObjects,
+        markerState
+      );
+
+      if (cityData) {
+        // Show tooltip at tap position
+        const sliderMinutes = parseInt(timeState.timeSlider.value);
+        showMarkerTooltip(
+          cityData,
+          touch.clientX,
+          touch.clientY,
+          markerState,
+          sliderMinutes,
+          timeState.selectedDate
+        );
+
+        // Trigger fly-to on tap
+        if (flyToState && controls) {
+          startFlyTo(cityData, sceneObjects, flyToState, controls);
+          selectedCityForSunTimes = cityData;
+          refreshSunTimesPanel();
+        }
+
+        // Auto-hide tooltip after 3 seconds
+        setTimeout(() => {
+          if (markerState) {
+            hideMarkerTooltip(markerState);
+          }
+        }, 3000);
+      } else {
+        // Tap on empty space hides tooltip
+        hideMarkerTooltip(markerState);
+      }
+    }, { passive: true });
+
+    // Cancel fly-to on multi-touch (pinch) gestures
+    window.addEventListener('touchmove', (event: TouchEvent) => {
+      if (event.touches.length >= 2 && flyToState && flyToState.isAnimating && controls) {
+        cancelFlyTo(flyToState, controls);
+      }
+    }, { passive: true });
 
     // Start location detection and animation
     locationState = createLocationState();

@@ -7,6 +7,7 @@ body {
 
 canvas {
   display: none;
+  touch-action: none; /* Prevent browser default touch gestures on canvas */
 }
 
 .controls {
@@ -424,4 +425,99 @@ canvas {
 /* Marker cursor styles */
 canvas.clickable-marker {
   cursor: pointer;
+}
+
+/* Mobile touch target sizes - ensure minimum 44x44px for interactive elements */
+@media (pointer: coarse) {
+  .preset-btn {
+    min-height: 44px;
+    font-size: 13px;
+  }
+
+  .playback-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 16px;
+  }
+
+  .speed-select {
+    min-height: 44px;
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  .date-picker {
+    min-height: 44px;
+    font-size: 16px;
+    padding: 8px 12px;
+  }
+
+  .city-search-input {
+    min-height: 44px;
+    font-size: 16px;
+    padding: 8px 28px 8px 10px;
+  }
+
+  .city-search-item {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+  }
+
+  .city-search-clear {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  .slider {
+    height: 44px;
+  }
+
+  .controls label {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .controls input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+  }
+
+  .retry-button {
+    min-height: 44px;
+    font-size: 18px;
+    padding: 12px 36px;
+  }
+
+  /* Prevent text selection on touch drag */
+  .controls {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Hide instructions panel on small mobile screens */
+  .instructions {
+    display: none;
+  }
+}
+
+/* Controls panel responsive layout for mobile */
+@media (max-width: 480px) {
+  .controls {
+    min-width: unset;
+    width: calc(100% - 20px);
+    left: 10px;
+    top: 10px;
+    max-height: 50vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px;
+  }
 }

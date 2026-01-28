@@ -456,6 +456,39 @@
   - TypeScript compiles without errors
   - Build completes successfully
 
+### IMPROVEMENT-003: Optimize mobile touch gesture handling
+- **Status:** COMPLETED
+- **Date:** 2026-01-28
+- **Changes:** Implemented comprehensive mobile touch support for all interactions:
+  - Updated `controls.ts`:
+    - Disabled panning (not useful for globe) via `controls.enablePan = false`
+    - Added `rotateSpeed: 0.8` for smoother touch rotation
+    - Added `setupCanvasTouchHandling()` to prevent default browser touch behaviors on canvas
+  - Updated `markers.ts`:
+    - Added `detectMarkerAtPosition()` for coordinate-based marker detection (shared by mouse and touch)
+    - Added `showMarkerTooltip()` and `hideMarkerTooltip()` utility functions
+    - Refactored `handleMarkerHover()` to use shared detection/tooltip functions
+  - Updated `main.ts`:
+    - Added touch event listeners (touchstart, touchend, touchmove)
+    - Implemented tap detection with distance threshold (15px) and timeout (300ms)
+    - Touch tap on marker shows tooltip and triggers fly-to animation
+    - Tooltip auto-hides after 3 seconds on touch devices
+    - Multi-touch (pinch) cancels fly-to animation
+    - Called `setupCanvasTouchHandling()` during initialization
+  - Updated `index.astro`:
+    - Viewport meta tag updated with `maximum-scale=1.0, user-scalable=no` to prevent double-tap zoom
+    - Instructions updated to mention pinch zoom and tap-to-fly
+  - Updated `global.css`:
+    - Added `touch-action: none` on canvas for proper touch handling
+    - Added `@media (pointer: coarse)` styles for minimum 44x44px touch targets
+    - Ensured all interactive elements (buttons, inputs, checkboxes, search items) meet accessibility size requirements
+    - Added responsive layout for controls panel on small screens (max-width: 480px)
+    - Hidden instructions panel on touch devices to save screen space
+    - Added `-webkit-overflow-scrolling: touch` for smooth scrolling in controls panel
+  - All 149 tests pass
+  - TypeScript compiles without errors
+  - Build completes successfully
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -495,3 +528,6 @@
 
 ### Phase 9 - Advanced Features
 - [x] FEATURE-009: Add satellite orbit visualization with ISS tracking
+
+### Phase 10 - Accessibility & Documentation
+- [x] IMPROVEMENT-003: Optimize mobile touch gesture handling

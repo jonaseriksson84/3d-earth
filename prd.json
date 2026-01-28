@@ -770,7 +770,7 @@
         "Touch targets minimum 44x44 pixels for accessibility",
         "Works on iOS Safari 15+ and Android Chrome 90+"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "IMPROVEMENT-004",
