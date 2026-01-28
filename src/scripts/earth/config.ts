@@ -13,10 +13,16 @@ export const CONFIG: EarthConfig = {
   DEGREES_PER_MINUTE: 0.25, // Earth rotation: 360deg / 1440 minutes
   SLIDER_STEP: 15, // 15-minute increments
 
-  // Geometry quality
+  // Geometry quality (LOD levels)
   GEOMETRY_HIGH: 64,
   GEOMETRY_MEDIUM: 48,
   GEOMETRY_LOW: 32,
+
+  // LOD distances (camera distance thresholds for geometry switching)
+  LOD_HIGH_SEGMENTS: 128,
+  LOD_HIGH_DISTANCE: 0,
+  LOD_MEDIUM_DISTANCE: 15,
+  LOD_LOW_DISTANCE: 30,
 
   // Camera settings
   CAMERA_FOV: 75,

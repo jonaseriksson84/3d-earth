@@ -13,6 +13,10 @@ export interface EarthConfig {
   GEOMETRY_HIGH: number;
   GEOMETRY_MEDIUM: number;
   GEOMETRY_LOW: number;
+  LOD_HIGH_SEGMENTS: number;
+  LOD_HIGH_DISTANCE: number;
+  LOD_MEDIUM_DISTANCE: number;
+  LOD_LOW_DISTANCE: number;
   CAMERA_FOV: number;
   CAMERA_NEAR: number;
   CAMERA_FAR: number;
@@ -42,8 +46,8 @@ export interface SceneObjects {
 }
 
 export interface EarthObjects {
-  earth: THREE.Mesh;
-  clouds: THREE.Mesh;
+  earth: THREE.LOD;
+  clouds: THREE.LOD;
   earthMaterial: THREE.ShaderMaterial;
 }
 

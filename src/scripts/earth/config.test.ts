@@ -116,6 +116,26 @@ describe('CONFIG', () => {
     });
   });
 
+  describe('LOD settings', () => {
+    it('LOD_HIGH_SEGMENTS is at least 128', () => {
+      expect(CONFIG.LOD_HIGH_SEGMENTS).toBeGreaterThanOrEqual(128);
+    });
+
+    it('GEOMETRY_HIGH is the medium LOD level', () => {
+      expect(CONFIG.GEOMETRY_HIGH).toBeLessThan(CONFIG.LOD_HIGH_SEGMENTS);
+      expect(CONFIG.GEOMETRY_HIGH).toBeGreaterThan(CONFIG.GEOMETRY_LOW);
+    });
+
+    it('LOD distances increase for lower detail levels', () => {
+      expect(CONFIG.LOD_HIGH_DISTANCE).toBeLessThan(CONFIG.LOD_MEDIUM_DISTANCE);
+      expect(CONFIG.LOD_MEDIUM_DISTANCE).toBeLessThan(CONFIG.LOD_LOW_DISTANCE);
+    });
+
+    it('LOD_HIGH_DISTANCE starts at 0', () => {
+      expect(CONFIG.LOD_HIGH_DISTANCE).toBe(0);
+    });
+  });
+
   describe('Controls', () => {
     it('DAMPING_FACTOR is between 0 and 1', () => {
       expect(CONFIG.DAMPING_FACTOR).toBeGreaterThan(0);

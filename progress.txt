@@ -525,6 +525,30 @@
   - TypeScript compiles without errors
   - Build completes successfully
 
+### PERF-001: Implement Level-of-Detail (LOD) for Earth mesh
+- **Status:** COMPLETED
+- **Date:** 2026-01-28
+- **Changes:** Implemented THREE.LOD for Earth and clouds with 3 detail levels:
+  - Updated `src/scripts/earth/earth.ts`:
+    - Replaced single `THREE.Mesh` with `THREE.LOD` for both Earth and clouds
+    - Three LOD levels: High (128 segments, <15 units), Medium (64 segments, 15-30 units), Low (32 segments, >30 units)
+    - Shared shader material across all LOD levels (no extra GPU memory for materials)
+    - Added `updateEarthLOD()` function to update LOD each frame based on camera distance
+    - Added `getLODLevels()` helper using config constants
+  - Updated `src/scripts/earth/types.ts`:
+    - Changed `EarthObjects.earth` from `THREE.Mesh` to `THREE.LOD`
+    - Changed `EarthObjects.clouds` from `THREE.Mesh` to `THREE.LOD`
+    - Added LOD config properties to `EarthConfig` interface
+  - Updated `src/scripts/earth/config.ts`:
+    - Added `LOD_HIGH_SEGMENTS: 128` for close-up detail
+    - Added `LOD_HIGH_DISTANCE: 0`, `LOD_MEDIUM_DISTANCE: 15`, `LOD_LOW_DISTANCE: 30` thresholds
+  - Updated `src/scripts/main.ts`:
+    - Imported `updateEarthLOD` and called it each frame before render
+  - Added 4 unit tests for LOD config validation
+  - All 153 tests pass
+  - TypeScript compiles without errors
+  - Build completes successfully
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -568,3 +592,6 @@
 ### Phase 10 - Accessibility & Documentation
 - [x] IMPROVEMENT-003: Optimize mobile touch gesture handling
 - [x] IMPROVEMENT-004: Add accessibility features
+
+### Phase 11 - Performance & Future-proofing
+- [x] PERF-001: Implement Level-of-Detail (LOD) for Earth mesh

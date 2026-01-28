@@ -911,7 +911,7 @@
         "Performance improvement measurable (20%+ fewer draw calls at low LOD)",
         "No visual popping during LOD transitions"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "PERF-002",

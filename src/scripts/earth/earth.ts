@@ -43,23 +43,21 @@ function getFragmentShader(): string {
   `;
 }
 
-function getSegments(): number {
-  const devicePixelRatio = window.devicePixelRatio || 1;
-  const isHighDPI = devicePixelRatio > 1.5;
-  const isLargeScreen = window.innerWidth > 1200;
+interface LODLevel {
+  segments: number;
+  distance: number;
+}
 
-  const segments =
-    isHighDPI && isLargeScreen
-      ? CONFIG.GEOMETRY_HIGH
-      : isHighDPI || isLargeScreen
-        ? CONFIG.GEOMETRY_MEDIUM
-        : CONFIG.GEOMETRY_LOW;
-
-  console.log(
-    `Using ${segments}x${segments} geometry segments (${segments * segments * 2} triangles)`
-  );
-
-  return segments;
+function getLODLevels(): LODLevel[] {
+  // Three LOD levels based on camera distance
+  // High: close-up (< 15 units) - 128 segments
+  // Medium: medium zoom (15-30 units) - 64 segments
+  // Low: far away (> 30 units) - 32 segments
+  return [
+    { segments: CONFIG.LOD_HIGH_SEGMENTS, distance: CONFIG.LOD_HIGH_DISTANCE },
+    { segments: CONFIG.GEOMETRY_HIGH, distance: CONFIG.LOD_MEDIUM_DISTANCE },
+    { segments: CONFIG.GEOMETRY_LOW, distance: CONFIG.LOD_LOW_DISTANCE },
+  ];
 }
 
 export function initEarth(
@@ -81,13 +79,7 @@ export function initEarth(
   );
 
   const textureLoader = new THREE.TextureLoader(loadingManager);
-  const segments = getSegments();
-
-  const earthGeometry = new THREE.SphereGeometry(
-    CONFIG.EARTH_RADIUS,
-    segments,
-    segments
-  );
+  const lodLevels = getLODLevels();
 
   // Load Earth textures
   const dayTexture = textureLoader.load(
@@ -103,7 +95,7 @@ export function initEarth(
     () => console.warn('Night lights texture failed')
   );
 
-  // Earth shader material
+  // Earth shader material (shared across LOD levels)
   const earthMaterial = new THREE.ShaderMaterial({
     uniforms: {
       dayTexture: { value: dayTexture },
@@ -114,7 +106,21 @@ export function initEarth(
     fragmentShader: getFragmentShader(),
   });
 
-  const earth = new THREE.Mesh(earthGeometry, earthMaterial);
+  // Create Earth LOD with multiple detail levels
+  const earth = new THREE.LOD();
+  for (const level of lodLevels) {
+    const geometry = new THREE.SphereGeometry(
+      CONFIG.EARTH_RADIUS,
+      level.segments,
+      level.segments
+    );
+    const mesh = new THREE.Mesh(geometry, earthMaterial);
+    earth.addLevel(mesh, level.distance);
+  }
+
+  console.log(
+    `Earth LOD: ${lodLevels.map((l) => `${l.segments}seg@${l.distance}u`).join(', ')}`
+  );
 
   // Apply Earth's axial tilt (23.4 degrees on the Z-axis)
   const tiltRadians = (CONFIG.AXIAL_TILT * Math.PI) / 180;
@@ -122,12 +128,7 @@ export function initEarth(
 
   scene.add(earth);
 
-  // Clouds
-  const cloudsGeometry = new THREE.SphereGeometry(
-    CONFIG.CLOUD_RADIUS,
-    segments,
-    segments
-  );
+  // Clouds LOD with matching detail levels
   const cloudTexture = textureLoader.load(
     '/textures/earth_clouds.jpg',
     undefined,
@@ -139,7 +140,17 @@ export function initEarth(
     transparent: true,
     opacity: CONFIG.CLOUD_OPACITY,
   });
-  const clouds = new THREE.Mesh(cloudsGeometry, cloudsMaterial);
+
+  const clouds = new THREE.LOD();
+  for (const level of lodLevels) {
+    const geometry = new THREE.SphereGeometry(
+      CONFIG.CLOUD_RADIUS,
+      level.segments,
+      level.segments
+    );
+    const mesh = new THREE.Mesh(geometry, cloudsMaterial);
+    clouds.addLevel(mesh, level.distance);
+  }
 
   // Apply same tilt to clouds
   clouds.rotation.z = tiltRadians;
@@ -159,4 +170,12 @@ export function updateEarthRotation(
   // Preserve the axial tilt (z rotation) while updating y rotation
   earth.rotation.y = -(Math.PI / 2) - (userLongitude * Math.PI) / 180;
   clouds.rotation.y = earth.rotation.y;
+}
+
+export function updateEarthLOD(
+  earthObjects: EarthObjects,
+  camera: THREE.Camera
+): void {
+  earthObjects.earth.update(camera);
+  earthObjects.clouds.update(camera);
 }

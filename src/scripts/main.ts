@@ -3,6 +3,7 @@ import {
   initWebGL,
   initScene,
   initEarth,
+  updateEarthLOD,
   initLighting,
   initControls,
   setupCanvasTouchHandling,
@@ -201,6 +202,12 @@ function animate(): void {
     if (controls) controls.update();
     if (sceneObjects) {
       const { renderer, scene, camera } = sceneObjects;
+
+      // Update LOD levels based on camera distance
+      if (earthObjects) {
+        updateEarthLOD(earthObjects, camera);
+      }
+
       if (renderer && scene && camera) {
         renderer.render(scene, camera);
       }
