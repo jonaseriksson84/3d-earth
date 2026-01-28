@@ -418,6 +418,44 @@
   - All 115 tests pass
   - TypeScript compiles without errors
 
+### FEATURE-009: Add satellite orbit visualization with ISS tracking
+- **Status:** COMPLETED
+- **Date:** 2026-01-28
+- **Changes:** Implemented satellite orbit visualization with ISS, GPS, and Geostationary orbits:
+  - Created new `src/scripts/earth/satellites.ts` module with full TypeScript types:
+    - `SATELLITES` array with ISS (408km, 51.6° inclination, 92.68min period), GPS (20,200km, 55°), and Geostationary (35,786km, 0°) orbit data
+    - `calculateSatellitePosition()` computes satellite position using simplified circular orbit model with RAAN precession
+    - `generateOrbitPoints()` creates orbital track line geometry
+    - `initSatellites()` creates orbit lines and marker sprites for all satellites
+    - `updateSatellitePositions()` updates marker positions based on time and day of year
+    - `updateSatellitesRotation()` keeps orbits synced with Earth rotation
+    - `setSatellitesVisible()` toggles visibility
+  - Orbit visualization:
+    - ISS orbital path (red) at ~408km altitude with 51.6° inclination
+    - GPS orbital path (green) at ~20,200km altitude with 55° inclination
+    - Geostationary ring (blue) at ~35,786km in equatorial plane
+    - Semi-transparent orbit track lines (opacity 0.35) for unobtrusive display
+    - Satellite markers use canvas-generated sprites with glow effect
+    - Marker scale varies by altitude for visibility
+  - Orbital mechanics:
+    - Position calculated from orbital period, inclination, and RAAN precession
+    - ISS completes orbit every ~92.68 minutes
+    - RAAN slowly precesses based on day of year
+    - Geostationary orbit correctly stays in equatorial plane
+  - Earth's axial tilt applied to satellite group
+  - Added `SatelliteData` and `SatelliteState` interfaces to types.ts
+  - Added UI toggle checkbox "Show satellite orbits" (disabled by default)
+  - Updated index.ts exports and main.ts integration
+  - Added 18 unit tests for satellite calculations:
+    - SATELLITES constant validation
+    - Orbital radius verification
+    - Position periodicity (same position after one period)
+    - Geostationary equatorial plane check
+    - Orbit point generation and closed loop verification
+  - All 149 tests pass
+  - TypeScript compiles without errors
+  - Build completes successfully
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -454,3 +492,6 @@
 - [x] FEATURE-006: Add Moon visualization with orbital position and phases
 - [x] FEATURE-016: Add solstice and equinox preset buttons
 - [x] FEATURE-017: Highlight the day/night terminator line
+
+### Phase 9 - Advanced Features
+- [x] FEATURE-009: Add satellite orbit visualization with ISS tracking

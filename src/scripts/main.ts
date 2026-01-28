@@ -44,6 +44,11 @@ import {
   updateMoonPosition,
   setMoonVisible,
   updateSunTimesDisplay,
+  initSatellites,
+  updateSatellitePositions,
+  updateSatellitesRotation,
+  setSatellitesVisible,
+  getDayOfYear,
 } from './earth';
 import type {
   SceneObjects,
@@ -59,6 +64,7 @@ import type {
   CitySearchState,
   TerminatorState,
   MoonState,
+  SatelliteState,
   CityData,
 } from './earth';
 
@@ -76,6 +82,7 @@ let atmosphereState: AtmosphereState | null = null;
 let terminatorState: TerminatorState | null = null;
 let citySearchState: CitySearchState | null = null;
 let moonState: MoonState | null = null;
+let satelliteState: SatelliteState | null = null;
 let selectedCityForSunTimes: CityData | null = null;
 let lastSunTimesDate: string = '';
 
@@ -179,6 +186,14 @@ function animate(): void {
       updateMoonPosition(moonState, timeState.selectedDate, sunDir.x, sunDir.y, sunDir.z);
     }
 
+    // Update satellite positions
+    if (satelliteState && satelliteState.visible && earthObjects && timeState) {
+      const sliderMinutes = parseInt(timeState.timeSlider.value);
+      const dayOfYearVal = getDayOfYear(timeState.selectedDate);
+      updateSatellitePositions(satelliteState, sliderMinutes, dayOfYearVal);
+      updateSatellitesRotation(satelliteState, earthObjects.earth.rotation.y);
+    }
+
     if (controls) controls.update();
     if (sceneObjects) {
       const { renderer, scene, camera } = sceneObjects;
@@ -214,6 +229,7 @@ export function initApp(): void {
       atmosphereState = null;
       terminatorState = null;
       moonState = null;
+      satelliteState = null;
       citySearchState = null;
       selectedCityForSunTimes = null;
       lastSunTimesDate = '';
@@ -257,6 +273,9 @@ export function initApp(): void {
 
     // Initialize Moon (disabled by default)
     moonState = initMoon(sceneObjects);
+
+    // Initialize satellite orbits (disabled by default)
+    satelliteState = initSatellites(sceneObjects);
 
     // Set up marker toggle
     const markerToggle = document.getElementById('markerToggle') as HTMLInputElement | null;
@@ -380,6 +399,23 @@ export function initApp(): void {
               sunDir.y,
               sunDir.z
             );
+          }
+        }
+      });
+    }
+
+    // Set up satellite toggle
+    const satelliteToggle = document.getElementById('satelliteToggle') as HTMLInputElement | null;
+    if (satelliteToggle) {
+      satelliteToggle.addEventListener('change', (event: Event) => {
+        const target = event.target as HTMLInputElement;
+        if (satelliteState) {
+          setSatellitesVisible(satelliteState, target.checked);
+          // Immediately update positions when enabled
+          if (target.checked && timeState) {
+            const sliderMinutes = parseInt(timeState.timeSlider.value);
+            const dayOfYearVal = getDayOfYear(timeState.selectedDate);
+            updateSatellitePositions(satelliteState, sliderMinutes, dayOfYearVal);
           }
         }
       });

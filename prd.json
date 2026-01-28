@@ -403,7 +403,7 @@
         "Option to add geostationary orbit ring (35,786 km altitude)",
         "Performance impact less than 2ms per frame with orbits enabled"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "FEATURE-010",

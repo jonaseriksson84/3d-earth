@@ -118,6 +118,23 @@ export interface MoonState {
   visible: boolean;
 }
 
+export interface SatelliteData {
+  name: string;
+  altitudeKm: number;
+  inclination: number;
+  periodMinutes: number;
+  color: number;
+  description: string;
+}
+
+export interface SatelliteState {
+  group: THREE.Group;
+  orbitLines: THREE.Line[];
+  markers: THREE.Sprite[];
+  visible: boolean;
+  tooltip: HTMLDivElement | null;
+}
+
 export interface FlyToState {
   isAnimating: boolean;
   startPosition: THREE.Vector3;
