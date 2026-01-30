@@ -1,7 +1,21 @@
+/**
+ * Scene lighting setup for the Earth visualization.
+ *
+ * Creates ambient fill light and a directional sun light.
+ *
+ * @module lighting
+ */
+
 import * as THREE from 'three';
 import { CONFIG } from './config';
 import type { LightingObjects, SceneObjects } from './types';
 
+/**
+ * Initializes scene lighting with ambient fill and directional sunlight.
+ *
+ * @param sceneObjects - Core scene objects to add lights to
+ * @returns The created ambient and directional light objects
+ */
 export function initLighting(sceneObjects: SceneObjects): LightingObjects {
   const { scene } = sceneObjects;
 

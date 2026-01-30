@@ -30,6 +30,9 @@ pnpm-debug.log*
 # typescript
 *.tsbuildinfo
 
+# generated docs
+docs/
+
 # Cloudflare
 .wrangler/
 

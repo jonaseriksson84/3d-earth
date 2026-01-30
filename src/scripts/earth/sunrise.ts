@@ -1,11 +1,27 @@
+/**
+ * Sunrise and sunset calculation using NOAA solar algorithms.
+ *
+ * Computes sunrise/sunset times for any location and date,
+ * handles polar day/night conditions, and provides UI display helpers.
+ *
+ * @module sunrise
+ */
+
 import { getDayOfYear } from './astronomy';
 import type { CityData } from './types';
 
+/**
+ * Sunrise and sunset times for a location, with polar condition flags.
+ */
 export interface SunTimes {
-  sunrise: string | null; // HH:MM format or null for polar day/night
+  /** Sunrise time in "HH:MM" format, or null for polar conditions */
+  sunrise: string | null;
+  /** Sunset time in "HH:MM" format, or null for polar conditions */
   sunset: string | null;
-  polarDay: boolean; // Sun never sets
-  polarNight: boolean; // Sun never rises
+  /** True when the sun never sets (midnight sun) */
+  polarDay: boolean;
+  /** True when the sun never rises (polar night) */
+  polarNight: boolean;
 }
 
 /**
@@ -100,7 +116,11 @@ function formatMinutesToTime(minutes: number): string {
 }
 
 /**
- * Format sun times for display in a tooltip.
+ * Formats sun times for compact display in a marker tooltip.
+ * Returns "↑HH:MM ↓HH:MM" for normal days, or polar condition text.
+ *
+ * @param sunTimes - Calculated sunrise/sunset data
+ * @returns Formatted string for tooltip display
  */
 export function formatSunTimesForTooltip(sunTimes: SunTimes): string {
   if (sunTimes.polarDay) return 'Polar day (no sunset)';
@@ -109,8 +129,14 @@ export function formatSunTimesForTooltip(sunTimes: SunTimes): string {
 }
 
 /**
- * Update the sunrise/sunset info panel in the UI.
+ * Updates the sunrise/sunset info panel in the UI.
  * Shows sun times for the user's location and optionally a selected city.
+ *
+ * @param userLat - User's latitude in degrees
+ * @param userLon - User's longitude in degrees
+ * @param date - Date to calculate sun times for
+ * @param userTimezone - User's UTC timezone offset in hours
+ * @param selectedCity - Optional city to show additional sun times for
  */
 export function updateSunTimesDisplay(
   userLat: number,

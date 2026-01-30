@@ -1,6 +1,28 @@
+/**
+ * Astronomical calculations for sun position using NOAA solar equations.
+ *
+ * Provides day-of-year calculation, sun position in 3D space based on
+ * equation of time and solar declination, and scene lighting updates.
+ *
+ * @module astronomy
+ */
+
 import { CONFIG } from './config';
 import type { EarthObjects, LightingObjects } from './types';
 
+/**
+ * Calculates the day of the year (1–366) for a given date.
+ * Falls back to January 1st on invalid input.
+ *
+ * @param date - The date to calculate for
+ * @returns Day number (1 = Jan 1, 365/366 = Dec 31)
+ *
+ * @example
+ * ```ts
+ * getDayOfYear(new Date(2026, 0, 1)); // 1
+ * getDayOfYear(new Date(2026, 11, 31)); // 365
+ * ```
+ */
 export function getDayOfYear(date: Date): number {
   try {
     if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
@@ -28,12 +50,26 @@ export function getDayOfYear(date: Date): number {
   }
 }
 
+/**
+ * Normalized 3D direction vector representing the sun's position.
+ */
 export interface SunPosition {
+  /** X component of the sun direction vector */
   x: number;
+  /** Y component of the sun direction vector */
   y: number;
+  /** Z component of the sun direction vector */
   z: number;
 }
 
+/**
+ * Calculates the sun's 3D position using NOAA equation of time and solar declination.
+ * Converts time-of-day and date into a normalized direction vector in Earth's local space.
+ *
+ * @param sliderMinutes - Time of day in minutes from local midnight (0–1439)
+ * @param selectedDate - Date to calculate for; defaults to current date
+ * @returns Object containing the sun position vector and the resolved Date
+ */
 export function calculateSunPosition(
   sliderMinutes: number,
   selectedDate?: Date
@@ -88,6 +124,15 @@ export function calculateSunPosition(
   return { position: { x, y, z }, date: now };
 }
 
+/**
+ * Updates the scene's sun position, directional light, and Earth shader uniform.
+ *
+ * @param sliderMinutes - Time of day in minutes from local midnight (0–1439)
+ * @param earthObjects - Earth objects containing the shader material to update
+ * @param lightingObjects - Lighting objects to reposition the sun light
+ * @param selectedDate - Date to calculate for; defaults to current date
+ * @returns The resolved Date object used for the calculation
+ */
 export function updateSunPosition(
   sliderMinutes: number,
   earthObjects: EarthObjects,

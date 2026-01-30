@@ -1,3 +1,12 @@
+/**
+ * Reference line visualization for Earth's axis and latitude circles.
+ *
+ * Renders semi-transparent lines for the rotational axis, equator,
+ * Arctic Circle, and Antarctic Circle.
+ *
+ * @module reflines
+ */
+
 import * as THREE from 'three';
 import { CONFIG } from './config';
 import type { SceneObjects, ReferenceLinesState } from './types';
@@ -64,7 +73,12 @@ function createAxisLine(radius: number): THREE.Line {
 }
 
 /**
- * Initialize reference lines (axis and latitude circles)
+ * Initializes reference lines including the rotational axis, equator,
+ * Arctic Circle (66.5°N), and Antarctic Circle (66.5°S).
+ * Lines are hidden by default and share Earth's axial tilt.
+ *
+ * @param sceneObjects - Core scene objects to add reference lines to
+ * @returns Reference lines state with group and visibility flag
  */
 export function initReferenceLines(
   sceneObjects: SceneObjects
@@ -107,7 +121,10 @@ export function initReferenceLines(
 }
 
 /**
- * Update reference lines rotation to match Earth
+ * Syncs reference lines rotation with Earth's Y-axis rotation.
+ *
+ * @param state - Reference lines state to update
+ * @param earthRotationY - Current Earth Y rotation in radians
  */
 export function updateReferenceLinesRotation(
   state: ReferenceLinesState,
@@ -117,7 +134,10 @@ export function updateReferenceLinesRotation(
 }
 
 /**
- * Set visibility of reference lines
+ * Sets visibility of all reference lines.
+ *
+ * @param state - Reference lines state to update
+ * @param visible - Whether reference lines should be visible
  */
 export function setReferenceLinesVisible(
   state: ReferenceLinesState,

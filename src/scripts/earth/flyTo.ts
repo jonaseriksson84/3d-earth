@@ -1,3 +1,12 @@
+/**
+ * Fly-to camera animation for navigating to city markers.
+ *
+ * Provides smooth spherical interpolation (slerp) camera animation
+ * with ease-in-out cubic easing and interruptible behavior.
+ *
+ * @module flyTo
+ */
+
 import * as THREE from 'three';
 import type { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { CONFIG } from './config';
@@ -12,7 +21,9 @@ function easeInOutCubic(t: number): number {
 }
 
 /**
- * Create initial fly-to state
+ * Creates the initial fly-to animation state (not animating).
+ *
+ * @returns Initialized fly-to state with default values
  */
 export function createFlyToState(): FlyToState {
   return {
@@ -40,7 +51,14 @@ function calculateCameraPosition(
 }
 
 /**
- * Start fly-to animation to a city
+ * Starts a fly-to camera animation toward a city's geographic position.
+ * Disables OrbitControls during the animation.
+ * Duration scales with angular distance (2–3 seconds).
+ *
+ * @param cityData - Target city with lat/lon coordinates
+ * @param sceneObjects - Scene objects for camera access
+ * @param flyToState - Mutable animation state to configure
+ * @param controls - OrbitControls to disable during animation
  */
 export function startFlyTo(
   cityData: CityData,
@@ -86,8 +104,13 @@ export function startFlyTo(
 }
 
 /**
- * Update fly-to animation each frame
- * Returns true if animation is complete
+ * Updates the fly-to animation each frame using spherical interpolation.
+ * Re-enables OrbitControls when the animation completes.
+ *
+ * @param flyToState - Animation state with start/end positions and timing
+ * @param sceneObjects - Scene objects for camera position updates
+ * @param controls - OrbitControls to re-enable on completion
+ * @returns `true` if the animation completed this frame, `false` otherwise
  */
 export function updateFlyTo(
   flyToState: FlyToState,
@@ -138,7 +161,10 @@ export function updateFlyTo(
 }
 
 /**
- * Cancel any in-progress fly-to animation
+ * Cancels any in-progress fly-to animation and re-enables OrbitControls.
+ *
+ * @param flyToState - Animation state to cancel
+ * @param controls - OrbitControls to re-enable
  */
 export function cancelFlyTo(
   flyToState: FlyToState,
@@ -152,15 +178,21 @@ export function cancelFlyTo(
 }
 
 /**
- * Check if fly-to animation is currently active
+ * Checks whether a fly-to animation is currently active.
+ *
+ * @param flyToState - Animation state to check
+ * @returns `true` if an animation is in progress
  */
 export function isFlyingTo(flyToState: FlyToState): boolean {
   return flyToState.isAnimating;
 }
 
 /**
- * Determine whether a mousedown target should cancel an in-progress fly-to.
- * Only canvas clicks (i.e. globe interaction) should cancel; UI element clicks should not.
+ * Determines whether a mousedown target should cancel an in-progress fly-to.
+ * Only canvas clicks (globe interaction) cancel; UI element clicks do not.
+ *
+ * @param target - The event target from the mousedown event
+ * @returns `true` if the target is a canvas element
  */
 export function shouldCancelFlyTo(target: EventTarget | null): boolean {
   if (!target || !(target instanceof HTMLElement)) return false;

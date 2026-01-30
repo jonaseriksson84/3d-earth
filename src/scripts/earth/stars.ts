@@ -1,10 +1,26 @@
+/**
+ * Star field background for immersive space environment.
+ *
+ * Creates a particle system of points distributed uniformly on a large sphere
+ * surrounding the Earth scene.
+ *
+ * @module stars
+ */
+
 import * as THREE from 'three';
 import type { SceneObjects } from './types';
 
+/**
+ * Configuration for the star field particle system.
+ */
 export interface StarsConfig {
+  /** Number of star particles to generate */
   count: number;
+  /** Radius of the sphere on which stars are placed (scene units) */
   radius: number;
+  /** Visual size of each star particle */
   size: number;
+  /** Whether star size scales with camera distance */
   sizeAttenuation: boolean;
 }
 
@@ -16,8 +32,11 @@ const STARS_CONFIG: StarsConfig = {
 };
 
 /**
- * Creates a star field using THREE.Points for efficient rendering
- * Stars are distributed on a large sphere surrounding the scene
+ * Creates a star field using THREE.Points for efficient rendering.
+ * Stars are uniformly distributed on a large sphere surrounding the scene.
+ *
+ * @param sceneObjects - Core scene objects to add the star field to
+ * @returns The created Points object representing the star field
  */
 export function initStars(sceneObjects: SceneObjects): THREE.Points {
   const { scene } = sceneObjects;

@@ -1,3 +1,12 @@
+/**
+ * Atmospheric glow effect using Fresnel shader for Earth's limb.
+ *
+ * Creates a subtle blue halo around Earth simulating atmospheric scattering
+ * as seen from space, using a back-face rendered sphere with additive blending.
+ *
+ * @module atmosphere
+ */
+
 import * as THREE from 'three';
 import { CONFIG } from './config';
 import type { AtmosphereState, SceneObjects } from './types';
@@ -49,6 +58,9 @@ function getAtmosphereFragmentShader(): string {
 /**
  * Initializes the atmospheric glow effect around Earth.
  * Creates a slightly larger sphere with Fresnel shader for limb glow.
+ *
+ * @param sceneObjects - Core scene objects to add the atmosphere to
+ * @returns Atmosphere state with mesh, material, and visibility flag
  */
 export function initAtmosphere(sceneObjects: SceneObjects): AtmosphereState {
   const { scene } = sceneObjects;
@@ -104,7 +116,10 @@ export function initAtmosphere(sceneObjects: SceneObjects): AtmosphereState {
 }
 
 /**
- * Updates atmosphere rotation to match Earth rotation.
+ * Syncs atmosphere rotation with Earth's Y-axis rotation.
+ *
+ * @param atmosphere - Atmosphere state to update
+ * @param earthRotationY - Current Earth Y rotation in radians
  */
 export function updateAtmosphereRotation(
   atmosphere: AtmosphereState,
@@ -115,6 +130,9 @@ export function updateAtmosphereRotation(
 
 /**
  * Toggles visibility of the atmospheric glow effect.
+ *
+ * @param atmosphere - Atmosphere state to update
+ * @param visible - Whether the atmosphere should be visible
  */
 export function setAtmosphereVisible(
   atmosphere: AtmosphereState,

@@ -827,7 +827,7 @@
         "Generated docs deployable as static site",
         "Minimum 90% of exports documented"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "IMPROVEMENT-006",

@@ -1,9 +1,21 @@
+/**
+ * City marker system for displaying interactive location markers on Earth.
+ *
+ * Manages 55+ city markers with tooltips, local time calculation,
+ * city search with autocomplete, and user location markers.
+ *
+ * @module markers
+ */
+
 import * as THREE from 'three';
 import { CONFIG } from './config';
 import type { SceneObjects, LocationState, CityData, MarkerState, CitySearchState } from './types';
 import { calculateSunriseSunset, formatSunTimesForTooltip } from './sunrise';
 
-// Major world cities with coordinates and timezone offsets
+/**
+ * Array of 55+ major world cities with geographic coordinates and UTC timezone offsets.
+ * Spans all continents: Europe, North/South America, Asia, Africa, and Oceania.
+ */
 export const CITIES: CityData[] = [
   // Europe
   { name: 'London', lat: 51.5074, lon: -0.1278, timezone: 0 },
@@ -69,7 +81,17 @@ export const CITIES: CityData[] = [
 ];
 
 /**
- * Convert latitude/longitude to 3D position on sphere
+ * Converts latitude/longitude coordinates to a 3D position on a sphere.
+ *
+ * @param lat - Latitude in degrees (-90 to 90)
+ * @param lon - Longitude in degrees (-180 to 180)
+ * @param radius - Sphere radius in scene units
+ * @returns 3D position vector on the sphere surface
+ *
+ * @example
+ * ```ts
+ * const pos = latLonToPosition(51.5, -0.12, 5); // London on radius-5 sphere
+ * ```
  */
 export function latLonToPosition(
   lat: number,
@@ -186,7 +208,12 @@ function createTooltip(): HTMLDivElement {
 }
 
 /**
- * Calculate local time for a city based on slider position
+ * Calculates local time for a city based on the time slider position.
+ * Converts from the user's local timezone through UTC to the target timezone.
+ *
+ * @param sliderMinutes - Time slider value in minutes from local midnight (0–1439)
+ * @param timezoneOffset - Target city's UTC offset in hours (e.g., -5 for EST)
+ * @returns Formatted time string in "HH:MM" format
  */
 export function calculateLocalTime(
   sliderMinutes: number,
@@ -214,7 +241,11 @@ export function calculateLocalTime(
 }
 
 /**
- * Initialize the marker system
+ * Initializes the city marker system with sprites for all cities.
+ * Creates a group with Earth's axial tilt and populates it with marker sprites.
+ *
+ * @param sceneObjects - Core scene objects to add the marker group to
+ * @returns Initialized marker state with all city sprites and tooltip element
  */
 export function initMarkers(sceneObjects: SceneObjects): MarkerState {
   const markersGroup = new THREE.Group();
@@ -251,7 +282,11 @@ export function initMarkers(sceneObjects: SceneObjects): MarkerState {
 }
 
 /**
- * Add or update the user's location marker
+ * Adds or updates the user's location marker on the globe.
+ * The user marker is visually distinct (green with ring design).
+ *
+ * @param markerState - Marker state containing the markers group
+ * @param locationState - User's current geolocation coordinates
  */
 export function updateUserMarker(
   markerState: MarkerState,
@@ -283,7 +318,11 @@ export function updateUserMarker(
 }
 
 /**
- * Toggle markers visibility
+ * Toggles visibility of all city and user markers.
+ * Hides the tooltip when markers are hidden.
+ *
+ * @param markerState - Marker state to update
+ * @param visible - Whether markers should be visible
  */
 export function setMarkersVisible(
   markerState: MarkerState,
@@ -297,7 +336,14 @@ export function setMarkersVisible(
 }
 
 /**
- * Handle mouse move for tooltip display
+ * Handles mouse movement for marker tooltip display and cursor styling.
+ * Shows tooltip with city info when hovering over a marker, hides on empty space.
+ *
+ * @param event - Mouse move event with screen coordinates
+ * @param sceneObjects - Scene objects for raycasting
+ * @param markerState - Marker state with sprites and tooltip element
+ * @param sliderMinutes - Current time slider value for local time calculation
+ * @param selectedDate - Currently selected date for sunrise/sunset calculation
  */
 export function handleMarkerHover(
   event: MouseEvent,
@@ -331,7 +377,11 @@ export function handleMarkerHover(
 }
 
 /**
- * Update markers to rotate with the Earth
+ * Syncs the markers group rotation with the Earth's Y-axis rotation.
+ * Should be called each frame to keep markers at correct geographic positions.
+ *
+ * @param markerState - Marker state with the markers group
+ * @param earthRotationY - Current Earth Y rotation in radians
  */
 export function updateMarkersRotation(
   markerState: MarkerState,
@@ -341,8 +391,12 @@ export function updateMarkersRotation(
 }
 
 /**
- * Handle click on city markers
- * Returns the city data if a marker was clicked, null otherwise
+ * Handles click events on city markers using raycasting.
+ *
+ * @param event - Mouse click event with screen coordinates
+ * @param sceneObjects - Scene objects for raycasting
+ * @param markerState - Marker state with sprites to test
+ * @returns The clicked city's data, or null if no marker was hit
  */
 export function handleMarkerClick(
   event: MouseEvent,
@@ -381,8 +435,14 @@ export function handleMarkerClick(
 }
 
 /**
- * Detect a marker at the given screen coordinates (used for touch events).
- * Returns the CityData if a marker is found at those coordinates, null otherwise.
+ * Detects a marker at the given screen coordinates using raycasting.
+ * Used by both mouse hover and touch tap handlers.
+ *
+ * @param clientX - Screen X coordinate in pixels
+ * @param clientY - Screen Y coordinate in pixels
+ * @param sceneObjects - Scene objects for raycasting
+ * @param markerState - Marker state with sprites to test
+ * @returns The city data if a marker was found, or null
  */
 export function detectMarkerAtPosition(
   clientX: number,
@@ -420,8 +480,15 @@ export function detectMarkerAtPosition(
 }
 
 /**
- * Show the marker tooltip at a given screen position.
- * Used by both mouse hover and touch tap.
+ * Shows the marker tooltip at a given screen position with city info.
+ * Displays city name, local time, sunrise/sunset times, and a fly-to hint.
+ *
+ * @param cityData - City data to display in the tooltip
+ * @param clientX - Screen X coordinate for tooltip positioning
+ * @param clientY - Screen Y coordinate for tooltip positioning
+ * @param markerState - Marker state containing the tooltip element
+ * @param sliderMinutes - Current time slider value for local time calculation
+ * @param selectedDate - Currently selected date for sunrise/sunset calculation
  */
 export function showMarkerTooltip(
   cityData: CityData,
@@ -451,7 +518,9 @@ export function showMarkerTooltip(
 }
 
 /**
- * Hide the marker tooltip.
+ * Hides the marker tooltip.
+ *
+ * @param markerState - Marker state containing the tooltip element
  */
 export function hideMarkerTooltip(markerState: MarkerState): void {
   if (markerState.tooltip) {
@@ -460,7 +529,10 @@ export function hideMarkerTooltip(markerState: MarkerState): void {
 }
 
 /**
- * Search cities by name (case-insensitive, partial match)
+ * Searches cities by name with case-insensitive partial matching.
+ *
+ * @param query - Search query string
+ * @returns Array of matching cities (empty for blank queries)
  */
 export function searchCities(query: string): CityData[] {
   if (!query.trim()) return [];
@@ -469,7 +541,9 @@ export function searchCities(query: string): CityData[] {
 }
 
 /**
- * Initialize the city search UI
+ * Initializes the city search UI by finding required DOM elements.
+ *
+ * @returns Search state with DOM references, or null if elements are missing
  */
 export function initCitySearch(): CitySearchState | null {
   const input = document.getElementById('citySearch') as HTMLInputElement | null;
@@ -488,7 +562,12 @@ export function initCitySearch(): CitySearchState | null {
 }
 
 /**
- * Update the search results dropdown
+ * Updates the search results dropdown with matching cities.
+ * Shows up to 8 results. Hides dropdown for empty queries.
+ *
+ * @param searchState - Search UI state with DOM elements
+ * @param query - Current search input value
+ * @param onSelect - Callback invoked when a result is clicked
  */
 export function updateSearchResults(
   searchState: CitySearchState,
@@ -547,8 +626,13 @@ function updateActiveHighlight(searchState: CitySearchState): void {
 }
 
 /**
- * Handle keyboard navigation in the city search dropdown.
- * Returns the selected city on Enter, or null otherwise.
+ * Handles keyboard navigation (ArrowUp/Down/Enter) in the city search dropdown.
+ *
+ * @param key - The pressed key name
+ * @param searchState - Search UI state for updating active index
+ * @param matches - Currently displayed search results
+ * @param onSelect - Callback invoked when Enter selects a city
+ * @returns The selected city on Enter, or null for arrow key navigation
  */
 export function handleSearchKeydown(
   key: string,
@@ -583,7 +667,9 @@ export function handleSearchKeydown(
 }
 
 /**
- * Clear the search input and results
+ * Clears the search input text, hides results dropdown, and hides clear button.
+ *
+ * @param searchState - Search UI state to reset
  */
 export function clearCitySearch(searchState: CitySearchState): void {
   searchState.input.value = '';

@@ -1,0 +1,12 @@
+{
+  "entryPoints": ["src/scripts/earth/index.ts", "src/scripts/main.ts"],
+  "out": "docs",
+  "name": "3D Earth Visualization API",
+  "readme": "none",
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "includeVersion": true,
+  "categorizeByGroup": true,
+  "sort": ["source-order"],
+  "tsconfig": "tsconfig.json"
+}

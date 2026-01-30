@@ -1,5 +1,23 @@
+/**
+ * Global configuration constants for the Earth visualization.
+ *
+ * Contains all tunable parameters for Earth geometry, camera, lighting,
+ * atmosphere effects, LOD thresholds, and default location.
+ *
+ * @module config
+ */
+
 import type { EarthConfig } from './types';
 
+/**
+ * Application-wide configuration object with all rendering and behavior constants.
+ *
+ * @example
+ * ```ts
+ * import { CONFIG } from './config';
+ * const sphere = new THREE.SphereGeometry(CONFIG.EARTH_RADIUS, 64, 64);
+ * ```
+ */
 export const CONFIG: EarthConfig = {
   // Earth physical properties
   EARTH_RADIUS: 5,

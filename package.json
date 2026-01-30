@@ -10,7 +10,9 @@
     "typecheck": "astro check && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "docs": "typedoc",
+    "docs:watch": "typedoc --watch"
   },
   "dependencies": {
     "astro": "^5.16.15",
@@ -21,6 +23,7 @@
     "@types/three": "^0.128.0",
     "@vitest/coverage-v8": "^2.1.0",
     "jsdom": "^27.4.0",
+    "typedoc": "^0.28.16",
     "typescript": "^5.8.3",
     "vitest": "^2.1.0"
   }

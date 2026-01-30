@@ -1,7 +1,21 @@
+/**
+ * Browser geolocation handling for detecting the user's position.
+ *
+ * Falls back to default coordinates (Stockholm) when geolocation is
+ * unavailable or denied.
+ *
+ * @module geolocation
+ */
+
 import { CONFIG } from './config';
 import type { LocationState, EarthObjects } from './types';
 import { updateEarthRotation } from './earth';
 
+/**
+ * Creates the initial location state with default coordinates.
+ *
+ * @returns Location state initialized to default longitude/latitude from CONFIG
+ */
 export function createLocationState(): LocationState {
   return {
     userLongitude: CONFIG.DEFAULT_LONGITUDE,
@@ -9,6 +23,13 @@ export function createLocationState(): LocationState {
   };
 }
 
+/**
+ * Requests the user's geolocation and updates Earth rotation to center their position.
+ * Falls back to default coordinates on failure or if geolocation is unsupported.
+ *
+ * @param locationState - Mutable state to update with detected coordinates
+ * @param earthObjects - Earth objects to rotate based on user longitude
+ */
 export function getLocation(
   locationState: LocationState,
   earthObjects: EarthObjects

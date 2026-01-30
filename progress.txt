@@ -525,6 +525,24 @@
   - TypeScript compiles without errors
   - Build completes successfully
 
+### IMPROVEMENT-005: Add JSDoc documentation for all modules
+- **Status:** COMPLETED
+- **Date:** 2026-01-30
+- **Changes:** Added comprehensive JSDoc/TSDoc documentation to all 21 source modules and configured TypeDoc:
+  - Added `@module` header documentation to all modules: types.ts, config.ts, scene.ts, earth.ts, lighting.ts, astronomy.ts, controls.ts, geolocation.ts, ui.ts, markers.ts, stars.ts, reflines.ts, loading.ts, flyTo.ts, atmosphere.ts, terminator.ts, moon.ts, sunrise.ts, satellites.ts, main.ts, index.ts
+  - Added `@param` and `@returns` tags to all exported functions across all modules
+  - Added property descriptions to all interfaces in types.ts (19 interfaces)
+  - Added property descriptions to SunTimes, StarsConfig, and SatelliteData interfaces
+  - Added `@example` code snippets for complex functions (latLonToPosition, getDayOfYear, CONFIG)
+  - Added `@throws` tags where applicable (checkWebGLSupport, initWebGL)
+  - Installed TypeDoc as dev dependency
+  - Created `typedoc.json` configuration with entry points, output directory, and sorting options
+  - Added `pnpm docs` and `pnpm docs:watch` scripts to package.json
+  - TypeDoc successfully generates HTML documentation to `./docs` directory
+  - 100% of exported functions, interfaces, and constants are documented
+  - All 153 tests pass
+  - TypeScript compiles without errors
+
 ### PERF-001: Implement Level-of-Detail (LOD) for Earth mesh
 - **Status:** COMPLETED
 - **Date:** 2026-01-28
@@ -592,6 +610,9 @@
 ### Phase 10 - Accessibility & Documentation
 - [x] IMPROVEMENT-003: Optimize mobile touch gesture handling
 - [x] IMPROVEMENT-004: Add accessibility features
+
+### Phase 10 - Accessibility & Documentation (continued)
+- [x] IMPROVEMENT-005: Add JSDoc documentation for all modules
 
 ### Phase 11 - Performance & Future-proofing
 - [x] PERF-001: Implement Level-of-Detail (LOD) for Earth mesh

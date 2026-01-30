@@ -1,7 +1,21 @@
+/**
+ * Scene initialization and WebGL support detection.
+ *
+ * Handles creating the Three.js scene, camera, and renderer,
+ * as well as checking for WebGL support and displaying error messages.
+ *
+ * @module scene
+ */
+
 import * as THREE from 'three';
 import { CONFIG } from './config';
 import type { SceneObjects } from './types';
 
+/**
+ * Checks whether the browser supports WebGL rendering.
+ *
+ * @returns `true` if WebGL or experimental-webgl context can be created
+ */
 export function checkWebGLSupport(): boolean {
   try {
     const canvas = document.createElement('canvas');
@@ -14,6 +28,13 @@ export function checkWebGLSupport(): boolean {
   }
 }
 
+/**
+ * Displays a full-screen error message to the user.
+ * Uses safe DOM manipulation (textContent) to prevent XSS.
+ *
+ * @param title - Error heading text
+ * @param message - Descriptive error message
+ */
 export function showError(title: string, message: string): void {
   // Clear existing content safely
   document.body.textContent = '';
@@ -36,6 +57,12 @@ export function showError(title: string, message: string): void {
   document.body.appendChild(container);
 }
 
+/**
+ * Verifies WebGL support and throws if unavailable.
+ * Displays a user-facing error message before throwing.
+ *
+ * @throws {Error} If WebGL is not supported by the browser
+ */
 export function initWebGL(): void {
   if (!checkWebGLSupport()) {
     showError(
@@ -46,6 +73,13 @@ export function initWebGL(): void {
   }
 }
 
+/**
+ * Creates and configures the Three.js scene, camera, and WebGL renderer.
+ * Appends the renderer's canvas to the document body with accessibility attributes.
+ *
+ * @returns Initialized scene objects (scene, camera, renderer)
+ * @throws {Error} If the WebGL renderer cannot be created
+ */
 export function initScene(): SceneObjects {
   try {
     const scene = new THREE.Scene();

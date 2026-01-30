@@ -1,4 +1,11 @@
-// Re-export all modules for convenient imports
+/**
+ * Barrel re-export module for the Earth visualization library.
+ *
+ * Provides a single import point for all types, configuration, and functions
+ * used in the 3D Earth visualization application.
+ *
+ * @module earth
+ */
 export * from './types';
 export * from './config';
 export * from './scene';

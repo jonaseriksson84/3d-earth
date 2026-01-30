@@ -1,7 +1,23 @@
+/**
+ * UI controls for time slider, date picker, playback, and astronomical presets.
+ *
+ * Manages user input for time-of-day and date selection, play/pause animation,
+ * keyboard shortcuts, and solstice/equinox preset buttons.
+ *
+ * @module ui
+ */
+
 import { CONFIG } from './config';
 import type { TimeState, EarthObjects, LightingObjects, SceneObjects } from './types';
 import { updateSunPosition } from './astronomy';
 
+/**
+ * Updates the time display element with local and UTC time strings.
+ * Also updates the slider's aria-valuetext for screen reader accessibility.
+ *
+ * @param now - The current Date to display
+ * @param timeDisplayElement - Cached DOM element to update (may be null)
+ */
 export function updateTimeDisplay(
   now: Date,
   timeDisplayElement: HTMLElement | null
@@ -35,6 +51,12 @@ export function updateTimeDisplay(
   }
 }
 
+/**
+ * Creates the initial time state with default values.
+ * Playback starts paused at 60x speed.
+ *
+ * @returns Initialized time state with null DOM references (set during initTimeControls)
+ */
 export function createTimeState(): TimeState {
   const today = new Date();
   return {
@@ -71,8 +93,11 @@ function parseDateFromInput(dateString: string): Date {
 }
 
 /**
- * Get solstice and equinox dates for a given year.
+ * Gets solstice and equinox dates for a given year.
  * Uses approximate dates that are accurate for most years.
+ *
+ * @param year - The calendar year to generate preset dates for
+ * @returns Array of preset objects with DOM element ID and corresponding Date
  */
 export function getAstronomicalPresets(year: number): { id: string; date: Date }[] {
   return [
@@ -109,7 +134,7 @@ function updatePresetActiveState(activeId: string): void {
 }
 
 /**
- * Clear active state from all preset buttons
+ * Clears the active/highlighted state from all astronomical preset buttons.
  */
 export function clearPresetActiveState(): void {
   const presets = getAstronomicalPresets(new Date().getFullYear());
@@ -122,7 +147,10 @@ export function clearPresetActiveState(): void {
 }
 
 /**
- * Toggle play/pause state
+ * Toggles time playback between playing and paused.
+ * Syncs currentTime from the slider when starting playback.
+ *
+ * @param timeState - Mutable time state to toggle
  */
 export function togglePlayback(timeState: TimeState): void {
   timeState.isPlaying = !timeState.isPlaying;
@@ -135,14 +163,21 @@ export function togglePlayback(timeState: TimeState): void {
 }
 
 /**
- * Set playback speed
+ * Sets the playback speed multiplier.
+ *
+ * @param timeState - Mutable time state to update
+ * @param speed - Speed multiplier (1, 10, 60, or 360)
  */
 export function setPlaybackSpeed(timeState: TimeState, speed: number): void {
   timeState.playbackSpeed = speed;
 }
 
 /**
- * Step time forward or backward
+ * Steps the time forward or backward by one slider increment.
+ * Wraps around at day boundaries (midnight).
+ *
+ * @param timeState - Mutable time state to update
+ * @param direction - Step direction: 1 for forward, -1 for backward
  */
 export function stepTime(timeState: TimeState, direction: number): void {
   const currentValue = parseInt(timeState.timeSlider.value);
@@ -180,7 +215,10 @@ function updatePlaybackUI(isPlaying: boolean): void {
 }
 
 /**
- * Handle time progression during playback
+ * Advances time during active playback based on elapsed real time and speed multiplier.
+ * Should be called each animation frame. No-op when playback is paused.
+ *
+ * @param timeState - Mutable time state to advance
  */
 export function updatePlayback(timeState: TimeState): void {
   if (!timeState.isPlaying) return;
@@ -210,6 +248,15 @@ export function updatePlayback(timeState: TimeState): void {
   }
 }
 
+/**
+ * Initializes all time-related UI controls including the time slider, date picker,
+ * cloud toggle, play/pause button, speed selector, preset buttons, and keyboard shortcuts.
+ *
+ * @param timeState - Mutable time state to bind to UI elements
+ * @param earthObjects - Earth objects for cloud visibility toggling
+ * @param _lightingObjects - Lighting objects (currently unused, reserved for future use)
+ * @throws {Error} If required UI elements (timeSlider, datePicker, cloudToggle) are not found
+ */
 export function initTimeControls(
   timeState: TimeState,
   earthObjects: EarthObjects,
@@ -349,6 +396,14 @@ export function initTimeControls(
   });
 }
 
+/**
+ * Checks for time or date changes and updates the sun position if needed.
+ * Called each animation frame for efficient change detection.
+ *
+ * @param timeState - Time state with slider value and change-detection flags
+ * @param earthObjects - Earth objects with shader material to update
+ * @param lightingObjects - Lighting objects to reposition
+ */
 export function handleSunUpdate(
   timeState: TimeState,
   earthObjects: EarthObjects,
@@ -372,6 +427,12 @@ export function handleSunUpdate(
   }
 }
 
+/**
+ * Sets up global event listeners for window resize handling.
+ * Updates camera aspect ratio and renderer size on resize.
+ *
+ * @param sceneObjects - Scene objects containing camera and renderer to update
+ */
 export function initEventListeners(sceneObjects: SceneObjects): void {
   const { camera, renderer } = sceneObjects;
 

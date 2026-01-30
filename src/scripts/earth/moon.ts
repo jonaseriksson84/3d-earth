@@ -1,3 +1,13 @@
+/**
+ * Moon visualization with orbital position and phase-accurate lighting.
+ *
+ * Calculates the Moon's position relative to Earth using the synodic period,
+ * renders it with a Lambertian shader illuminated by the sun direction,
+ * and implements tidal locking (same face always toward Earth).
+ *
+ * @module moon
+ */
+
 import * as THREE from 'three';
 import { CONFIG } from './config';
 import type { SceneObjects, MoonState } from './types';
@@ -8,9 +18,12 @@ const MOON_DISTANCE = CONFIG.EARTH_RADIUS * 12; // Compressed from real 60x for 
 const SYNODIC_PERIOD = 29.530588853; // Days for one full Moon cycle
 
 /**
- * Calculate the Moon's orbital angle (in radians) for a given date.
- * Uses a simplified model based on the synodic period relative to a known new moon.
- * Reference new moon: January 6, 2000 18:14 UTC
+ * Calculates the Moon's orbital phase angle for a given date.
+ * Uses a simplified model based on the synodic period (29.53 days)
+ * relative to a known new moon reference (January 6, 2000 18:14 UTC).
+ *
+ * @param date - The date to calculate the phase angle for
+ * @returns Phase angle in radians (0 = new moon, π = full moon)
  */
 export function calculateMoonPhaseAngle(date: Date): number {
   const referenceNewMoon = Date.UTC(2000, 0, 6, 18, 14, 0);
@@ -23,9 +36,14 @@ export function calculateMoonPhaseAngle(date: Date): number {
 }
 
 /**
- * Calculate the Moon's ecliptic longitude offset from the Sun.
- * The Moon orbits ~12.2 degrees per day relative to the stars,
- * but we use the synodic period for phase accuracy.
+ * Calculates the Moon's 3D position relative to Earth based on the current date
+ * and sun direction. Applies a 5.14° orbital inclination.
+ *
+ * @param date - The date to calculate position for
+ * @param sunDirX - X component of the normalized sun direction
+ * @param sunDirY - Y component of the normalized sun direction
+ * @param sunDirZ - Z component of the normalized sun direction
+ * @returns Moon position in scene coordinates
  */
 export function calculateMoonPosition(
   date: Date,
@@ -109,6 +127,13 @@ function getMoonFragmentShader(): string {
   `;
 }
 
+/**
+ * Initializes the Moon mesh with a Lambertian shader for phase illumination.
+ * Hidden by default; toggle via UI checkbox.
+ *
+ * @param sceneObjects - Core scene objects to add the Moon to
+ * @returns Moon state with mesh, shader material, and visibility flag
+ */
 export function initMoon(sceneObjects: SceneObjects): MoonState {
   const { scene } = sceneObjects;
 
@@ -134,6 +159,16 @@ export function initMoon(sceneObjects: SceneObjects): MoonState {
   };
 }
 
+/**
+ * Updates the Moon's position and phase lighting based on the current date and sun direction.
+ * Implements tidal locking by orienting the Moon toward Earth's center.
+ *
+ * @param moonState - Moon state with mesh and shader to update
+ * @param date - Current date for orbital position calculation
+ * @param sunDirX - X component of the sun direction for phase lighting
+ * @param sunDirY - Y component of the sun direction for phase lighting
+ * @param sunDirZ - Z component of the sun direction for phase lighting
+ */
 export function updateMoonPosition(
   moonState: MoonState,
   date: Date,
@@ -151,6 +186,12 @@ export function updateMoonPosition(
   moonState.mesh.lookAt(0, 0, 0);
 }
 
+/**
+ * Sets visibility of the Moon mesh.
+ *
+ * @param moonState - Moon state to update
+ * @param visible - Whether the Moon should be visible
+ */
 export function setMoonVisible(moonState: MoonState, visible: boolean): void {
   moonState.visible = visible;
   moonState.mesh.visible = visible;

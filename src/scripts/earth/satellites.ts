@@ -1,3 +1,12 @@
+/**
+ * Satellite orbit visualization with ISS, GPS, and Geostationary tracking.
+ *
+ * Renders orbital track lines and animated satellite position markers
+ * using simplified circular orbit models with inclination and RAAN precession.
+ *
+ * @module satellites
+ */
+
 import * as THREE from 'three';
 import { CONFIG } from './config';
 import type { SceneObjects, SatelliteState, SatelliteData } from './types';
@@ -13,6 +22,9 @@ function altitudeToSceneRadius(altitudeKm: number): number {
   return (6371 + altitudeKm) / KM_PER_EARTH_UNIT;
 }
 
+/**
+ * Predefined satellite orbital data for ISS, GPS, and Geostationary orbits.
+ */
 export const SATELLITES: SatelliteData[] = [
   {
     name: 'ISS',
@@ -41,8 +53,13 @@ export const SATELLITES: SatelliteData[] = [
 ];
 
 /**
- * Calculate satellite position along its orbit at a given time.
- * Uses simplified circular orbit model.
+ * Calculates a satellite's 3D position along its circular orbit.
+ * Applies orbital inclination and RAAN (Right Ascension of Ascending Node) precession.
+ *
+ * @param satellite - Satellite orbital parameters
+ * @param timeMinutes - Current time of day in minutes (0–1439)
+ * @param dayOfYear - Day of year (1–366) for RAAN calculation
+ * @returns Satellite position in scene coordinates
  */
 export function calculateSatellitePosition(
   satellite: SatelliteData,
@@ -80,7 +97,11 @@ export function calculateSatellitePosition(
 }
 
 /**
- * Generate points for an orbital track line.
+ * Generates 3D points forming a complete orbital track line.
+ *
+ * @param satellite - Satellite orbital parameters (altitude and inclination)
+ * @param segments - Number of line segments (default: 128)
+ * @returns Array of 3D points forming a closed orbit loop
  */
 export function generateOrbitPoints(
   satellite: SatelliteData,
@@ -143,6 +164,13 @@ function createSatelliteMarkerTexture(color: number): THREE.Texture {
   return texture;
 }
 
+/**
+ * Initializes satellite orbit lines and position markers for all satellites.
+ * Hidden by default; toggle via UI checkbox.
+ *
+ * @param sceneObjects - Core scene objects to add the satellite group to
+ * @returns Satellite state with orbit lines, markers, and visibility flag
+ */
 export function initSatellites(sceneObjects: SceneObjects): SatelliteState {
   const { scene } = sceneObjects;
   const group = new THREE.Group();
@@ -196,6 +224,13 @@ export function initSatellites(sceneObjects: SceneObjects): SatelliteState {
   };
 }
 
+/**
+ * Updates all satellite marker positions along their orbits and rotates orbit lines.
+ *
+ * @param state - Satellite state with markers and orbit lines
+ * @param timeMinutes - Current time of day in minutes
+ * @param dayOfYear - Day of year for RAAN calculation
+ */
 export function updateSatellitePositions(
   state: SatelliteState,
   timeMinutes: number,
@@ -213,15 +248,35 @@ export function updateSatellitePositions(
   }
 }
 
+/**
+ * Syncs the satellite group rotation with Earth's Y-axis rotation.
+ *
+ * @param state - Satellite state with group to rotate
+ * @param earthRotationY - Current Earth Y rotation in radians
+ */
 export function updateSatellitesRotation(state: SatelliteState, earthRotationY: number): void {
   state.group.rotation.y = earthRotationY;
 }
 
+/**
+ * Sets visibility of all satellite orbit lines and markers.
+ *
+ * @param state - Satellite state to update
+ * @param visible - Whether satellites should be visible
+ */
 export function setSatellitesVisible(state: SatelliteState, visible: boolean): void {
   state.visible = visible;
   state.group.visible = visible;
 }
 
+/**
+ * Handles mouse hover over satellite markers using raycasting.
+ *
+ * @param event - Mouse move event with screen coordinates
+ * @param sceneObjects - Scene objects for raycasting
+ * @param state - Satellite state with markers to test
+ * @returns Satellite description text if hovering a marker, or null
+ */
 export function handleSatelliteHover(
   event: MouseEvent,
   sceneObjects: SceneObjects,

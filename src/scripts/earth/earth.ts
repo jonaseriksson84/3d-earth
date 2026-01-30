@@ -1,3 +1,12 @@
+/**
+ * Earth mesh creation, shader materials, and LOD management.
+ *
+ * Creates the Earth sphere with day/night shader, cloud layer, and
+ * Level-of-Detail switching based on camera distance.
+ *
+ * @module earth
+ */
+
 import * as THREE from 'three';
 import { CONFIG } from './config';
 import type { EarthObjects, SceneObjects, LoadingState } from './types';
@@ -60,6 +69,14 @@ function getLODLevels(): LODLevel[] {
   ];
 }
 
+/**
+ * Initializes the Earth and cloud meshes with LOD, textures, and day/night shader.
+ * Earth's axial tilt is applied to both meshes.
+ *
+ * @param sceneObjects - Core scene objects to add Earth to
+ * @param loadingState - Loading overlay state for progress tracking
+ * @returns Earth objects including LOD meshes and shader material
+ */
 export function initEarth(
   sceneObjects: SceneObjects,
   loadingState: LoadingState
@@ -160,6 +177,13 @@ export function initEarth(
   return { earth, clouds, earthMaterial };
 }
 
+/**
+ * Rotates the Earth and cloud meshes to center the user's longitude at the camera.
+ * Preserves the axial tilt (Z rotation) while updating Y rotation.
+ *
+ * @param earthObjects - Earth and cloud mesh objects
+ * @param userLongitude - User's longitude in degrees (-180 to 180)
+ */
 export function updateEarthRotation(
   earthObjects: EarthObjects,
   userLongitude: number
@@ -172,6 +196,13 @@ export function updateEarthRotation(
   clouds.rotation.y = earth.rotation.y;
 }
 
+/**
+ * Updates the LOD level for Earth and cloud meshes based on camera distance.
+ * Should be called each frame before rendering.
+ *
+ * @param earthObjects - Earth and cloud LOD objects
+ * @param camera - Current camera for distance calculation
+ */
 export function updateEarthLOD(
   earthObjects: EarthObjects,
   camera: THREE.Camera

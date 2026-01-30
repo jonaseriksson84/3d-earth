@@ -1,3 +1,12 @@
+/**
+ * Application entry point and orchestrator.
+ *
+ * Initializes all subsystems (scene, Earth, lighting, controls, markers, etc.),
+ * wires up UI event listeners, and runs the animation loop.
+ *
+ * @module main
+ */
+
 import type { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import {
   initWebGL,
@@ -92,7 +101,8 @@ let selectedCityForSunTimes: CityData | null = null;
 let lastSunTimesDate: string = '';
 
 /**
- * Wrapper to get location and update both Earth rotation and user marker
+ * Gets user geolocation and updates both Earth rotation and user marker.
+ * Places default marker immediately, then updates after geolocation resolves.
  */
 function getLocationWithMarkerUpdate(
   locState: LocationState,
@@ -218,6 +228,11 @@ function animate(): void {
   }
 }
 
+/**
+ * Initializes the entire 3D Earth visualization application.
+ * Sets up all subsystems, UI event listeners, and starts the animation loop.
+ * Displays an error message if initialization fails.
+ */
 export function initApp(): void {
   try {
     console.log('Initializing 3D Earth visualization...');

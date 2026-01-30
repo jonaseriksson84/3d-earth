@@ -1,7 +1,22 @@
+/**
+ * Camera controls setup for orbit-style interaction with the globe.
+ *
+ * Configures OrbitControls for smooth rotation, zoom limits, and touch handling.
+ *
+ * @module controls
+ */
+
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { CONFIG } from './config';
 import type { SceneObjects } from './types';
 
+/**
+ * Initializes OrbitControls with damping, zoom limits, and disabled panning.
+ * Sets the camera to the initial viewing distance.
+ *
+ * @param sceneObjects - Core scene objects (camera and renderer for controls binding)
+ * @returns Configured OrbitControls instance
+ */
 export function initControls(
   sceneObjects: SceneObjects
 ): OrbitControls {

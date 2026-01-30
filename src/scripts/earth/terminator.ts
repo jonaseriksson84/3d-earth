@@ -1,3 +1,13 @@
+/**
+ * Day/night terminator line visualization.
+ *
+ * Renders a glowing orange/gold line at the boundary between day and night
+ * on Earth's surface. The terminator is computed as the great circle
+ * perpendicular to the sun direction vector.
+ *
+ * @module terminator
+ */
+
 import * as THREE from 'three';
 import { CONFIG } from './config';
 import type { SceneObjects, TerminatorState } from './types';
@@ -9,14 +19,19 @@ const TERMINATOR_GLOW_OPACITY = 0.25;
 const TERMINATOR_SEGMENTS = 128;
 
 /**
- * Generate points along the terminator great circle.
+ * Generates points along the terminator great circle.
  * The terminator is the great circle perpendicular to the sun direction,
- * i.e. all points where dot(surfaceNormal, sunDirection) = 0.
+ * i.e. all points where `dot(surfaceNormal, sunDirection) = 0`.
  *
- * Given a sun direction vector S, we construct two orthonormal vectors
- * U and V in the plane perpendicular to S. The terminator circle is then:
- *   P(t) = R * (cos(t) * U + sin(t) * V)
- * for t in [0, 2*PI].
+ * Given a sun direction vector S, constructs two orthonormal vectors
+ * U and V in the plane perpendicular to S. The terminator circle is:
+ *   `P(t) = R * (cos(t) * U + sin(t) * V)` for t in [0, 2π].
+ *
+ * @param sunX - X component of the sun direction vector
+ * @param sunY - Y component of the sun direction vector
+ * @param sunZ - Z component of the sun direction vector
+ * @param radius - Radius at which to generate the terminator circle
+ * @returns Array of 3D points along the terminator, or empty if sun direction is zero
  */
 export function generateTerminatorPoints(
   sunX: number,
@@ -73,7 +88,11 @@ export function generateTerminatorPoints(
 }
 
 /**
- * Initialize the terminator line visualization
+ * Initializes the terminator line visualization with main and glow lines.
+ * Hidden by default; toggle via UI checkbox.
+ *
+ * @param sceneObjects - Core scene objects to add the terminator to
+ * @returns Terminator state with lines, group, and visibility flag
  */
 export function initTerminator(
   sceneObjects: SceneObjects
@@ -125,8 +144,13 @@ export function initTerminator(
 }
 
 /**
- * Update the terminator line position based on current sun direction.
- * This should be called whenever the sun position changes.
+ * Updates the terminator line geometry based on current sun direction.
+ * No-op when the terminator is hidden. Should be called when sun position changes.
+ *
+ * @param state - Terminator state with line geometries to update
+ * @param sunX - X component of the sun direction vector
+ * @param sunY - Y component of the sun direction vector
+ * @param sunZ - Z component of the sun direction vector
  */
 export function updateTerminatorPosition(
   state: TerminatorState,
@@ -151,7 +175,10 @@ export function updateTerminatorPosition(
 }
 
 /**
- * Set visibility of the terminator line
+ * Sets visibility of the terminator line.
+ *
+ * @param state - Terminator state to update
+ * @param visible - Whether the terminator should be visible
  */
 export function setTerminatorVisible(
   state: TerminatorState,
