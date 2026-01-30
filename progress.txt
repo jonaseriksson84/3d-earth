@@ -567,6 +567,44 @@
   - TypeScript compiles without errors
   - Build completes successfully
 
+### FEATURE-008: Add Aurora Borealis and Australis visualization
+- **Status:** COMPLETED
+- **Date:** 2026-01-30
+- **Changes:** Implemented animated aurora effects near polar regions with night-side rendering:
+  - Created new `src/scripts/earth/aurora.ts` module with full TypeScript types:
+    - `createAuroraBandGeometry()` generates ring geometry at specified latitude band
+    - `initAurora()` creates northern and southern aurora meshes with animated shader
+    - `updateAurora()` advances animation time and updates sun direction uniform
+    - `updateAuroraRotation()` syncs aurora group with Earth rotation
+    - `setAuroraVisible()` toggles visibility
+  - Custom GLSL shader for aurora curtain effect:
+    - Vertex shader passes UV coordinates, world position, and normals
+    - Fragment shader creates layered sine wave curtain with pseudo-noise for organic feel
+    - Color gradient transitions from green (base) through blue to purple (top)
+    - Shimmer effect using high-frequency noise
+    - Night-side culling: auroras only visible on dark side using sun direction dot product
+    - Smooth twilight transition using smoothstep
+  - Aurora Borealis positioned at ~67 degrees N geomagnetic latitude
+  - Aurora Australis positioned at ~67 degrees S geomagnetic latitude
+  - Band width of 8 degrees for realistic aurora oval extent
+  - Uses THREE.AdditiveBlending for light accumulation (glow effect)
+  - Additive blending with transparency (opacity 0.45) for unobtrusive display
+  - Earth's axial tilt applied to aurora group
+  - Added `AuroraState` interface to types.ts
+  - Added aurora config constants to config.ts and EarthConfig interface:
+    - `AURORA_LATITUDE: 67`, `AURORA_BAND_WIDTH: 8`
+    - `AURORA_OPACITY: 0.45`, `AURORA_ANIMATION_SPEED: 0.8`
+  - Added UI toggle checkbox "Show auroras" (disabled by default)
+  - Updated index.ts exports and main.ts integration
+  - Animation runs at 60fps using delta-time-based updates
+  - Added 11 unit tests for aurora config and geometry:
+    - Config validation (latitude range, band width, opacity, speed)
+    - Geometry vertex count, index buffer, radius, latitude placement
+    - UV coordinate range, normal unit length
+  - All 164 tests pass
+  - TypeScript compiles without errors
+  - Build completes successfully
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -613,6 +651,9 @@
 
 ### Phase 10 - Accessibility & Documentation (continued)
 - [x] IMPROVEMENT-005: Add JSDoc documentation for all modules
+
+### Phase 8 - Visual Polish
+- [x] FEATURE-008: Add Aurora Borealis and Australis visualization
 
 ### Phase 11 - Performance & Future-proofing
 - [x] PERF-001: Implement Level-of-Detail (LOD) for Earth mesh

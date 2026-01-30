@@ -25,3 +25,4 @@ export * from './terminator';
 export * from './moon';
 export * from './sunrise';
 export * from './satellites';
+export * from './aurora';

@@ -62,6 +62,10 @@ import {
   updateSatellitePositions,
   updateSatellitesRotation,
   setSatellitesVisible,
+  initAurora,
+  updateAurora,
+  updateAuroraRotation,
+  setAuroraVisible,
   getDayOfYear,
 } from './earth';
 import type {
@@ -79,6 +83,7 @@ import type {
   TerminatorState,
   MoonState,
   SatelliteState,
+  AuroraState,
   CityData,
 } from './earth';
 
@@ -97,6 +102,8 @@ let terminatorState: TerminatorState | null = null;
 let citySearchState: CitySearchState | null = null;
 let moonState: MoonState | null = null;
 let satelliteState: SatelliteState | null = null;
+let auroraState: AuroraState | null = null;
+let lastFrameTime: number = 0;
 let selectedCityForSunTimes: CityData | null = null;
 let lastSunTimesDate: string = '';
 
@@ -201,6 +208,18 @@ function animate(): void {
       updateMoonPosition(moonState, timeState.selectedDate, sunDir.x, sunDir.y, sunDir.z);
     }
 
+    // Update aurora animation
+    if (auroraState && earthObjects) {
+      updateAuroraRotation(auroraState, earthObjects.earth.rotation.y);
+      if (auroraState.visible) {
+        const now = performance.now() / 1000;
+        const dt = lastFrameTime > 0 ? Math.min(now - lastFrameTime, 0.1) : 0.016;
+        lastFrameTime = now;
+        const sunDir = earthObjects.earthMaterial.uniforms.sunDirection.value;
+        updateAurora(auroraState, dt, sunDir.x, sunDir.y, sunDir.z);
+      }
+    }
+
     // Update satellite positions
     if (satelliteState && satelliteState.visible && earthObjects && timeState) {
       const sliderMinutes = parseInt(timeState.timeSlider.value);
@@ -256,6 +275,8 @@ export function initApp(): void {
       terminatorState = null;
       moonState = null;
       satelliteState = null;
+      auroraState = null;
+      lastFrameTime = 0;
       citySearchState = null;
       selectedCityForSunTimes = null;
       lastSunTimesDate = '';
@@ -305,6 +326,9 @@ export function initApp(): void {
 
     // Initialize satellite orbits (disabled by default)
     satelliteState = initSatellites(sceneObjects);
+
+    // Initialize aurora effects (disabled by default)
+    auroraState = initAurora(sceneObjects);
 
     // Set up marker toggle
     const markerToggle = document.getElementById('markerToggle') as HTMLInputElement | null;
@@ -446,6 +470,17 @@ export function initApp(): void {
             const dayOfYearVal = getDayOfYear(timeState.selectedDate);
             updateSatellitePositions(satelliteState, sliderMinutes, dayOfYearVal);
           }
+        }
+      });
+    }
+
+    // Set up aurora toggle
+    const auroraToggle = document.getElementById('auroraToggle') as HTMLInputElement | null;
+    if (auroraToggle) {
+      auroraToggle.addEventListener('change', (event: Event) => {
+        const target = event.target as HTMLInputElement;
+        if (auroraState) {
+          setAuroraVisible(auroraState, target.checked);
         }
       });
     }

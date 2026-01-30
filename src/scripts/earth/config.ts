@@ -64,6 +64,12 @@ export const CONFIG: EarthConfig = {
   ATMOSPHERE_GLOW_INTENSITY: 0.6, // Subtle glow
   ATMOSPHERE_FRESNEL_POWER: 3.0, // Controls edge sharpness (2-5 range)
 
+  // Aurora effect
+  AURORA_LATITUDE: 67, // Geomagnetic latitude for aurora oval (~65-70 degrees)
+  AURORA_BAND_WIDTH: 8, // Width of aurora band in degrees
+  AURORA_OPACITY: 0.45, // Base opacity for aurora effect
+  AURORA_ANIMATION_SPEED: 0.8, // Animation speed multiplier
+
   // Default location (Stockholm)
   DEFAULT_LONGITUDE: 18,
   DEFAULT_LATITUDE: 59,

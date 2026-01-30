@@ -374,7 +374,7 @@
         "UI toggle to enable/disable aurora effect",
         "Performance impact less than 3ms per frame when enabled"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "FEATURE-009",

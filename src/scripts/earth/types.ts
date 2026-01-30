@@ -77,6 +77,14 @@ export interface EarthConfig {
   ATMOSPHERE_GLOW_INTENSITY: number;
   /** Fresnel power exponent controlling edge glow sharpness */
   ATMOSPHERE_FRESNEL_POWER: number;
+  /** Latitude band center for aurora rings in degrees (65-70) */
+  AURORA_LATITUDE: number;
+  /** Width of the aurora band in degrees */
+  AURORA_BAND_WIDTH: number;
+  /** Base transparency of aurora effect (0-1) */
+  AURORA_OPACITY: number;
+  /** Speed multiplier for aurora animation */
+  AURORA_ANIMATION_SPEED: number;
   /** Default longitude in degrees when geolocation is unavailable */
   DEFAULT_LONGITUDE: number;
   /** Default latitude in degrees when geolocation is unavailable */
@@ -218,6 +226,22 @@ export interface AtmosphereState {
   /** Fresnel shader material controlling the glow */
   material: THREE.ShaderMaterial;
   /** Whether the atmosphere effect is currently visible */
+  visible: boolean;
+}
+
+/**
+ * State for the aurora borealis and australis visualization.
+ */
+export interface AuroraState {
+  /** Group containing both northern and southern aurora meshes */
+  group: THREE.Group;
+  /** Northern aurora mesh (Aurora Borealis) */
+  northMesh: THREE.Mesh;
+  /** Southern aurora mesh (Aurora Australis) */
+  southMesh: THREE.Mesh;
+  /** Shader material shared by both auroras (contains time uniform) */
+  material: THREE.ShaderMaterial;
+  /** Whether the aurora effect is currently visible */
   visible: boolean;
 }
 
