@@ -21,7 +21,7 @@ for ((i=1; i<=$1; i++)); do
   tmpfile=$(mktemp)
   trap "rm -f $tmpfile" EXIT
 
-  docker sandbox run claude \
+  docker sandbox run claude . -- \
     --verbose \
     --print \
     --output-format stream-json \
