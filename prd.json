@@ -431,7 +431,7 @@
         "Graceful fallback to static texture on API failure",
         "Performance impact less than 2ms per frame for animation"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "FEATURE-011",

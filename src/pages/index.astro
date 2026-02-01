@@ -89,6 +89,13 @@ import '../styles/global.css';
         <label>
           <input type="checkbox" id="cloudToggle" checked aria-label="Toggle cloud layer visibility" /> Show clouds
         </label>
+        <div class="cloud-mode-controls">
+          <label for="cloudModeSelect">Mode:</label>
+          <select id="cloudModeSelect" class="cloud-mode-select" aria-label="Cloud animation mode">
+            <option value="static">Static</option>
+            <option value="animated" selected>Animated</option>
+          </select>
+        </div>
       </div>
 
       <div class="slider-container">

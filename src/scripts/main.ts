@@ -67,6 +67,9 @@ import {
   updateAuroraRotation,
   setAuroraVisible,
   getDayOfYear,
+  createCloudAnimationState,
+  setCloudAnimationMode,
+  updateCloudAnimation,
 } from './earth';
 import type {
   SceneObjects,
@@ -84,6 +87,7 @@ import type {
   MoonState,
   SatelliteState,
   AuroraState,
+  CloudAnimationState,
   CityData,
 } from './earth';
 
@@ -103,6 +107,7 @@ let citySearchState: CitySearchState | null = null;
 let moonState: MoonState | null = null;
 let satelliteState: SatelliteState | null = null;
 let auroraState: AuroraState | null = null;
+let cloudAnimState: CloudAnimationState | null = null;
 let lastFrameTime: number = 0;
 let selectedCityForSunTimes: CityData | null = null;
 let lastSunTimesDate: string = '';
@@ -154,6 +159,11 @@ function animate(): void {
   try {
     requestAnimationFrame(animate);
 
+    // Compute frame delta time
+    const now = performance.now() / 1000;
+    const dt = lastFrameTime > 0 ? Math.min(now - lastFrameTime, 0.1) : 0.016;
+    lastFrameTime = now;
+
     // Update time during playback
     if (timeState) {
       updatePlayback(timeState);
@@ -174,6 +184,11 @@ function animate(): void {
     // Update fly-to animation
     if (flyToState && sceneObjects && controls) {
       updateFlyTo(flyToState, sceneObjects, controls);
+    }
+
+    // Update cloud animation (drift effect)
+    if (cloudAnimState && earthObjects) {
+      updateCloudAnimation(cloudAnimState, earthObjects, dt);
     }
 
     // Keep markers synced with Earth rotation
@@ -212,9 +227,6 @@ function animate(): void {
     if (auroraState && earthObjects) {
       updateAuroraRotation(auroraState, earthObjects.earth.rotation.y);
       if (auroraState.visible) {
-        const now = performance.now() / 1000;
-        const dt = lastFrameTime > 0 ? Math.min(now - lastFrameTime, 0.1) : 0.016;
-        lastFrameTime = now;
         const sunDir = earthObjects.earthMaterial.uniforms.sunDirection.value;
         updateAurora(auroraState, dt, sunDir.x, sunDir.y, sunDir.z);
       }
@@ -276,6 +288,7 @@ export function initApp(): void {
       moonState = null;
       satelliteState = null;
       auroraState = null;
+      cloudAnimState = null;
       lastFrameTime = 0;
       citySearchState = null;
       selectedCityForSunTimes = null;
@@ -329,6 +342,10 @@ export function initApp(): void {
 
     // Initialize aurora effects (disabled by default)
     auroraState = initAurora(sceneObjects);
+
+    // Initialize cloud animation (animated by default)
+    cloudAnimState = createCloudAnimationState();
+    setCloudAnimationMode(cloudAnimState, 'animated');
 
     // Set up marker toggle
     const markerToggle = document.getElementById('markerToggle') as HTMLInputElement | null;
@@ -481,6 +498,17 @@ export function initApp(): void {
         const target = event.target as HTMLInputElement;
         if (auroraState) {
           setAuroraVisible(auroraState, target.checked);
+        }
+      });
+    }
+
+    // Set up cloud animation mode select
+    const cloudModeSelect = document.getElementById('cloudModeSelect') as HTMLSelectElement | null;
+    if (cloudModeSelect) {
+      cloudModeSelect.addEventListener('change', (event: Event) => {
+        const target = event.target as HTMLSelectElement;
+        if (cloudAnimState) {
+          setCloudAnimationMode(cloudAnimState, target.value as 'static' | 'animated');
         }
       });
     }

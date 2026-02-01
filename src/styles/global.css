@@ -152,6 +152,34 @@ canvas {
   color: white;
 }
 
+.cloud-mode-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding-left: 22px;
+}
+
+.cloud-mode-controls label {
+  font-size: 13px;
+  color: #aaa;
+}
+
+.cloud-mode-select {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  color: white;
+  padding: 2px 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.cloud-mode-select option {
+  background: #333;
+  color: white;
+}
+
 .instructions {
   position: absolute;
   bottom: 20px;
@@ -496,7 +524,8 @@ canvas.clickable-marker {
     font-size: 16px;
   }
 
-  .speed-select {
+  .speed-select,
+  .cloud-mode-select {
     min-height: 44px;
     font-size: 14px;
     padding: 8px 12px;

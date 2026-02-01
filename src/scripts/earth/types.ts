@@ -89,6 +89,8 @@ export interface EarthConfig {
   DEFAULT_LONGITUDE: number;
   /** Default latitude in degrees when geolocation is unavailable */
   DEFAULT_LATITUDE: number;
+  /** Cloud drift speed in radians per second (trade winds effect) */
+  CLOUD_DRIFT_SPEED: number;
   /** OrbitControls damping factor for smooth deceleration */
   DAMPING_FACTOR: number;
 }
@@ -365,6 +367,16 @@ export interface CitySearchState {
   debounceTimer: ReturnType<typeof setTimeout> | null;
   /** Index of the currently highlighted result (-1 = no selection) */
   activeIndex: number;
+}
+
+/**
+ * State for the animated cloud layer rotation.
+ */
+export interface CloudAnimationState {
+  /** Current cloud animation mode: 'static' (locked to Earth) or 'animated' (slow drift) */
+  mode: 'static' | 'animated';
+  /** Accumulated cloud rotation offset from Earth in radians */
+  rotationOffset: number;
 }
 
 /**

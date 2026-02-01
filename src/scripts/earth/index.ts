@@ -26,3 +26,4 @@ export * from './moon';
 export * from './sunrise';
 export * from './satellites';
 export * from './aurora';
+export * from './clouds';

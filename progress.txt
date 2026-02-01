@@ -605,6 +605,40 @@
   - TypeScript compiles without errors
   - Build completes successfully
 
+### FEATURE-010: Add animated or real-time cloud layer
+- **Status:** COMPLETED
+- **Date:** 2026-02-01
+- **Changes:** Implemented animated cloud drift simulating trade winds effect:
+  - Created new `src/scripts/earth/clouds.ts` module with full TypeScript types:
+    - `CloudAnimationState` interface for tracking animation mode and rotation offset
+    - `createCloudAnimationState()` creates initial state (static mode, zero offset)
+    - `setCloudAnimationMode()` switches between 'static' and 'animated' modes
+    - `updateCloudAnimation()` applies differential rotation each frame
+  - Cloud drift mechanics:
+    - Clouds rotate slightly slower than Earth surface (trade winds effect)
+    - Drift speed configurable via `CONFIG.CLOUD_DRIFT_SPEED` (0.002 radians/second)
+    - Rotation offset wraps at 2*PI to prevent unbounded growth
+    - Static mode locks clouds to Earth rotation (zero offset)
+  - Added `CLOUD_DRIFT_SPEED` to config.ts and `EarthConfig` interface in types.ts
+  - Added UI controls in index.astro:
+    - Cloud mode select dropdown with "Static" and "Animated" options
+    - Animated mode selected by default
+    - Styled consistently with existing speed-select controls
+  - Added CSS for `.cloud-mode-controls` and `.cloud-mode-select` in global.css
+  - Mobile touch target size (44px minimum) applied to cloud mode select
+  - Delta time computed once per frame and shared by cloud animation and aurora
+  - Updated index.ts exports and main.ts integration
+  - Cloud animation state reset in retry handler
+  - Added 11 unit tests for cloud animation:
+    - State creation defaults
+    - Mode switching and offset reset
+    - CONFIG.CLOUD_DRIFT_SPEED validation
+    - Static vs animated behavior
+    - Offset accumulation and wrapping
+  - All 175 tests pass
+  - TypeScript compiles without errors
+  - Build completes successfully
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -654,6 +688,7 @@
 
 ### Phase 8 - Visual Polish
 - [x] FEATURE-008: Add Aurora Borealis and Australis visualization
+- [x] FEATURE-010: Add animated or real-time cloud layer
 
 ### Phase 11 - Performance & Future-proofing
 - [x] PERF-001: Implement Level-of-Detail (LOD) for Earth mesh

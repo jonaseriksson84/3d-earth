@@ -70,6 +70,9 @@ export const CONFIG: EarthConfig = {
   AURORA_OPACITY: 0.45, // Base opacity for aurora effect
   AURORA_ANIMATION_SPEED: 0.8, // Animation speed multiplier
 
+  // Cloud animation
+  CLOUD_DRIFT_SPEED: 0.002, // Radians per second - slow westward drift simulating trade winds
+
   // Default location (Stockholm)
   DEFAULT_LONGITUDE: 18,
   DEFAULT_LATITUDE: 59,
