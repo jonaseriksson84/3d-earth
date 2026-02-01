@@ -455,6 +455,103 @@ canvas.clickable-marker {
   cursor: pointer;
 }
 
+canvas.placing-marker {
+  cursor: crosshair;
+}
+
+/* Custom markers */
+.add-marker-btn {
+  width: 100%;
+  padding: 6px 12px;
+  background: rgba(255, 102, 204, 0.2);
+  border: 1px solid rgba(255, 102, 204, 0.5);
+  border-radius: 4px;
+  color: #ff66cc;
+  cursor: pointer;
+  font-size: 13px;
+  margin-top: 4px;
+  transition: background 0.15s;
+}
+
+.add-marker-btn:hover {
+  background: rgba(255, 102, 204, 0.35);
+}
+
+.add-marker-btn.placing-active {
+  background: rgba(255, 102, 204, 0.5);
+  border-color: #ff66cc;
+}
+
+.custom-marker-count {
+  font-size: 12px;
+  color: #999;
+}
+
+.custom-markers-list {
+  max-height: 150px;
+  overflow-y: auto;
+  margin-top: 6px;
+}
+
+.custom-markers-empty {
+  color: #777;
+  font-size: 12px;
+  padding: 4px 0;
+}
+
+.custom-marker-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.custom-marker-item:last-child {
+  border-bottom: none;
+}
+
+.custom-marker-name {
+  cursor: pointer;
+  font-size: 13px;
+  color: #ff66cc;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 8px;
+}
+
+.custom-marker-name:hover {
+  text-decoration: underline;
+}
+
+.custom-marker-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.custom-marker-btn {
+  padding: 2px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ccc;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.custom-marker-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.custom-marker-delete:hover {
+  background: rgba(255, 80, 80, 0.3);
+  border-color: rgba(255, 80, 80, 0.5);
+  color: #ff8080;
+}
+
 /* Accessibility: Focus indicators for keyboard navigation */
 .controls *:focus-visible {
   outline: 2px solid #4da6ff;

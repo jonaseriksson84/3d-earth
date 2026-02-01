@@ -639,6 +639,40 @@
   - TypeScript compiles without errors
   - Build completes successfully
 
+### FEATURE-014: Allow users to add custom location markers
+- **Status:** COMPLETED
+- **Date:** 2026-02-01
+- **Changes:** Implemented custom location markers with click-to-place, edit, delete, and localStorage persistence:
+  - Created new `src/scripts/earth/customMarkers.ts` module with full TypeScript types:
+    - `estimateTimezone()` approximates UTC offset from longitude (1 hour per 15 degrees)
+    - `loadCustomMarkers()` loads persisted markers from localStorage with validation
+    - `saveCustomMarkers()` persists markers to localStorage
+    - `initCustomMarkers()` restores saved markers as sprites on the globe
+    - `setPlacingMode()` toggles click-to-place mode with crosshair cursor
+    - `screenToLatLon()` raycasts screen coordinates to geographic lat/lon, accounting for Earth rotation and axial tilt
+    - `addCustomMarker()` creates a new custom marker with diamond-shaped magenta sprite
+    - `removeCustomMarker()` deletes a marker and disposes its Three.js resources
+    - `editCustomMarkerLabel()` updates a marker's label
+    - `getCustomMarkerId()` extracts custom marker ID from sprite userData
+    - `updateCustomMarkersList()` renders the marker list UI with edit/delete/fly-to actions
+  - Added `CustomMarkerData` and `CustomMarkerState` interfaces to types.ts
+  - Custom markers are visually distinct: magenta diamond shape vs yellow circles for cities
+  - Click-to-place mode: button toggles crosshair cursor, click on globe opens prompt for label
+  - Markers placed at correct geographic position using inverse Earth rotation transform
+  - Edit and delete functionality via buttons in the marker list panel
+  - Clicking a marker name triggers fly-to animation
+  - Maximum 20 custom markers enforced
+  - Markers show local time and sunrise/sunset in tooltips (reuses existing tooltip system)
+  - Custom markers persist across page reloads via localStorage
+  - Works on both desktop (click) and mobile (tap) for placement
+  - Added UI section in index.astro with "Add marker" button and marker list
+  - Added CSS styles for custom marker UI (button, list, edit/delete controls)
+  - Updated main.ts with placement handlers for click and touch events
+  - Added 13 unit tests for estimateTimezone, loadCustomMarkers, and saveCustomMarkers
+  - All 188 tests pass
+  - TypeScript compiles without errors
+  - Build completes successfully
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -689,6 +723,9 @@
 ### Phase 8 - Visual Polish
 - [x] FEATURE-008: Add Aurora Borealis and Australis visualization
 - [x] FEATURE-010: Add animated or real-time cloud layer
+
+### Phase 9 - Advanced Features
+- [x] FEATURE-014: Allow users to add custom location markers
 
 ### Phase 11 - Performance & Future-proofing
 - [x] PERF-001: Implement Level-of-Detail (LOD) for Earth mesh

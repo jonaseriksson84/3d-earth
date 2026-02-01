@@ -70,6 +70,13 @@ import {
   createCloudAnimationState,
   setCloudAnimationMode,
   updateCloudAnimation,
+  initCustomMarkers,
+  setPlacingMode,
+  screenToLatLon,
+  addCustomMarker,
+  removeCustomMarker,
+  editCustomMarkerLabel,
+  updateCustomMarkersList,
 } from './earth';
 import type {
   SceneObjects,
@@ -88,6 +95,7 @@ import type {
   SatelliteState,
   AuroraState,
   CloudAnimationState,
+  CustomMarkerState,
   CityData,
 } from './earth';
 
@@ -108,6 +116,7 @@ let moonState: MoonState | null = null;
 let satelliteState: SatelliteState | null = null;
 let auroraState: AuroraState | null = null;
 let cloudAnimState: CloudAnimationState | null = null;
+let customMarkerState: CustomMarkerState | null = null;
 let lastFrameTime: number = 0;
 let selectedCityForSunTimes: CityData | null = null;
 let lastSunTimesDate: string = '';
@@ -259,6 +268,103 @@ function animate(): void {
   }
 }
 
+function refreshCustomMarkersList(): void {
+  if (!customMarkerState || !markerState) return;
+  const listEl = document.getElementById('customMarkersList');
+  const countEl = document.getElementById('customMarkerCount');
+  if (!listEl) return;
+
+  if (countEl) {
+    countEl.textContent = `${customMarkerState.markers.length}/${customMarkerState.maxMarkers}`;
+  }
+
+  updateCustomMarkersList(
+    customMarkerState,
+    listEl,
+    // onDelete
+    (id) => {
+      if (!customMarkerState || !markerState) return;
+      removeCustomMarker(customMarkerState, markerState, id);
+      refreshCustomMarkersList();
+    },
+    // onEdit
+    (id) => {
+      if (!customMarkerState) return;
+      const marker = customMarkerState.markers.find((m) => m.id === id);
+      if (!marker) return;
+      const newLabel = prompt('Enter new label:', marker.label);
+      if (newLabel !== null && newLabel.trim()) {
+        editCustomMarkerLabel(customMarkerState, id, newLabel.trim());
+        refreshCustomMarkersList();
+      }
+    },
+    // onFlyTo
+    (marker) => {
+      if (!sceneObjects || !flyToState || !controls) return;
+      const cityData: CityData = {
+        name: marker.label,
+        lat: marker.lat,
+        lon: marker.lon,
+        timezone: marker.timezone,
+      };
+      startFlyTo(cityData, sceneObjects, flyToState, controls);
+      selectedCityForSunTimes = cityData;
+      refreshSunTimesPanel();
+    }
+  );
+}
+
+function setupCustomMarkersUI(): void {
+  const addBtn = document.getElementById('addMarkerBtn');
+  if (!addBtn) return;
+
+  addBtn.addEventListener('click', () => {
+    if (!customMarkerState) return;
+
+    if (customMarkerState.markers.length >= customMarkerState.maxMarkers) {
+      alert(`Maximum of ${customMarkerState.maxMarkers} custom markers reached.`);
+      return;
+    }
+
+    const isPlacing = !customMarkerState.placingMode;
+    setPlacingMode(customMarkerState, isPlacing);
+    addBtn.classList.toggle('placing-active', isPlacing);
+    addBtn.textContent = isPlacing ? 'Click on globe to place...' : '+ Add marker';
+  });
+
+  refreshCustomMarkersList();
+}
+
+function handleCustomMarkerPlacement(clientX: number, clientY: number): boolean {
+  if (!customMarkerState || !customMarkerState.placingMode) return false;
+  if (!sceneObjects || !markerState) return false;
+
+  const latLon = screenToLatLon(clientX, clientY, sceneObjects);
+  if (!latLon) return false;
+
+  const label = prompt('Enter marker label:');
+  if (!label || !label.trim()) {
+    // User cancelled - exit placing mode
+    setPlacingMode(customMarkerState, false);
+    const addBtn = document.getElementById('addMarkerBtn');
+    if (addBtn) {
+      addBtn.classList.remove('placing-active');
+      addBtn.textContent = '+ Add marker';
+    }
+    return true;
+  }
+
+  addCustomMarker(customMarkerState, markerState, latLon.lat, latLon.lon, label.trim());
+  setPlacingMode(customMarkerState, false);
+  const addBtn = document.getElementById('addMarkerBtn');
+  if (addBtn) {
+    addBtn.classList.remove('placing-active');
+    addBtn.textContent = '+ Add marker';
+  }
+  refreshCustomMarkersList();
+  return true;
+}
+
 /**
  * Initializes the entire 3D Earth visualization application.
  * Sets up all subsystems, UI event listeners, and starts the animation loop.
@@ -289,6 +395,7 @@ export function initApp(): void {
       satelliteState = null;
       auroraState = null;
       cloudAnimState = null;
+      customMarkerState = null;
       lastFrameTime = 0;
       citySearchState = null;
       selectedCityForSunTimes = null;
@@ -346,6 +453,10 @@ export function initApp(): void {
     // Initialize cloud animation (animated by default)
     cloudAnimState = createCloudAnimationState();
     setCloudAnimationMode(cloudAnimState, 'animated');
+
+    // Initialize custom markers (loads from localStorage)
+    customMarkerState = initCustomMarkers(markerState);
+    setupCustomMarkersUI();
 
     // Set up marker toggle
     const markerToggle = document.getElementById('markerToggle') as HTMLInputElement | null;
@@ -521,8 +632,17 @@ export function initApp(): void {
       }
     });
 
-    // Set up marker click events for fly-to animation
+    // Set up marker click events for fly-to animation and custom marker placement
     window.addEventListener('click', (event: MouseEvent) => {
+      // Check if we're in placing mode first
+      if (customMarkerState && customMarkerState.placingMode) {
+        // Only handle placement on canvas clicks
+        if (event.target instanceof HTMLElement && event.target.tagName === 'CANVAS') {
+          handleCustomMarkerPlacement(event.clientX, event.clientY);
+          return;
+        }
+      }
+
       if (sceneObjects && markerState && flyToState && controls) {
         const cityData = handleMarkerClick(event, sceneObjects, markerState);
         if (cityData) {
@@ -586,6 +706,12 @@ export function initApp(): void {
 
       // Check if the tap target is the canvas
       if (!(touch.target instanceof HTMLElement) || touch.target.tagName !== 'CANVAS') return;
+
+      // Handle custom marker placement on tap
+      if (customMarkerState && customMarkerState.placingMode) {
+        handleCustomMarkerPlacement(touch.clientX, touch.clientY);
+        return;
+      }
 
       if (!sceneObjects || !markerState || !timeState) return;
 

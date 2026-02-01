@@ -370,6 +370,36 @@ export interface CitySearchState {
 }
 
 /**
+ * A user-created custom marker saved to localStorage.
+ */
+export interface CustomMarkerData {
+  /** Unique identifier for the custom marker */
+  id: string;
+  /** User-defined label for the marker */
+  label: string;
+  /** Latitude in degrees (-90 to 90) */
+  lat: number;
+  /** Longitude in degrees (-180 to 180) */
+  lon: number;
+  /** Estimated UTC timezone offset in hours (based on longitude) */
+  timezone: number;
+}
+
+/**
+ * State for the custom marker system including sprites, placement mode, and persistence.
+ */
+export interface CustomMarkerState {
+  /** Array of custom marker data (persisted to localStorage) */
+  markers: CustomMarkerData[];
+  /** Map of marker ID to its sprite for quick lookup */
+  sprites: Map<string, THREE.Sprite>;
+  /** Whether the user is currently in place-marker mode */
+  placingMode: boolean;
+  /** Maximum number of custom markers allowed */
+  maxMarkers: number;
+}
+
+/**
  * State for the animated cloud layer rotation.
  */
 export interface CloudAnimationState {
