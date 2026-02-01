@@ -747,6 +747,43 @@
   - TypeScript compiles without errors
   - Build completes successfully
 
+### FEATURE-019: Display timezone boundaries on globe
+- **Status:** COMPLETED
+- **Date:** 2026-02-01
+- **Changes:** Implemented timezone boundary meridian lines with hover tooltip:
+  - Created new `src/scripts/earth/timezones.ts` module with full TypeScript types:
+    - `getTimezoneInfos()` generates timezone info for all 25 standard meridians (-12 to +12)
+    - `initTimezones()` creates meridian lines at 15-degree intervals on the globe
+    - `updateTimezonesRotation()` syncs timezone lines with Earth rotation each frame
+    - `setTimezonesVisible()` toggles visibility
+    - `handleTimezoneHover()` raycasts mouse position to show timezone info tooltip
+  - Timezone boundary visualization:
+    - 25 meridian lines at 15-degree longitude intervals (-180 to +180)
+    - Lines run pole-to-pole with configurable segment count (64 segments)
+    - UTC/prime meridian highlighted in red (0xff4444) with higher opacity
+    - Standard timezone lines in cyan-teal (0x44aacc) at 0.35 opacity
+    - Lines rendered slightly above Earth surface to prevent z-fighting
+  - Hover tooltip shows:
+    - Timezone label (e.g., "UTC+5")
+    - Current local time in that timezone based on time slider position
+    - Geographic coordinates (latitude/longitude) of hover point
+  - Added `TimezoneState` interface to types.ts
+  - Added timezone config constants to config.ts and EarthConfig interface:
+    - `TIMEZONE_LINE_COLOR: 0x44aacc`, `TIMEZONE_LINE_OPACITY: 0.35`
+    - `TIMEZONE_UTC_COLOR: 0xff4444`, `TIMEZONE_SEGMENTS: 64`
+  - Added UI toggle checkbox "Show timezone boundaries" (disabled by default)
+  - Added CSS for timezone tooltip with fixed positioning and monospace font
+  - Earth's axial tilt applied to timezone group
+  - Timezone lines rotate with Earth mesh each frame
+  - Updated index.ts exports and main.ts integration
+  - Tooltip hidden when timezone visualization is disabled
+  - Added 13 unit tests for timezone module:
+    - Config validation (colors, opacity, segments)
+    - getTimezoneInfos() entry count, boundaries, labels, sequential offsets
+  - All 215 tests pass
+  - TypeScript compiles without errors
+  - Build completes successfully
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -803,6 +840,9 @@
 
 ### Phase 9 - Advanced Features (continued)
 - [x] FEATURE-018: Add solar eclipse visualization
+
+### Phase 9 - Advanced Features (continued)
+- [x] FEATURE-019: Display timezone boundaries on globe
 
 ### Phase 11 - Performance & Future-proofing
 - [x] PERF-001: Implement Level-of-Detail (LOD) for Earth mesh

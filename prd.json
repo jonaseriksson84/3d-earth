@@ -685,7 +685,7 @@
         "Legend showing timezone color coding",
         "Performance impact less than 3ms per frame when enabled"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "IMPROVEMENT-001",

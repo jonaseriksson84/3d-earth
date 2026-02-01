@@ -84,6 +84,10 @@ import {
   findEclipseForDate,
   updateEclipseNotification,
   populateEclipseButtons,
+  initTimezones,
+  updateTimezonesRotation,
+  setTimezonesVisible,
+  handleTimezoneHover,
 } from './earth';
 import type {
   SceneObjects,
@@ -104,6 +108,7 @@ import type {
   CloudAnimationState,
   CustomMarkerState,
   EclipseState,
+  TimezoneState,
   CityData,
 } from './earth';
 
@@ -126,6 +131,7 @@ let auroraState: AuroraState | null = null;
 let cloudAnimState: CloudAnimationState | null = null;
 let customMarkerState: CustomMarkerState | null = null;
 let eclipseState: EclipseState | null = null;
+let timezoneState: TimezoneState | null = null;
 let lastFrameTime: number = 0;
 let lastEclipseDateCheck: string = '';
 let selectedCityForSunTimes: CityData | null = null;
@@ -267,6 +273,11 @@ function animate(): void {
           updateEclipseNotification(eclipse, notificationEl);
         }
       }
+    }
+
+    // Keep timezone boundaries synced with Earth rotation
+    if (timezoneState && earthObjects) {
+      updateTimezonesRotation(timezoneState, earthObjects.earth.rotation.y);
     }
 
     // Update satellite positions
@@ -425,6 +436,7 @@ export function initApp(): void {
       cloudAnimState = null;
       customMarkerState = null;
       eclipseState = null;
+      timezoneState = null;
       lastFrameTime = 0;
       lastEclipseDateCheck = '';
       citySearchState = null;
@@ -482,6 +494,9 @@ export function initApp(): void {
 
     // Initialize eclipse visualization (disabled by default)
     eclipseState = initEclipse(sceneObjects);
+
+    // Initialize timezone boundaries (disabled by default)
+    timezoneState = initTimezones(sceneObjects);
 
     // Initialize cloud animation (animated by default)
     cloudAnimState = createCloudAnimationState();
@@ -662,6 +677,17 @@ export function initApp(): void {
       });
     }
 
+    // Set up timezone boundaries toggle
+    const timezoneToggle = document.getElementById('timezoneToggle') as HTMLInputElement | null;
+    if (timezoneToggle) {
+      timezoneToggle.addEventListener('change', (event: Event) => {
+        const target = event.target as HTMLInputElement;
+        if (timezoneState) {
+          setTimezonesVisible(timezoneState, target.checked);
+        }
+      });
+    }
+
     // Populate eclipse quick-jump buttons
     const eclipseButtonsEl = document.getElementById('eclipseButtons');
     populateEclipseButtons(eclipseButtonsEl, (dateStr: string) => {
@@ -692,6 +718,11 @@ export function initApp(): void {
       if (sceneObjects && markerState && timeState) {
         const sliderMinutes = parseInt(timeState.timeSlider.value);
         handleMarkerHover(event, sceneObjects, markerState, sliderMinutes, timeState.selectedDate);
+      }
+      // Timezone hover tooltip
+      if (sceneObjects && timezoneState && timezoneState.visible && timeState) {
+        const sliderMinutes = parseInt(timeState.timeSlider.value);
+        handleTimezoneHover(event, sceneObjects, timezoneState, sliderMinutes);
       }
     });
 

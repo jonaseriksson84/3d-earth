@@ -726,6 +726,21 @@ canvas.placing-marker {
   color: #ffa500;
 }
 
+/* Timezone tooltip */
+.timezone-tooltip {
+  position: fixed;
+  background: rgba(10, 22, 40, 0.9);
+  border: 1px solid rgba(68, 170, 204, 0.6);
+  border-radius: 4px;
+  color: #88ddee;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+  pointer-events: none;
+  z-index: 1000;
+  white-space: nowrap;
+}
+
 /* Controls panel responsive layout for mobile */
 @media (max-width: 480px) {
   .controls {

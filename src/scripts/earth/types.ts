@@ -93,6 +93,14 @@ export interface EarthConfig {
   CLOUD_DRIFT_SPEED: number;
   /** OrbitControls damping factor for smooth deceleration */
   DAMPING_FACTOR: number;
+  /** Color for timezone boundary lines (hex) */
+  TIMEZONE_LINE_COLOR: number;
+  /** Opacity for timezone boundary lines (0-1) */
+  TIMEZONE_LINE_OPACITY: number;
+  /** Color for the UTC/prime meridian line (hex) */
+  TIMEZONE_UTC_COLOR: number;
+  /** Number of latitude segments per timezone boundary line */
+  TIMEZONE_SEGMENTS: number;
 }
 
 /**
@@ -439,6 +447,20 @@ export interface CloudAnimationState {
   mode: 'static' | 'animated';
   /** Accumulated cloud rotation offset from Earth in radians */
   rotationOffset: number;
+}
+
+/**
+ * State for timezone boundary lines on the globe.
+ */
+export interface TimezoneState {
+  /** Group containing all timezone boundary lines */
+  group: THREE.Group;
+  /** Array of timezone line objects (24 standard + 1 highlighted UTC) */
+  lines: THREE.Line[];
+  /** Whether timezone boundaries are currently visible */
+  visible: boolean;
+  /** Tooltip element for displaying timezone info on hover */
+  tooltip: HTMLDivElement | null;
 }
 
 /**

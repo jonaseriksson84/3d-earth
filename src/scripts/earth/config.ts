@@ -79,4 +79,10 @@ export const CONFIG: EarthConfig = {
 
   // Controls
   DAMPING_FACTOR: 0.05,
+
+  // Timezone boundaries
+  TIMEZONE_LINE_COLOR: 0x44aacc, // Cyan-teal for timezone lines
+  TIMEZONE_LINE_OPACITY: 0.35,
+  TIMEZONE_UTC_COLOR: 0xff4444, // Red for UTC/prime meridian
+  TIMEZONE_SEGMENTS: 64, // Latitude segments per timezone line
 };
