@@ -815,6 +815,43 @@
   - TypeScript compiles without errors
   - Build completes successfully
 
+### PERF-002: Implement texture compression with KTX2/Basis
+- **Status:** COMPLETED
+- **Date:** 2026-02-01
+- **Changes:** Implemented KTX2/Basis Universal texture compression with automatic JPEG fallback:
+  - Converted all three Earth textures to KTX2 format with Basis ETC1S encoding:
+    - `earth_day.jpg` (4.4MB) → `earth_day.ktx2` (1.9MB) — 57% reduction
+    - `earth_night.jpg` (3.0MB) → `earth_night.ktx2` (979KB) — 67% reduction
+    - `earth_clouds.jpg` (12MB) → `earth_clouds.ktx2` (3.6MB) — 70% reduction
+    - Total: 19.4MB → 6.5MB — **67% file size reduction** (exceeds 50% target)
+  - Created new `src/scripts/earth/textureCompression.ts` module with full TypeScript types:
+    - `KTX2_TEXTURES` and `JPEG_TEXTURES` path constants for both formats
+    - `supportsCompressedTextures()` detects GPU compressed texture format support
+    - `createKTX2Loader()` configures KTX2Loader with Basis transcoder path and GPU detection
+    - `loadTexturesWithCompression()` tries KTX2 first, falls back to JPEG automatically
+    - `loadJPEGTextures()` loads standard JPEG textures as fallback
+  - Copied Basis Universal transcoder files to `public/basis/`:
+    - `basis_transcoder.js` (63KB) — JavaScript transcoder
+    - `basis_transcoder.wasm` (440KB) — WebAssembly transcoder
+  - Updated `src/scripts/earth/earth.ts`:
+    - `initEarth()` now uses `loadTexturesWithCompression()` instead of direct TextureLoader
+    - Removed manual TextureLoader instantiation for Earth textures
+    - Both KTX2 and JPEG paths use the same LoadingManager for progress tracking
+  - KTX2Loader uses Three.js 0.128 built-in KTX2Loader + BasisTextureLoader:
+    - Web Worker-based transcoding for non-blocking decompression
+    - Automatic GPU format selection (S3TC, ETC1, ETC2, ASTC, BPTC, PVRTC)
+    - GPU-native decompression (no CPU decode after transcoding)
+  - Updated `src/scripts/earth/index.ts` with textureCompression exports
+  - Added 8 unit tests for texture compression configuration:
+    - KTX2 and JPEG texture path validation
+    - File extension verification (.ktx2 and .jpg)
+    - Directory path consistency
+    - Matching keys between KTX2 and JPEG texture maps
+    - Base filename consistency between compressed and fallback versions
+  - All 232 tests pass
+  - TypeScript compiles without errors
+  - Build completes successfully
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -879,3 +916,4 @@
 - [x] PERF-001: Implement Level-of-Detail (LOD) for Earth mesh
 - [x] IMPROVEMENT-007: Add Progressive Web App (PWA) support
 - [x] PERF-003: Implement GPU instancing for markers and particles
+- [x] PERF-002: Implement texture compression with KTX2/Basis

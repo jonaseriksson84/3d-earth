@@ -11,6 +11,7 @@ import * as THREE from 'three';
 import { CONFIG } from './config';
 import type { EarthObjects, SceneObjects, LoadingState } from './types';
 import { createTextureLoadingManager, showErrorOverlay } from './loading';
+import { loadTexturesWithCompression } from './textureCompression';
 
 function getVertexShader(): string {
   return `
@@ -95,22 +96,12 @@ export function initEarth(
     }
   );
 
-  const textureLoader = new THREE.TextureLoader(loadingManager);
   const lodLevels = getLODLevels();
 
-  // Load Earth textures
-  const dayTexture = textureLoader.load(
-    '/textures/earth_day.jpg',
-    undefined,
-    undefined,
-    () => console.warn('Day texture failed')
-  );
-  const nightTexture = textureLoader.load(
-    '/textures/earth_night.jpg',
-    undefined,
-    undefined,
-    () => console.warn('Night lights texture failed')
-  );
+  // Load Earth textures with KTX2 compression support and JPEG fallback
+  const textures = loadTexturesWithCompression(renderer, loadingManager);
+  const dayTexture = textures.dayTexture;
+  const nightTexture = textures.nightTexture;
 
   // Earth shader material (shared across LOD levels)
   const earthMaterial = new THREE.ShaderMaterial({
@@ -146,12 +137,7 @@ export function initEarth(
   scene.add(earth);
 
   // Clouds LOD with matching detail levels
-  const cloudTexture = textureLoader.load(
-    '/textures/earth_clouds.jpg',
-    undefined,
-    undefined,
-    () => console.warn('Cloud texture failed')
-  );
+  const cloudTexture = textures.cloudTexture;
   const cloudsMaterial = new THREE.MeshLambertMaterial({
     map: cloudTexture,
     transparent: true,

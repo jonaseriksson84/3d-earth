@@ -939,7 +939,7 @@
         "Transcoder WASM files properly served",
         "Texture loading time reduced by 30%+ on average connections"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "PERF-003",
