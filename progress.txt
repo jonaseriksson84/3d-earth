@@ -784,6 +784,37 @@
   - TypeScript compiles without errors
   - Build completes successfully
 
+### PERF-003: Implement GPU instancing for markers and particles
+- **Status:** COMPLETED
+- **Date:** 2026-02-01
+- **Changes:** Implemented GPU instancing and shared material optimizations across star field, city markers, and satellite markers:
+  - Updated `src/scripts/earth/stars.ts`:
+    - Replaced `THREE.BufferGeometry` with `THREE.InstancedBufferGeometry` for per-star attributes
+    - Added per-instance `offset` attribute (3D position on sphere)
+    - Added per-instance `starSize` attribute for varying star brightness (0.3x to 2.5x base size)
+    - Added per-instance `starColor` attribute for subtle warm/cool color variation
+    - Custom GLSL vertex shader positions stars from offset attribute and applies size attenuation
+    - Custom GLSL fragment shader renders circular points with soft edges
+    - All 5000+ stars rendered in a single draw call with GPU-native instancing
+    - Exported `STARS_CONFIG` for testability with new `minSizeMultiplier` and `maxSizeMultiplier` fields
+  - Updated `src/scripts/earth/markers.ts`:
+    - Added shared texture/material cache for city markers (`sharedCityTexture`, `sharedCityMaterial`)
+    - Added shared texture/material cache for user location marker (`sharedUserTexture`, `sharedUserMaterial`)
+    - All 55+ city markers now share a single `SpriteMaterial` instead of creating individual materials
+    - Reduces material/texture GPU memory from 55 to 2 (city + user)
+    - Marker hover and click detection continue to work unchanged via raycasting
+  - Updated `src/scripts/earth/satellites.ts`:
+    - Added `satelliteTextureCache` Map keyed by color to avoid redundant canvas texture creation
+    - Satellite markers with same color reuse cached textures
+  - Added 9 unit tests in `stars.test.ts`:
+    - Star count, radius, base size validation
+    - Size multiplier range and bounds validation
+    - Minimum and maximum star size checks
+    - Size attenuation enabled check
+  - All 224 tests pass
+  - TypeScript compiles without errors
+  - Build completes successfully
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -847,3 +878,4 @@
 ### Phase 11 - Performance & Future-proofing
 - [x] PERF-001: Implement Level-of-Detail (LOD) for Earth mesh
 - [x] IMPROVEMENT-007: Add Progressive Web App (PWA) support
+- [x] PERF-003: Implement GPU instancing for markers and particles

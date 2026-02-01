@@ -109,6 +109,15 @@ export function latLonToPosition(
 }
 
 /**
+ * Cached shared textures and materials for GPU-efficient marker rendering.
+ * City markers share a single texture and material to minimize draw calls.
+ */
+let sharedCityTexture: THREE.CanvasTexture | null = null;
+let sharedCityMaterial: THREE.SpriteMaterial | null = null;
+let sharedUserTexture: THREE.CanvasTexture | null = null;
+let sharedUserMaterial: THREE.SpriteMaterial | null = null;
+
+/**
  * Create a circular marker texture using canvas
  */
 function createMarkerTexture(
@@ -162,20 +171,52 @@ function createMarkerTexture(
 }
 
 /**
- * Create a sprite marker for a city
+ * Gets or creates a shared SpriteMaterial for city markers.
+ * All city markers share one texture and one material, reducing draw calls
+ * from N (one per marker) to effectively 1 shared material.
+ *
+ * @returns Shared SpriteMaterial for city markers
+ */
+function getSharedCityMaterial(): THREE.SpriteMaterial {
+  if (!sharedCityMaterial) {
+    sharedCityTexture = createMarkerTexture('#ffcc00');
+    sharedCityMaterial = new THREE.SpriteMaterial({
+      map: sharedCityTexture,
+      transparent: true,
+      depthTest: true,
+      depthWrite: false,
+    });
+  }
+  return sharedCityMaterial;
+}
+
+/**
+ * Gets or creates a shared SpriteMaterial for the user location marker.
+ *
+ * @returns Shared SpriteMaterial for user marker
+ */
+function getSharedUserMaterial(): THREE.SpriteMaterial {
+  if (!sharedUserMaterial) {
+    sharedUserTexture = createMarkerTexture('#00ff88', true);
+    sharedUserMaterial = new THREE.SpriteMaterial({
+      map: sharedUserTexture,
+      transparent: true,
+      depthTest: true,
+      depthWrite: false,
+    });
+  }
+  return sharedUserMaterial;
+}
+
+/**
+ * Create a sprite marker for a city using shared materials for GPU efficiency.
+ * City markers all share a single texture/material pair, reducing draw calls.
  */
 function createMarkerSprite(
-  color: string,
+  _color: string,
   isUserLocation: boolean = false
 ): THREE.Sprite {
-  const texture = createMarkerTexture(color, isUserLocation);
-  const material = new THREE.SpriteMaterial({
-    map: texture,
-    transparent: true,
-    depthTest: true,
-    depthWrite: false,
-  });
-
+  const material = isUserLocation ? getSharedUserMaterial() : getSharedCityMaterial();
   const sprite = new THREE.Sprite(material);
   const scale = isUserLocation ? 0.35 : 0.25;
   sprite.scale.set(scale, scale, 1);

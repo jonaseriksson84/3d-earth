@@ -967,7 +967,7 @@
         "Marker hover detection works with instanced rendering",
         "Memory usage reduced compared to individual meshes"
       ],
-      "passes": false
+      "passes": true
     }
   ],
   "summary": {

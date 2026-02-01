@@ -129,7 +129,14 @@ export function generateOrbitPoints(
   return points;
 }
 
+/** Cache for satellite marker textures keyed by color to avoid redundant canvas creation */
+const satelliteTextureCache = new Map<number, THREE.Texture>();
+
 function createSatelliteMarkerTexture(color: number): THREE.Texture {
+  // Return cached texture if already created for this color
+  const cached = satelliteTextureCache.get(color);
+  if (cached) return cached;
+
   const canvas = document.createElement('canvas');
   canvas.width = 32;
   canvas.height = 32;
@@ -161,6 +168,7 @@ function createSatelliteMarkerTexture(color: number): THREE.Texture {
   ctx.fill();
 
   const texture = new THREE.CanvasTexture(canvas);
+  satelliteTextureCache.set(color, texture);
   return texture;
 }
 
