@@ -71,7 +71,7 @@ export const CONFIG: EarthConfig = {
   AURORA_ANIMATION_SPEED: 0.8, // Animation speed multiplier
 
   // Cloud animation
-  CLOUD_DRIFT_SPEED: 0.002, // Radians per second - slow westward drift simulating trade winds
+  CLOUD_DRIFT_SPEED: 0.03, // Radians per second - westward drift simulating trade winds
 
   // Default location (Stockholm)
   DEFAULT_LONGITUDE: 18,
