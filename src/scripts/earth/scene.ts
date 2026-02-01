@@ -1,8 +1,8 @@
 /**
- * Scene initialization and WebGL support detection.
+ * Scene initialization and graphics support detection.
  *
- * Handles creating the Three.js scene, camera, and renderer,
- * as well as checking for WebGL support and displaying error messages.
+ * Handles creating the Three.js scene, camera, and renderer (WebGPU or WebGL),
+ * as well as checking for graphics API support and displaying error messages.
  *
  * @module scene
  */
@@ -10,6 +10,7 @@
 import * as THREE from 'three';
 import { CONFIG } from './config';
 import type { SceneObjects } from './types';
+import { createRenderer } from './webgpu';
 
 /**
  * Checks whether the browser supports WebGL rendering.
@@ -74,11 +75,13 @@ export function initWebGL(): void {
 }
 
 /**
- * Creates and configures the Three.js scene, camera, and WebGL renderer.
+ * Creates and configures the Three.js scene, camera, and renderer.
+ * Automatically detects WebGPU support and selects the optimal rendering backend.
+ * Falls back to WebGL when WebGPU is not available.
  * Appends the renderer's canvas to the document body with accessibility attributes.
  *
  * @returns Initialized scene objects (scene, camera, renderer)
- * @throws {Error} If the WebGL renderer cannot be created
+ * @throws {Error} If the renderer cannot be created
  */
 export function initScene(): SceneObjects {
   try {
@@ -89,18 +92,20 @@ export function initScene(): SceneObjects {
       CONFIG.CAMERA_NEAR,
       CONFIG.CAMERA_FAR
     );
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+
+    // Create renderer with automatic WebGPU/WebGL selection
+    const renderer = createRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x000000, 1);
     renderer.domElement.setAttribute('role', 'img');
     renderer.domElement.setAttribute('aria-label', 'Interactive 3D Earth visualization. Use mouse to rotate and scroll to zoom.');
     document.body.appendChild(renderer.domElement);
 
-    console.log('Scene initialized successfully');
+    console.log(`Scene initialized successfully (${renderer.rendererInfo.backend} backend)`);
 
     return { scene, camera, renderer };
   } catch (error) {
-    console.error('Failed to initialize WebGL renderer:', error);
+    console.error('Failed to initialize renderer:', error);
     showError(
       'Graphics Initialization Failed',
       'Unable to start the 3D graphics system. Please refresh the page or try a different browser.'

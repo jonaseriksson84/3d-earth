@@ -9,6 +9,7 @@
 
 import type * as THREE from 'three';
 import type { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import type { AppRenderer } from './webgpu';
 
 /**
  * Application configuration constants for Earth rendering, camera, lighting, and visual effects.
@@ -104,15 +105,16 @@ export interface EarthConfig {
 }
 
 /**
- * Core Three.js scene objects: the scene graph, camera, and WebGL renderer.
+ * Core Three.js scene objects: the scene graph, camera, and renderer.
+ * The renderer is an AppRenderer abstraction that supports both WebGPU and WebGL backends.
  */
 export interface SceneObjects {
   /** The Three.js scene graph */
   scene: THREE.Scene;
   /** Perspective camera for viewing the Earth */
   camera: THREE.PerspectiveCamera;
-  /** WebGL renderer attached to the DOM */
-  renderer: THREE.WebGLRenderer;
+  /** Renderer abstraction supporting WebGPU and WebGL backends */
+  renderer: AppRenderer;
 }
 
 /**

@@ -31,3 +31,4 @@ export * from './customMarkers';
 export * from './eclipse';
 export * from './timezones';
 export * from './textureCompression';
+export * from './webgpu';

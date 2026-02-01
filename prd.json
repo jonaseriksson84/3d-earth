@@ -855,7 +855,7 @@
         "Feature detection logged for debugging",
         "Three.js WebGPURenderer used for implementation"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "IMPROVEMENT-007",

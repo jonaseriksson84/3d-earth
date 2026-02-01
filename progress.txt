@@ -852,6 +852,68 @@
   - TypeScript compiles without errors
   - Build completes successfully
 
+### IMPROVEMENT-006: Add WebGPU support for modern browsers
+- **Status:** COMPLETED
+- **Date:** 2026-02-01
+- **Changes:** Implemented WebGPU detection, renderer abstraction, and WebGL fallback:
+  - Created new `src/scripts/earth/webgpu.ts` module with full TypeScript types:
+    - `RendererInfo` interface describing active rendering backend (webgpu/webgl)
+    - `AppRenderer` interface providing common renderer API for both backends
+    - `detectWebGPUSupport()` checks `navigator.gpu` availability
+    - `verifyWebGPUAdapter()` asynchronously confirms GPU adapter accessibility
+    - `createRenderer()` factory creates appropriate renderer with automatic backend selection
+    - `WGSL_SHADERS` object containing WGSL equivalents of all GLSL shaders (earth vertex/fragment, atmosphere vertex/fragment)
+    - `getWGSLShader()` helper to retrieve WGSL shader source by name
+  - Renderer abstraction layer:
+    - `AppRenderer` wraps `THREE.WebGLRenderer` (or `THREE.WebGPURenderer` when available)
+    - Common interface: `domElement`, `setSize()`, `setClearColor()`, `render()`, `rendererInfo`, `nativeRenderer`
+    - `nativeRenderer` provides direct access to underlying Three.js renderer for API-specific operations
+    - `rendererInfo` reports backend type, WebGPU availability, and human-readable description
+  - Updated `src/scripts/earth/types.ts`:
+    - `SceneObjects.renderer` changed from `THREE.WebGLRenderer` to `AppRenderer`
+    - Import added for `AppRenderer` type from webgpu module
+  - Updated `src/scripts/earth/scene.ts`:
+    - `initScene()` now uses `createRenderer()` factory instead of direct `THREE.WebGLRenderer`
+    - Logs active rendering backend on initialization
+    - Import added for `createRenderer` from webgpu module
+  - Updated `src/scripts/earth/textureCompression.ts`:
+    - `supportsCompressedTextures()` accepts `AppRenderer` and uses `nativeRenderer.extensions`
+    - `createKTX2Loader()` accepts `AppRenderer` and passes `nativeRenderer` for GPU format detection
+    - `loadTexturesWithCompression()` accepts `AppRenderer`
+  - Updated `src/scripts/earth/flyTo.test.ts`:
+    - Mock SceneObjects updated to use `AppRenderer` interface
+  - Updated `src/pages/index.astro`:
+    - Added `rendererInfo` div in instructions panel for displaying active backend
+  - Updated `src/styles/global.css`:
+    - Added `.renderer-info` styles for subtle renderer backend indicator
+  - Updated `src/scripts/main.ts`:
+    - Populates renderer info UI element with active backend name and description tooltip
+  - Updated `src/scripts/earth/index.ts`:
+    - Added webgpu module to barrel exports
+  - WGSL shader ports:
+    - Earth vertex shader ported to WGSL (VertexInput/VertexOutput structs, uniform bindings)
+    - Earth fragment shader ported to WGSL (textureSample, smoothstep, sun direction dot product)
+    - Atmosphere vertex shader ported to WGSL (world position, normal matrix transforms)
+    - Atmosphere fragment shader ported to WGSL (Fresnel calculation, glow color/intensity)
+  - WebGPU detection and logging:
+    - Detects `navigator.gpu` API availability
+    - Asynchronously verifies GPU adapter accessibility
+    - Checks for `THREE.WebGPURenderer` availability in Three.js build
+    - Comprehensive console logging for debugging renderer selection
+  - WebGL fallback:
+    - Automatic fallback when WebGPU not available or Three.js version lacks WebGPURenderer
+    - All existing functionality preserved with WebGL rendering
+    - No visual differences between WebGPU and WebGL paths
+  - Added 19 unit tests for WebGPU module:
+    - `detectWebGPUSupport()` with/without navigator.gpu
+    - `verifyWebGPUAdapter()` success, null adapter, and error cases
+    - WGSL shader content validation (vertex/fragment, earth/atmosphere)
+    - `getWGSLShader()` name lookup
+    - `RendererInfo` type structure for all backend configurations
+  - All 251 tests pass
+  - TypeScript compiles without errors
+  - Build completes successfully
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -917,3 +979,4 @@
 - [x] IMPROVEMENT-007: Add Progressive Web App (PWA) support
 - [x] PERF-003: Implement GPU instancing for markers and particles
 - [x] PERF-002: Implement texture compression with KTX2/Basis
+- [x] IMPROVEMENT-006: Add WebGPU support for modern browsers

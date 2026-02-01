@@ -860,6 +860,14 @@ export function initApp(): void {
     refreshSunTimesPanel();
     animate();
 
+    // Display renderer backend info in UI
+    const rendererInfoEl = document.getElementById('rendererInfo');
+    if (rendererInfoEl && sceneObjects) {
+      const info = sceneObjects.renderer.rendererInfo;
+      rendererInfoEl.textContent = `Renderer: ${info.backend.toUpperCase()}`;
+      rendererInfoEl.title = info.description;
+    }
+
     console.log('Application initialized successfully');
   } catch (error) {
     console.error('Failed to initialize application:', error);

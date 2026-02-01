@@ -14,7 +14,12 @@ function createMockSceneObjects(): SceneObjects {
     camera: new THREE.PerspectiveCamera(75, 1, 0.1, 1000),
     renderer: {
       domElement: {} as HTMLCanvasElement,
-    } as unknown as THREE.WebGLRenderer,
+      setSize: () => {},
+      setClearColor: () => {},
+      render: () => {},
+      rendererInfo: { backend: 'webgl' as const, webgpuAvailable: false, description: 'WebGL' },
+      nativeRenderer: {} as THREE.WebGLRenderer,
+    },
   };
 }
 

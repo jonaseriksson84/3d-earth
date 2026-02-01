@@ -10,6 +10,7 @@
 import * as THREE from 'three';
 // @ts-ignore - Three.js 0.128 examples don't have type declarations
 import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js';
+import type { AppRenderer } from './webgpu';
 
 /** Path to the Basis Universal transcoder WASM/JS files */
 const TRANSCODER_PATH = '/basis/';
@@ -32,11 +33,11 @@ export const JPEG_TEXTURES = {
  * Whether the browser supports any GPU compressed texture format
  * that Basis Universal can transcode to.
  *
- * @param renderer - WebGL renderer to check extensions on
+ * @param renderer - AppRenderer (uses the native WebGL renderer for extension checks)
  * @returns true if at least one compressed texture format is supported
  */
-export function supportsCompressedTextures(renderer: THREE.WebGLRenderer): boolean {
-  const ext = renderer.extensions;
+export function supportsCompressedTextures(renderer: AppRenderer): boolean {
+  const ext = renderer.nativeRenderer.extensions;
   return (
     ext.has('WEBGL_compressed_texture_s3tc') ||
     ext.has('WEBGL_compressed_texture_etc1') ||
@@ -51,17 +52,17 @@ export function supportsCompressedTextures(renderer: THREE.WebGLRenderer): boole
 /**
  * Creates a configured KTX2Loader with Basis transcoder path and GPU format detection.
  *
- * @param renderer - WebGL renderer for GPU format detection
+ * @param renderer - AppRenderer for GPU format detection (uses native WebGL renderer)
  * @param manager - Loading manager for progress tracking
  * @returns Configured KTX2Loader ready to load .ktx2 files
  */
 export function createKTX2Loader(
-  renderer: THREE.WebGLRenderer,
+  renderer: AppRenderer,
   manager: THREE.LoadingManager
 ): InstanceType<typeof KTX2Loader> {
   const loader = new KTX2Loader(manager);
   loader.setTranscoderPath(TRANSCODER_PATH);
-  loader.detectSupport(renderer);
+  loader.detectSupport(renderer.nativeRenderer);
   return loader;
 }
 
@@ -79,12 +80,12 @@ export interface TextureLoadResult {
  * Attempts to load KTX2 textures first. If the browser doesn't support GPU
  * compressed textures or KTX2 loading fails, falls back to JPEG textures.
  *
- * @param renderer - WebGL renderer for format detection
+ * @param renderer - AppRenderer for format detection
  * @param manager - Loading manager for progress tracking
  * @returns Object containing loaded textures and whether compression was used
  */
 export function loadTexturesWithCompression(
-  renderer: THREE.WebGLRenderer,
+  renderer: AppRenderer,
   manager: THREE.LoadingManager
 ): TextureLoadResult {
   const hasCompression = supportsCompressedTextures(renderer);
