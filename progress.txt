@@ -711,6 +711,42 @@
   - TypeScript compiles without errors
   - Build completes successfully
 
+### IMPROVEMENT-007: Add Progressive Web App (PWA) support
+- **Status:** COMPLETED
+- **Date:** 2026-02-01
+- **Changes:** Implemented PWA support with web app manifest, service worker, and offline caching:
+  - Created `public/manifest.webmanifest` with app metadata:
+    - Full name "3D Earth Visualization", short name "Earth"
+    - Standalone display mode for app-like experience
+    - Theme and background color matching app (#0a1628)
+    - SVG icons for both standard and maskable purposes
+    - Education category classification
+  - Created SVG icons in `public/icons/`:
+    - `icon.svg`: Earth-themed icon with blue globe, green continents, and atmospheric glow
+    - `icon-maskable.svg`: Same design with safe-zone padding for adaptive icons
+  - Created `public/service-worker.js` with intelligent caching strategy:
+    - Cache-first for textures (large files, rarely change)
+    - Cache-first for static assets (`_astro/*`, `icons/*`)
+    - Network-first for HTML and other assets (ensures fresh content)
+    - Old cache cleanup on service worker activation
+    - Graceful offline fallback for all request types
+    - `skipWaiting()` and `clients.claim()` for immediate activation
+  - Created `src/scripts/register-sw.ts` for service worker registration:
+    - Registers service worker on window load event
+    - Feature-detects `serviceWorker` API before registration
+    - Logs registration errors to console
+  - Updated `src/pages/index.astro` head section:
+    - Added `<meta name="description">` for app description
+    - Added `<meta name="theme-color" content="#0a1628">` for browser chrome
+    - Added `<link rel="manifest">` pointing to webmanifest
+    - Added `<link rel="icon">` with SVG favicon
+    - Added `<link rel="apple-touch-icon">` for iOS home screen
+  - App works fully offline after first load (all critical assets cached)
+  - Install prompt appears on supported browsers
+  - All 202 tests pass
+  - TypeScript compiles without errors
+  - Build completes successfully
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -770,3 +806,4 @@
 
 ### Phase 11 - Performance & Future-proofing
 - [x] PERF-001: Implement Level-of-Detail (LOD) for Earth mesh
+- [x] IMPROVEMENT-007: Add Progressive Web App (PWA) support

@@ -1,0 +1,25 @@
+{
+  "name": "3D Earth Visualization",
+  "short_name": "Earth",
+  "description": "Interactive 3D Earth with day/night visualization, city markers, moon phases, and astronomical features",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#0a1628",
+  "background_color": "#0a1628",
+  "categories": ["education", "weather"],
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

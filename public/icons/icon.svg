@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="earth" cx="40%" cy="35%" r="55%">
+      <stop offset="0%" stop-color="#5b9bd5"/>
+      <stop offset="50%" stop-color="#2e75b6"/>
+      <stop offset="100%" stop-color="#1a4472"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="80%" stop-color="transparent"/>
+      <stop offset="95%" stop-color="#88ccff" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#88ccff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="256" cy="256" r="250" fill="#0a1628"/>
+  <circle cx="256" cy="256" r="200" fill="url(#earth)"/>
+  <!-- Simplified continent shapes -->
+  <ellipse cx="220" cy="180" rx="45" ry="35" fill="#4a8c3f" opacity="0.8"/>
+  <ellipse cx="280" cy="230" rx="30" ry="50" fill="#4a8c3f" opacity="0.7"/>
+  <ellipse cx="190" cy="280" rx="25" ry="20" fill="#4a8c3f" opacity="0.7"/>
+  <ellipse cx="320" cy="190" rx="35" ry="25" fill="#4a8c3f" opacity="0.6"/>
+  <!-- Atmosphere glow -->
+  <circle cx="256" cy="256" r="210" fill="url(#glow)"/>
+  <!-- Highlight -->
+  <ellipse cx="210" cy="190" rx="80" ry="60" fill="white" opacity="0.08"/>
+</svg>

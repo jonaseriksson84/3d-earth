@@ -883,7 +883,7 @@
         "Lighthouse PWA score 90+",
         "Background sync for time updates when back online (optional)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "PERF-001",
