@@ -690,6 +690,42 @@ canvas.placing-marker {
   }
 }
 
+/* Eclipse notification and buttons */
+.eclipse-notification {
+  margin-top: 6px;
+  padding: 6px 8px;
+  background: rgba(255, 160, 0, 0.2);
+  border: 1px solid rgba(255, 160, 0, 0.5);
+  border-radius: 4px;
+  font-size: 12px;
+  color: #ffa500;
+  line-height: 1.4;
+}
+
+.eclipse-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.eclipse-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+  color: #ccc;
+  padding: 3px 7px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.eclipse-btn:hover {
+  background: rgba(255, 160, 0, 0.25);
+  border-color: rgba(255, 160, 0, 0.5);
+  color: #ffa500;
+}
+
 /* Controls panel responsive layout for mobile */
 @media (max-width: 480px) {
   .controls {

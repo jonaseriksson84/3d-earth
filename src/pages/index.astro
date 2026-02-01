@@ -159,6 +159,14 @@ import '../styles/global.css';
 
       <div class="slider-container">
         <label>
+          <input type="checkbox" id="eclipseToggle" aria-label="Toggle solar eclipse visualization" /> Show eclipses
+        </label>
+        <div id="eclipseNotification" class="eclipse-notification" style="display: none;" aria-live="polite"></div>
+        <div id="eclipseButtons" class="eclipse-buttons" aria-label="Quick-jump to upcoming eclipses"></div>
+      </div>
+
+      <div class="slider-container">
+        <label>
           <input type="checkbox" id="atmosphereToggle" checked aria-label="Toggle atmospheric glow effect" /> Show atmosphere
         </label>
       </div>

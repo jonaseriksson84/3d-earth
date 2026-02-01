@@ -400,6 +400,38 @@ export interface CustomMarkerState {
 }
 
 /**
+ * Data for a solar eclipse event including date, type, and location of maximum eclipse.
+ */
+export interface EclipseData {
+  /** Date of the eclipse in YYYY-MM-DD format */
+  date: string;
+  /** Type of solar eclipse */
+  type: 'total' | 'annular' | 'partial';
+  /** Human-readable description of the eclipse */
+  description: string;
+  /** Latitude of maximum eclipse point in degrees */
+  maxLat: number;
+  /** Longitude of maximum eclipse point in degrees */
+  maxLon: number;
+}
+
+/**
+ * State for the solar eclipse shadow visualization on Earth's surface.
+ */
+export interface EclipseState {
+  /** Group containing the eclipse shadow mesh, rotated with Earth */
+  group: THREE.Group;
+  /** Eclipse shadow mesh rendered on Earth's surface */
+  mesh: THREE.Mesh;
+  /** Shader material for umbra/penumbra shadow rendering */
+  material: THREE.ShaderMaterial;
+  /** Whether eclipse visualization is enabled by the user */
+  visible: boolean;
+  /** Currently active eclipse data, or null if no eclipse on selected date */
+  currentEclipse: EclipseData | null;
+}
+
+/**
  * State for the animated cloud layer rotation.
  */
 export interface CloudAnimationState {

@@ -673,6 +673,44 @@
   - TypeScript compiles without errors
   - Build completes successfully
 
+### FEATURE-018: Add solar eclipse visualization
+- **Status:** COMPLETED
+- **Date:** 2026-02-01
+- **Changes:** Implemented solar eclipse visualization with shadow projection and eclipse database:
+  - Created new `src/scripts/earth/eclipse.ts` module with full TypeScript types:
+    - `ECLIPSES` database with 16 solar eclipses from 2024-2030 (total, annular, partial)
+    - `findEclipseForDate()` finds eclipse matching a date string
+    - `getNextEclipse()` returns the next upcoming eclipse from a given date
+    - `initEclipse()` creates shadow mesh with custom shader material
+    - `updateEclipseForDate()` positions shadow and configures shader based on eclipse type
+    - `updateEclipseRotation()` syncs shadow with Earth rotation
+    - `setEclipseVisible()` toggles visibility
+    - `updateEclipseNotification()` shows/hides eclipse info in UI
+    - `populateEclipseButtons()` creates quick-jump buttons for upcoming eclipses
+  - Custom GLSL shader for eclipse shadow rendering:
+    - Renders umbra (dark core) and penumbra (gradient shadow) on Earth surface
+    - Different shadow profiles for total (darkest), annular (ring of fire), and partial eclipses
+    - Uses angular distance from eclipse center for smooth gradient falloff
+    - Shadow mesh slightly above Earth surface to prevent z-fighting
+  - Added `EclipseData` and `EclipseState` interfaces to types.ts
+  - Added UI controls in index.astro:
+    - Toggle checkbox "Show eclipses" (disabled by default)
+    - Eclipse notification banner showing eclipse type and description when date matches
+    - Quick-jump buttons for next 5 upcoming eclipses with date and type
+  - Eclipse shadow rotates with Earth mesh (axial tilt applied)
+  - Notification appears automatically when navigating to an eclipse date
+  - Quick-jump buttons set date to eclipse date and time to noon UTC
+  - Added CSS styles for eclipse notification (orange theme) and quick-jump buttons
+  - Updated index.ts exports and main.ts integration
+  - Eclipse state properly reset in retry handler
+  - Added 14 unit tests for eclipse module:
+    - Database validation (field completeness, date sorting, year range, types)
+    - findEclipseForDate() with known dates, non-eclipse dates, and empty string
+    - getNextEclipse() with dates before, on, between, and after all eclipses
+  - All 202 tests pass
+  - TypeScript compiles without errors
+  - Build completes successfully
+
 ## Pending Tasks
 
 ### Phase 1 - Bug Fixes
@@ -726,6 +764,9 @@
 
 ### Phase 9 - Advanced Features
 - [x] FEATURE-014: Allow users to add custom location markers
+
+### Phase 9 - Advanced Features (continued)
+- [x] FEATURE-018: Add solar eclipse visualization
 
 ### Phase 11 - Performance & Future-proofing
 - [x] PERF-001: Implement Level-of-Detail (LOD) for Earth mesh

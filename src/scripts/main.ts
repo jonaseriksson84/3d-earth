@@ -77,6 +77,13 @@ import {
   removeCustomMarker,
   editCustomMarkerLabel,
   updateCustomMarkersList,
+  initEclipse,
+  updateEclipseForDate,
+  updateEclipseRotation,
+  setEclipseVisible,
+  findEclipseForDate,
+  updateEclipseNotification,
+  populateEclipseButtons,
 } from './earth';
 import type {
   SceneObjects,
@@ -96,6 +103,7 @@ import type {
   AuroraState,
   CloudAnimationState,
   CustomMarkerState,
+  EclipseState,
   CityData,
 } from './earth';
 
@@ -117,7 +125,9 @@ let satelliteState: SatelliteState | null = null;
 let auroraState: AuroraState | null = null;
 let cloudAnimState: CloudAnimationState | null = null;
 let customMarkerState: CustomMarkerState | null = null;
+let eclipseState: EclipseState | null = null;
 let lastFrameTime: number = 0;
+let lastEclipseDateCheck: string = '';
 let selectedCityForSunTimes: CityData | null = null;
 let lastSunTimesDate: string = '';
 
@@ -238,6 +248,24 @@ function animate(): void {
       if (auroraState.visible) {
         const sunDir = earthObjects.earthMaterial.uniforms.sunDirection.value;
         updateAurora(auroraState, dt, sunDir.x, sunDir.y, sunDir.z);
+      }
+    }
+
+    // Update eclipse shadow rotation and date check
+    if (eclipseState && earthObjects) {
+      updateEclipseRotation(eclipseState, earthObjects.earth.rotation.y);
+
+      // Check for eclipse when date changes
+      if (timeState) {
+        const currentDateStr = timeState.datePicker.value;
+        if (currentDateStr !== lastEclipseDateCheck) {
+          lastEclipseDateCheck = currentDateStr;
+          updateEclipseForDate(eclipseState, currentDateStr);
+          // Update notification
+          const eclipse = findEclipseForDate(currentDateStr);
+          const notificationEl = document.getElementById('eclipseNotification');
+          updateEclipseNotification(eclipse, notificationEl);
+        }
       }
     }
 
@@ -396,7 +424,9 @@ export function initApp(): void {
       auroraState = null;
       cloudAnimState = null;
       customMarkerState = null;
+      eclipseState = null;
       lastFrameTime = 0;
+      lastEclipseDateCheck = '';
       citySearchState = null;
       selectedCityForSunTimes = null;
       lastSunTimesDate = '';
@@ -449,6 +479,9 @@ export function initApp(): void {
 
     // Initialize aurora effects (disabled by default)
     auroraState = initAurora(sceneObjects);
+
+    // Initialize eclipse visualization (disabled by default)
+    eclipseState = initEclipse(sceneObjects);
 
     // Initialize cloud animation (animated by default)
     cloudAnimState = createCloudAnimationState();
@@ -612,6 +645,36 @@ export function initApp(): void {
         }
       });
     }
+
+    // Set up eclipse toggle
+    const eclipseToggle = document.getElementById('eclipseToggle') as HTMLInputElement | null;
+    if (eclipseToggle) {
+      eclipseToggle.addEventListener('change', (event: Event) => {
+        const target = event.target as HTMLInputElement;
+        if (eclipseState) {
+          setEclipseVisible(eclipseState, target.checked);
+          // Re-check current date for eclipse
+          if (target.checked && timeState) {
+            const dateStr = timeState.datePicker.value;
+            updateEclipseForDate(eclipseState, dateStr);
+          }
+        }
+      });
+    }
+
+    // Populate eclipse quick-jump buttons
+    const eclipseButtonsEl = document.getElementById('eclipseButtons');
+    populateEclipseButtons(eclipseButtonsEl, (dateStr: string) => {
+      if (timeState) {
+        timeState.datePicker.value = dateStr;
+        timeState.selectedDate = new Date(dateStr + 'T12:00:00');
+        timeState.lastDateValue = dateStr;
+        timeState.needsSunUpdate = true;
+        // Set time to noon for best eclipse viewing
+        timeState.timeSlider.value = '720';
+        timeState.lastSliderValue = '720';
+      }
+    });
 
     // Set up cloud animation mode select
     const cloudModeSelect = document.getElementById('cloudModeSelect') as HTMLSelectElement | null;

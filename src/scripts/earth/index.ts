@@ -28,3 +28,4 @@ export * from './satellites';
 export * from './aurora';
 export * from './clouds';
 export * from './customMarkers';
+export * from './eclipse';

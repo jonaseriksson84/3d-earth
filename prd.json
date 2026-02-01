@@ -657,7 +657,7 @@
         "Quick-jump buttons to next upcoming eclipses",
         "Tooltip shows eclipse type (total, partial, annular) and path info"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "FEATURE-019",
