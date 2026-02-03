@@ -1,128 +1,157 @@
-# 3D Earth with Real-Time Sun Position
+# 3D Earth
 
-An interactive 3D Earth visualization that displays real-time day/night cycles based on accurate astronomical calculations and your geographic location.
+An interactive 3D Earth visualization with real-time day/night cycles, astronomical features, and geolocation integration.
 
 ## Features
 
-- **Real-Time Sun Positioning**: Uses NOAA equations for precise sun position calculation
-- **City Lights**: Realistic illuminated cities visible on the dark side of Earth
-- **Geolocation Integration**: Centers your longitude in the view for personalized lighting
-- **Intuitive Time Control**: Clean slider interface to explore different times of day
-- **Realistic Earth Rendering**: High-quality textures with surface maps, normal maps, and specular reflectance
-- **Cloud Layer**: Semi-transparent global cloud coverage
-- **Interactive Controls**: Mouse drag to rotate, scroll to zoom, with zoom limits to prevent going inside Earth
-- **User-Friendly Interface**: Clear time display and interaction instructions
+### Core Visualization
+- **Real-Time Day/Night Cycle**: Accurate sun positioning using NOAA solar equations
+- **City Lights**: Illuminated cities visible on the dark side of Earth
+- **Cloud Layer**: Animated semi-transparent cloud coverage with drift effect
+- **Atmospheric Glow**: Realistic Fresnel-based atmosphere effect
+- **High-Quality Textures**: Surface maps, normal maps, and specular reflectance
 
-## Technical Implementation
+### Astronomical Features
+- **Moon**: Position updates based on date and sun direction
+- **Solar Eclipse Detection**: Eclipse shadow paths with quick-jump to upcoming eclipses
+- **Aurora Borealis/Australis**: Animated aurora effects around polar regions
+- **Satellite Orbits**: ISS and other satellite orbit visualization
+- **Sunrise/Sunset Calculator**: Display times for selected locations
+- **Day/Night Terminator**: Visual boundary line between day and night
 
-### Sun Position Calculation
+### Navigation & Interaction
+- **Geolocation Integration**: Centers view on user's location at startup
+- **City Search**: Autocomplete search with smooth fly-to animations
+- **Custom Markers**: Place up to 50 custom markers with labels (persisted to localStorage)
+- **Mouse Controls**: Drag to rotate, scroll to zoom
+- **Keyboard Navigation**: Space for play/pause, arrow keys for time stepping
 
-The sun's position is calculated using standard astronomical formulas:
+### Time Controls
+- **Time Slider**: 15-minute increment control
+- **Date Picker**: With seasonal preset buttons (equinoxes and solstices)
+- **Playback Animation**: Adjustable speed (1x, 10x, 60x, 360x)
+- **UTC & Local Time Display**: Real-time clock display
 
-1. **Day of Year Calculation**: Determines the fractional day of the year
-2. **Solar Declination**: Uses NOAA equations to calculate the sun's latitude
-3. **Equation of Time**: Accounts for Earth's elliptical orbit and axial tilt
-4. **Subsolar Longitude**: Calculates where the sun is directly overhead
+### Visual Overlays
+- **Timezone Boundaries**: Interactive lines with hover tooltips
+- **Reference Grid**: Equator, meridians, and geographic grid lines
+- **Level-of-Detail**: Geometry detail adjusts based on camera distance
 
-```javascript
-// Core formula for subsolar longitude (moves west as time progresses)
-let subsolarLon = -(utcMinutes - 720 + eqTime) * 0.25;
-// Use directly without offset for correct positioning
-let sunLon = subsolarLon;
+### Technical Features
+- **Progressive Web App**: Installable with offline support
+- **WebGPU Support**: With automatic WebGL fallback
+- **Texture Compression**: KTX2/Basis Universal with JPEG fallback
+- **GPU Instancing**: Optimized rendering for stars and markers
+
+## Tech Stack
+
+- **[Astro](https://astro.build/)** - Static site framework
+- **[Three.js](https://threejs.org/)** - 3D graphics library
+- **[TypeScript](https://www.typescriptlang.org/)** - Type-safe JavaScript
+- **[Cloudflare Workers](https://workers.cloudflare.com/)** - Deployment target
+- **[Vitest](https://vitest.dev/)** - Unit testing
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- pnpm
+
+### Installation
+
+```bash
+pnpm install
 ```
 
-### City Lights Implementation
+### Development
 
-City lights are rendered using a custom shader that blends day and night textures:
-
-```javascript
-// Custom shader blends textures based on sun position
-const earthMaterial = new THREE.ShaderMaterial({
-    uniforms: {
-        dayTexture: { value: dayTexture },
-        nightTexture: { value: nightTexture },
-        sunDirection: { value: new THREE.Vector3() }
-    },
-    // Shader calculates lighting in object space for proper rotation
-    fragmentShader: `
-        float sunDot = dot(objectNormal, normalize(sunDirection));
-        float mixFactor = smoothstep(-0.1, 0.1, sunDot);
-        vec4 finalColor = mix(nightColor, dayColor, mixFactor);
-    `
-});
+```bash
+pnpm dev
 ```
 
-### Coordinate System
+Open [http://localhost:4321](http://localhost:4321) in your browser.
 
-The project uses object-space coordinates for lighting to ensure proper rotation:
+### Build
 
-- **Geographic coordinates**: Standard longitude/latitude for sun calculations  
-- **Object-space lighting**: Ensures day/night patterns rotate with Earth
-- **OrbitControls integration**: Lighting stays fixed to Earth's surface during user interaction
-
-Key coordinate conversion:
-```javascript
-const x = Math.cos(lat) * Math.cos(lon);
-const y = Math.sin(lat);
-const z = -Math.cos(lat) * Math.sin(lon);  // Inverted for correct Three.js movement
+```bash
+pnpm build
 ```
 
-### User Interface
+### Preview Production Build
 
-Clean, intuitive interface with:
-- **Single time display**: Shows local time with UTC in parentheses
-- **Direct time control**: Slider immediately updates sun position
-- **Interaction guidance**: Clear instructions for mouse controls
-- **Zoom limits**: Prevents camera from going inside Earth geometry
+```bash
+pnpm preview
+```
 
-## User Controls
+## Available Scripts
 
-- **Mouse Drag**: Rotate the Earth in any direction
-- **Mouse Scroll**: Zoom in for surface detail or zoom out for global view
-- **Time Slider**: Adjust time to see how lighting changes throughout the day
+| Command | Description |
+|---------|-------------|
+| `pnpm dev` | Start development server |
+| `pnpm build` | Build for production |
+| `pnpm preview` | Preview production build |
+| `pnpm typecheck` | Run TypeScript type checking |
+| `pnpm test` | Run unit tests |
+| `pnpm test:watch` | Run tests in watch mode |
+| `pnpm test:coverage` | Run tests with coverage report |
+| `pnpm docs` | Generate API documentation |
 
-## Display Information
+## Project Structure
 
-- **Time Display**: Shows your local time with UTC time in parentheses
-- **City Lights**: Illuminated cities automatically appear in nighttime regions
-- **Realistic Lighting**: Smooth day/night transitions with accurate sun positioning
+```
+src/
+├── pages/
+│   └── index.astro          # Main page with UI markup
+├── scripts/
+│   ├── main.ts              # Application entry point
+│   └── earth/               # Core visualization modules
+│       ├── scene.ts         # Scene, camera, renderer setup
+│       ├── earth.ts         # Earth mesh and shader material
+│       ├── astronomy.ts     # NOAA solar position calculations
+│       ├── moon.ts          # Moon rendering
+│       ├── aurora.ts        # Aurora effect
+│       ├── eclipse.ts       # Eclipse shadow projection
+│       ├── satellites.ts    # Satellite orbit visualization
+│       ├── markers.ts       # City markers
+│       ├── flyTo.ts         # Camera animation system
+│       └── ...              # Additional modules
+└── styles/
+    └── global.css           # Application styles
 
-## Technical Challenges Solved
+public/
+├── textures/                # Earth textures (JPG + KTX2)
+├── icons/                   # PWA icons
+└── manifest.webmanifest     # PWA manifest
+```
 
-### Sun Movement and Positioning
-- **East/West Direction**: Corrected sun movement to properly move west as time progresses
-- **Timing Accuracy**: Fixed sun position to correctly illuminate regions at appropriate times
-- **Coordinate System**: Implemented object-space lighting to ensure day/night patterns rotate with Earth
+## Controls
 
-### User Experience Improvements
-- **Interface Simplification**: Removed confusing controls and technical jargon for intuitive use
-- **City Lights Integration**: Added realistic nighttime illumination using custom shaders
-- **Zoom Controls**: Implemented distance limits to prevent camera from going inside Earth
-- **Visual Polish**: Changed to black space background and added clear user instructions
+| Input | Action |
+|-------|--------|
+| Mouse drag | Rotate the globe |
+| Mouse scroll | Zoom in/out |
+| Space | Play/pause time animation |
+| Left/Right arrows | Step time backward/forward |
+| Click on city | Fly to location |
 
-## Dependencies
+## Deployment
 
-- **Three.js r128**: 3D graphics library
-- **OrbitControls**: Camera movement controls
-- **Earth Textures**: High-resolution surface, normal, and specular maps from threejs.org
+The project is configured for deployment to Cloudflare Workers:
 
-## Usage
+```bash
+pnpm build
+npx wrangler deploy
+```
 
-Simply open `index.html` in a web browser. The application will:
+## Astronomical Calculations
 
-1. Request your location for accurate positioning
-2. Display the Earth with real-time lighting and city lights
-3. Center your longitude in the view
-4. Show current time with intuitive controls
+Sun positioning uses NOAA Solar Position Calculator equations:
+- Day-of-year fractional calculations
+- Solar declination with axial tilt (23.4°)
+- Equation of time for Earth's elliptical orbit
+- Subsolar point for accurate shadow placement
 
-**Interactions:**
-- **Drag** to rotate the Earth and explore different regions
-- **Scroll** to zoom in for surface details or zoom out for global view  
-- **Use the time slider** to see how lighting changes throughout the day
-- **Watch city lights** appear automatically in nighttime areas
+## License
 
-## Astronomical Data Sources
-
-- NOAA Solar Position Calculator equations for equation of time and solar declination
-- Standard astronomical formulas for day-of-year and subsolar point calculations
-- Geographic coordinate system for accurate Earth positioning
+MIT

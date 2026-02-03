@@ -505,6 +505,27 @@ export function initApp(): void {
     customMarkerState = initCustomMarkers(markerState);
     setupCustomMarkersUI();
 
+    // Set up menu toggle for collapsible controls panel
+    const menuToggle = document.getElementById('menuToggle');
+    const controlsPanel = document.getElementById('controlsPanel');
+    if (menuToggle && controlsPanel) {
+      // Check if we should start collapsed (on mobile)
+      const isMobile = window.matchMedia('(max-width: 768px)').matches;
+      if (isMobile) {
+        menuToggle.setAttribute('aria-expanded', 'false');
+      } else {
+        controlsPanel.classList.remove('collapsed');
+        controlsPanel.classList.add('expanded');
+      }
+
+      menuToggle.addEventListener('click', () => {
+        const isExpanded = menuToggle.getAttribute('aria-expanded') === 'true';
+        menuToggle.setAttribute('aria-expanded', String(!isExpanded));
+        controlsPanel.classList.toggle('collapsed', isExpanded);
+        controlsPanel.classList.toggle('expanded', !isExpanded);
+      });
+    }
+
     // Set up marker toggle
     const markerToggle = document.getElementById('markerToggle') as HTMLInputElement | null;
     if (markerToggle) {
