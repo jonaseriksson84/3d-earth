@@ -33,14 +33,18 @@ function getFragmentShader(): string {
     uniform sampler2D dayTexture;
     uniform sampler2D nightTexture;
     uniform vec3 sunDirection;
+    uniform float textureFlipY;
 
     varying vec2 vUv;
     varying vec3 vNormal;
     varying vec3 vPosition;
 
     void main() {
-      vec4 dayColor = texture2D(dayTexture, vUv);
-      vec4 nightColor = texture2D(nightTexture, vUv);
+      // Apply Y-flip for KTX2 compressed textures (textureFlipY = 1.0)
+      vec2 uv = vec2(vUv.x, mix(vUv.y, 1.0 - vUv.y, textureFlipY));
+
+      vec4 dayColor = texture2D(dayTexture, uv);
+      vec4 nightColor = texture2D(nightTexture, uv);
 
       vec3 objectNormal = normalize(vPosition);
       float sunDot = dot(objectNormal, normalize(sunDirection));
@@ -104,11 +108,13 @@ export function initEarth(
   const nightTexture = textures.nightTexture;
 
   // Earth shader material (shared across LOD levels)
+  // KTX2 compressed textures need Y-flip correction (textureFlipY = 1.0)
   const earthMaterial = new THREE.ShaderMaterial({
     uniforms: {
       dayTexture: { value: dayTexture },
       nightTexture: { value: nightTexture },
       sunDirection: { value: new THREE.Vector3(1, 0, 0) },
+      textureFlipY: { value: textures.compressed ? 1.0 : 0.0 },
     },
     vertexShader: getVertexShader(),
     fragmentShader: getFragmentShader(),
@@ -151,6 +157,16 @@ export function initEarth(
       level.segments,
       level.segments
     );
+
+    // Flip UVs for KTX2 compressed textures (Y coordinate is inverted)
+    if (textures.compressed) {
+      const uvAttr = geometry.getAttribute('uv');
+      for (let i = 0; i < uvAttr.count; i++) {
+        uvAttr.setY(i, 1.0 - uvAttr.getY(i));
+      }
+      uvAttr.needsUpdate = true;
+    }
+
     const mesh = new THREE.Mesh(geometry, cloudsMaterial);
     clouds.addLevel(mesh, level.distance);
   }
