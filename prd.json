@@ -104,6 +104,54 @@
       "passes": true
     },
     {
+      "id": "BUG-006",
+      "category": "Bug Fix",
+      "priority": "medium",
+      "description": "Overlay layers hidden behind cloud layer when clouds visible",
+      "details": "The terminator line, reference lines (equator, Arctic/Antarctic circles, axis), and timezone boundaries do not render when the cloud layer is visible. These overlay elements should always render on top of clouds when their respective toggles are enabled.",
+      "stepsToVerify": [
+        "Enable cloud layer visibility",
+        "Enable terminator line toggle and verify it renders above clouds",
+        "Enable reference lines toggle and verify lines render above clouds",
+        "Enable timezone boundaries toggle and verify they render above clouds",
+        "Verify overlays are visible at all viewing angles with clouds enabled",
+        "Verify overlay colors/opacity remain appropriate when rendered over clouds"
+      ],
+      "acceptanceCriteria": [
+        "Terminator line renders above cloud layer when both are enabled",
+        "Reference lines (equator, Arctic/Antarctic circles, axis) render above clouds",
+        "Timezone boundaries render above cloud layer",
+        "Overlay render order: Earth → Clouds → Overlays",
+        "No z-fighting artifacts between overlays and clouds",
+        "Visual clarity maintained for all overlay elements over clouds"
+      ],
+      "passes": false
+    },
+    {
+      "id": "BUG-007",
+      "category": "Bug Fix",
+      "priority": "medium",
+      "description": "App does not start centered on user's current location",
+      "details": "When the application loads and geolocation is available, the globe should automatically rotate to center the view on the user's current location. Currently the app starts with an arbitrary or default view position.",
+      "stepsToVerify": [
+        "Allow geolocation permission when prompted",
+        "Verify globe rotates to center user's location on initial load",
+        "Verify user's location marker is visible in the center of the view",
+        "Test with geolocation denied and verify graceful fallback",
+        "Verify the centering animation is smooth (not jarring)",
+        "Verify zoom level is appropriate to see the user's region"
+      ],
+      "acceptanceCriteria": [
+        "Globe automatically centers on user's geolocation after permission granted",
+        "Centering happens with smooth animation (not instant snap)",
+        "User's location marker visible in initial view",
+        "Appropriate zoom level showing user's region (not too close or far)",
+        "Graceful fallback to default view (e.g., Atlantic centered) if geolocation denied",
+        "No delay in rendering while waiting for geolocation (show default, then animate)"
+      ],
+      "passes": false
+    },
+    {
       "id": "REFACTOR-001",
       "category": "Refactoring",
       "priority": "high",
@@ -971,15 +1019,15 @@
     }
   ],
   "summary": {
-    "totalRequirements": 33,
-    "bugFixes": 5,
+    "totalRequirements": 35,
+    "bugFixes": 7,
     "refactoring": 2,
     "newFeatures": 19,
     "technicalImprovements": 7,
     "performance": 3,
     "byPriority": {
       "high": 7,
-      "medium": 16,
+      "medium": 18,
       "low": 10
     }
   },
@@ -987,7 +1035,7 @@
     {
       "phase": 1,
       "name": "Foundation - Bug Fixes",
-      "requirements": ["BUG-001", "BUG-002", "BUG-003", "BUG-004", "BUG-005"],
+      "requirements": ["BUG-001", "BUG-002", "BUG-003", "BUG-004", "BUG-005", "BUG-006", "BUG-007"],
       "description": "Fix all identified bugs and security issues in the current codebase"
     },
     {
