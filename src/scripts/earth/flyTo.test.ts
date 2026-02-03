@@ -122,6 +122,26 @@ describe('startFlyTo', () => {
     expect(flyToState.duration).toBeGreaterThanOrEqual(2000);
     expect(flyToState.duration).toBeLessThanOrEqual(3000);
   });
+
+  it('applies earth rotation to end position when provided', () => {
+    // Fly to the same city with no rotation
+    startFlyTo(city, sceneObjects, flyToState, controls as never, 0);
+    const endPosNoRotation = flyToState.endPosition.clone();
+
+    // Reset state
+    flyToState = createFlyToState();
+
+    // Fly to the same city with 90 degree rotation
+    const halfPiRotation = Math.PI / 2;
+    startFlyTo(city, sceneObjects, flyToState, controls as never, halfPiRotation);
+    const endPosWithRotation = flyToState.endPosition.clone();
+
+    // The positions should be different when rotation is applied
+    expect(endPosWithRotation.x).not.toBeCloseTo(endPosNoRotation.x, 3);
+
+    // But distance from origin should be the same (rotation preserves magnitude)
+    expect(endPosWithRotation.length()).toBeCloseTo(endPosNoRotation.length(), 5);
+  });
 });
 
 describe('cancelFlyTo', () => {

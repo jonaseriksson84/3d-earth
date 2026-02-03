@@ -339,7 +339,7 @@ function refreshCustomMarkersList(): void {
         lon: marker.lon,
         timezone: marker.timezone,
       };
-      startFlyTo(cityData, sceneObjects, flyToState, controls);
+      startFlyTo(cityData, sceneObjects, flyToState, controls, earthObjects?.earth.rotation.y ?? 0);
       selectedCityForSunTimes = cityData;
       refreshSunTimesPanel();
     }
@@ -522,7 +522,7 @@ export function initApp(): void {
         debounceTimer = setTimeout(() => {
           updateSearchResults(searchStateRef, searchInput.value, (city) => {
             if (sceneObjects && flyToState && controls) {
-              startFlyTo(city, sceneObjects, flyToState, controls);
+              startFlyTo(city, sceneObjects, flyToState, controls, earthObjects?.earth.rotation.y ?? 0);
             }
           });
         }, 200);
@@ -534,7 +534,7 @@ export function initApp(): void {
           const matches = searchCities(searchInput.value).slice(0, 8);
           const city = handleSearchKeydown(event.key, searchStateRef, matches, (c) => {
             if (sceneObjects && flyToState && controls) {
-              startFlyTo(c, sceneObjects, flyToState, controls);
+              startFlyTo(c, sceneObjects, flyToState, controls, earthObjects?.earth.rotation.y ?? 0);
             }
           });
           if (city) {
@@ -555,7 +555,7 @@ export function initApp(): void {
         if (searchInput.value.trim()) {
           updateSearchResults(searchStateRef, searchInput.value, (city) => {
             if (sceneObjects && flyToState && controls) {
-              startFlyTo(city, sceneObjects, flyToState, controls);
+              startFlyTo(city, sceneObjects, flyToState, controls, earthObjects?.earth.rotation.y ?? 0);
             }
           });
         }
@@ -733,7 +733,7 @@ export function initApp(): void {
       if (sceneObjects && markerState && flyToState && controls) {
         const cityData = handleMarkerClick(event, sceneObjects, markerState);
         if (cityData) {
-          startFlyTo(cityData, sceneObjects, flyToState, controls);
+          startFlyTo(cityData, sceneObjects, flyToState, controls, earthObjects?.earth.rotation.y ?? 0);
           selectedCityForSunTimes = cityData;
           refreshSunTimesPanel();
         }
@@ -823,7 +823,7 @@ export function initApp(): void {
 
         // Trigger fly-to on tap
         if (flyToState && controls) {
-          startFlyTo(cityData, sceneObjects, flyToState, controls);
+          startFlyTo(cityData, sceneObjects, flyToState, controls, earthObjects?.earth.rotation.y ?? 0);
           selectedCityForSunTimes = cityData;
           refreshSunTimesPanel();
         }
@@ -860,7 +860,7 @@ export function initApp(): void {
           lon,
           timezone: userTimezone,
         };
-        startFlyTo(userLocationData, sceneObjects, flyToState, controls);
+        startFlyTo(userLocationData, sceneObjects, flyToState, controls, earthObjects?.earth.rotation.y ?? 0);
         selectedCityForSunTimes = userLocationData;
         refreshSunTimesPanel();
       }

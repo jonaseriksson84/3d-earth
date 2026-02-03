@@ -59,12 +59,14 @@ function calculateCameraPosition(
  * @param sceneObjects - Scene objects for camera access
  * @param flyToState - Mutable animation state to configure
  * @param controls - OrbitControls to disable during animation
+ * @param earthRotationY - Current Earth Y rotation in radians (to account for globe orientation)
  */
 export function startFlyTo(
   cityData: CityData,
   sceneObjects: SceneObjects,
   flyToState: FlyToState,
-  controls: OrbitControls
+  controls: OrbitControls,
+  earthRotationY: number = 0
 ): void {
   // Store current camera position
   flyToState.startPosition.copy(sceneObjects.camera.position);
@@ -78,10 +80,18 @@ export function startFlyTo(
   );
 
   // Calculate the position on the sphere where the camera should look from
-  flyToState.endPosition = calculateCameraPosition(
+  // This gives us the position in "Earth local" coordinates (unrotated)
+  const localPosition = calculateCameraPosition(
     cityData.lat,
     cityData.lon,
     targetDistance
+  );
+
+  // Apply Earth's rotation to get world-space coordinates
+  // The Earth (and markers) rotate around Y axis, so we need to match that
+  flyToState.endPosition = localPosition.applyAxisAngle(
+    new THREE.Vector3(0, 1, 0),
+    earthRotationY
   );
 
   // Adjust duration based on angular distance (longer for farther trips)
