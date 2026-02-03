@@ -125,7 +125,7 @@
         "No z-fighting artifacts between overlays and clouds",
         "Visual clarity maintained for all overlay elements over clouds"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "BUG-007",

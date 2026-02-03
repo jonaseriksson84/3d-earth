@@ -980,3 +980,18 @@
 - [x] PERF-003: Implement GPU instancing for markers and particles
 - [x] PERF-002: Implement texture compression with KTX2/Basis
 - [x] IMPROVEMENT-006: Add WebGPU support for modern browsers
+
+### BUG-006: Overlay layers hidden behind cloud layer when clouds visible
+- **Status:** COMPLETED
+- **Date:** 2026-02-03
+- **Changes:** Fixed overlay layers (terminator, reference lines, timezone boundaries) being hidden behind clouds:
+  - Updated cloud layer material in `earth.ts` to set `depthWrite: false`, preventing clouds from occluding overlay layers
+  - Increased overlay radii from 5.02-5.03 to 5.06 (above cloud layer at 5.05) for consistent rendering:
+    - `terminator.ts`: radius increased to `CONFIG.EARTH_RADIUS + 0.06`
+    - `reflines.ts`: radius increased to `CONFIG.EARTH_RADIUS + 0.06`
+    - `timezones.ts`: radius increased to `CONFIG.EARTH_RADIUS + 0.06`
+  - Render order now correct: Earth (5.0) → Clouds (5.05, no depth write) → Overlays (5.06)
+  - No z-fighting artifacts between overlays and clouds
+  - All overlay elements visually clear when rendered over clouds
+- All 251 tests pass
+- Build completes without errors

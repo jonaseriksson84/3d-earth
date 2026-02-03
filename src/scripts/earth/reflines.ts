@@ -84,7 +84,8 @@ export function initReferenceLines(
   sceneObjects: SceneObjects
 ): ReferenceLinesState {
   const { scene } = sceneObjects;
-  const radius = CONFIG.EARTH_RADIUS + 0.02; // Slightly above Earth surface
+  // Radius above cloud layer (5.05) so reference lines render on top of clouds
+  const radius = CONFIG.EARTH_RADIUS + 0.06;
 
   // Create a group to hold all reference lines
   const group = new THREE.Group();

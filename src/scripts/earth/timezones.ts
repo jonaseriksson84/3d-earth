@@ -96,7 +96,8 @@ function createMeridianLine(
  */
 export function initTimezones(sceneObjects: SceneObjects): TimezoneState {
   const { scene } = sceneObjects;
-  const radius = CONFIG.EARTH_RADIUS + 0.03;
+  // Radius above cloud layer (5.05) so timezone lines render on top of clouds
+  const radius = CONFIG.EARTH_RADIUS + 0.06;
   const group = new THREE.Group();
   const lines: THREE.Line[] = [];
 

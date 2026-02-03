@@ -143,11 +143,14 @@ export function initEarth(
   scene.add(earth);
 
   // Clouds LOD with matching detail levels
+  // depthWrite: false allows overlay layers (terminator, reference lines, timezones)
+  // to render correctly on top of the cloud layer
   const cloudTexture = textures.cloudTexture;
   const cloudsMaterial = new THREE.MeshLambertMaterial({
     map: cloudTexture,
     transparent: true,
     opacity: CONFIG.CLOUD_OPACITY,
+    depthWrite: false,
   });
 
   const clouds = new THREE.LOD();

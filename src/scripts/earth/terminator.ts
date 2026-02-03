@@ -98,7 +98,8 @@ export function initTerminator(
   sceneObjects: SceneObjects
 ): TerminatorState {
   const { scene } = sceneObjects;
-  const radius = CONFIG.EARTH_RADIUS + 0.03; // Slightly above Earth surface
+  // Radius above cloud layer (5.05) so terminator renders on top of clouds
+  const radius = CONFIG.EARTH_RADIUS + 0.06;
 
   // Create the main terminator line
   const initialPoints = generateTerminatorPoints(1, 0, 0, radius);
