@@ -149,7 +149,7 @@
         "Graceful fallback to default view (e.g., Atlantic centered) if geolocation denied",
         "No delay in rendering while waiting for geolocation (show default, then animate)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "REFACTOR-001",

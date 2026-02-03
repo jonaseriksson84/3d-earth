@@ -12,6 +12,13 @@ import type { LocationState, EarthObjects } from './types';
 import { updateEarthRotation } from './earth';
 
 /**
+ * Callback function invoked when geolocation succeeds.
+ * @param lat - Latitude in degrees
+ * @param lon - Longitude in degrees
+ */
+export type GeolocationSuccessCallback = (lat: number, lon: number) => void;
+
+/**
  * Creates the initial location state with default coordinates.
  *
  * @returns Location state initialized to default longitude/latitude from CONFIG
@@ -29,10 +36,12 @@ export function createLocationState(): LocationState {
  *
  * @param locationState - Mutable state to update with detected coordinates
  * @param earthObjects - Earth objects to rotate based on user longitude
+ * @param onSuccess - Optional callback invoked when geolocation succeeds with lat/lon
  */
 export function getLocation(
   locationState: LocationState,
-  earthObjects: EarthObjects
+  earthObjects: EarthObjects,
+  onSuccess?: GeolocationSuccessCallback
 ): void {
   if (!navigator.geolocation) {
     console.log('Geolocation not supported, using default location');
@@ -58,6 +67,10 @@ export function getLocation(
           `Geolocation success: ${lat.toFixed(2)}N, ${lon.toFixed(2)}E`
         );
         updateEarthRotation(earthObjects, locationState.userLongitude);
+        // Invoke success callback for fly-to animation
+        if (onSuccess) {
+          onSuccess(lat, lon);
+        }
       } else {
         console.warn('Invalid coordinates received, using default location');
         updateEarthRotation(earthObjects, locationState.userLongitude);

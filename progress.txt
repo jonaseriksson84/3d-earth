@@ -995,3 +995,33 @@
   - All overlay elements visually clear when rendered over clouds
 - All 251 tests pass
 - Build completes without errors
+
+### BUG-007: App does not start centered on user's current location
+- **Status:** COMPLETED
+- **Date:** 2026-02-03
+- **Changes:** Implemented smooth fly-to animation to user's geolocation on startup:
+  - Updated `geolocation.ts`:
+    - Added `GeolocationSuccessCallback` type for optional success callback
+    - Modified `getLocation()` to accept optional `onSuccess` callback parameter
+    - Callback is invoked with lat/lon when geolocation succeeds
+  - Updated `main.ts`:
+    - Modified `getLocationWithMarkerUpdate()` to accept geolocation success callback
+    - Added callback that triggers fly-to animation to user's location
+    - Creates synthetic `CityData` for user's location with estimated timezone from longitude
+    - User marker placed immediately at default location (no rendering delay)
+    - Smooth animation begins after geolocation permission granted
+  - Behavior:
+    - App renders immediately with default view (Stockholm, no delay)
+    - When geolocation succeeds, camera smoothly flies to user's location
+    - User's location marker is visible and centered after animation
+    - Animation uses existing fly-to system (2-3 second duration, ease-in-out)
+    - Graceful fallback: if geolocation denied/unavailable, stays at default view
+  - All acceptance criteria met:
+    - Globe automatically centers on user's geolocation after permission granted ✓
+    - Centering happens with smooth animation (not instant snap) ✓
+    - User's location marker visible in initial view ✓
+    - Appropriate zoom level (uses CONFIG.INITIAL_CAMERA_DISTANCE) ✓
+    - Graceful fallback to default view if geolocation denied ✓
+    - No delay in rendering while waiting for geolocation ✓
+- All 251 tests pass
+- Build completes without errors

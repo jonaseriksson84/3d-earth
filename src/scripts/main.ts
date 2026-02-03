@@ -139,33 +139,26 @@ let lastSunTimesDate: string = '';
 
 /**
  * Gets user geolocation and updates both Earth rotation and user marker.
- * Places default marker immediately, then updates after geolocation resolves.
+ * Places default marker immediately, then updates and flies to location after geolocation resolves.
  */
 function getLocationWithMarkerUpdate(
   locState: LocationState,
   earthObjs: EarthObjects,
-  markers: MarkerState
+  markers: MarkerState,
+  onGeolocationSuccess?: (lat: number, lon: number) => void
 ): void {
-  // First get location (which updates Earth rotation)
-  getLocation(locState, earthObjs);
-
-  // Then add/update the user marker after a delay to allow geolocation to complete
-  // Also add it immediately with default location
+  // Add user marker at default location immediately (no delay in rendering)
   updateUserMarker(markers, locState);
 
-  // Update again when geolocation completes (if supported)
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      () => {
-        // Geolocation succeeded, locState has been updated by getLocation
-        updateUserMarker(markers, locState);
-      },
-      () => {
-        // Geolocation failed, but we already have the default marker
-      },
-      { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
-    );
-  }
+  // Get location with callback for when geolocation succeeds
+  getLocation(locState, earthObjs, (lat: number, lon: number) => {
+    // Update the user marker to the actual location
+    updateUserMarker(markers, locState);
+    // Invoke callback for fly-to animation
+    if (onGeolocationSuccess) {
+      onGeolocationSuccess(lat, lon);
+    }
+  });
 }
 
 function refreshSunTimesPanel(): void {
@@ -856,7 +849,22 @@ export function initApp(): void {
 
     // Start location detection and animation
     locationState = createLocationState();
-    getLocationWithMarkerUpdate(locationState, earthObjects, markerState);
+    getLocationWithMarkerUpdate(locationState, earthObjects, markerState, (lat, lon) => {
+      // Fly to user's location with smooth animation after geolocation succeeds
+      if (sceneObjects && flyToState && controls) {
+        // Calculate user's timezone from longitude (approximate)
+        const userTimezone = Math.round(lon / 15);
+        const userLocationData: CityData = {
+          name: 'Your Location',
+          lat,
+          lon,
+          timezone: userTimezone,
+        };
+        startFlyTo(userLocationData, sceneObjects, flyToState, controls);
+        selectedCityForSunTimes = userLocationData;
+        refreshSunTimesPanel();
+      }
+    });
     refreshSunTimesPanel();
     animate();
 
