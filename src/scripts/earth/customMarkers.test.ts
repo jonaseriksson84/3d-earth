@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { estimateTimezone, loadCustomMarkers, saveCustomMarkers } from './customMarkers';
 
 // Mock localStorage for Node.js test environment

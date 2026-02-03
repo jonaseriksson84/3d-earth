@@ -15,6 +15,7 @@
     "docs:watch": "typedoc --watch"
   },
   "dependencies": {
+    "@astrojs/check": "^0.9.6",
     "astro": "^5.16.15",
     "three": "^0.128.0"
   },

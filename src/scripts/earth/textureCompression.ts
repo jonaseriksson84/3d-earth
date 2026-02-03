@@ -98,19 +98,19 @@ export function loadTexturesWithCompression(
 
       const dayTexture = ktx2Loader.load(
         KTX2_TEXTURES.day,
-        undefined,
+        () => {},
         undefined,
         () => console.warn('KTX2 day texture failed, will use JPEG fallback')
       );
       const nightTexture = ktx2Loader.load(
         KTX2_TEXTURES.night,
-        undefined,
+        () => {},
         undefined,
         () => console.warn('KTX2 night texture failed, will use JPEG fallback')
       );
       const cloudTexture = ktx2Loader.load(
         KTX2_TEXTURES.clouds,
-        undefined,
+        () => {},
         undefined,
         () => console.warn('KTX2 cloud texture failed, will use JPEG fallback')
       );
