@@ -84,6 +84,10 @@ import {
   findEclipseForDate,
   updateEclipseNotification,
   populateEclipseButtons,
+  createEclipseTooltip,
+  detectEclipseHover,
+  showEclipseTooltip,
+  hideEclipseTooltip,
   initTimezones,
   updateTimezonesRotation,
   setTimezonesVisible,
@@ -136,6 +140,7 @@ let lastFrameTime: number = 0;
 let lastEclipseDateCheck: string = '';
 let selectedCityForSunTimes: CityData | null = null;
 let lastSunTimesDate: string = '';
+let eclipseTooltip: HTMLElement | null = null;
 
 /**
  * Gets user geolocation and updates both Earth rotation and user marker.
@@ -487,6 +492,7 @@ export function initApp(): void {
 
     // Initialize eclipse visualization (disabled by default)
     eclipseState = initEclipse(sceneObjects);
+    eclipseTooltip = createEclipseTooltip();
 
     // Initialize timezone boundaries (disabled by default)
     timezoneState = initTimezones(sceneObjects);
@@ -693,6 +699,28 @@ export function initApp(): void {
         timeState.timeSlider.value = '720';
         timeState.lastSliderValue = '720';
       }
+      // Auto-enable "Show eclipses" when clicking an eclipse button
+      if (eclipseToggle && !eclipseToggle.checked) {
+        eclipseToggle.checked = true;
+        if (eclipseState) {
+          setEclipseVisible(eclipseState, true);
+        }
+      }
+      // Update eclipse for the selected date
+      if (eclipseState) {
+        updateEclipseForDate(eclipseState, dateStr);
+      }
+      // Fly to eclipse location
+      const eclipse = findEclipseForDate(dateStr);
+      if (eclipse && sceneObjects && flyToState && controls) {
+        const eclipseCityData: CityData = {
+          name: `Eclipse (${eclipse.type})`,
+          lat: eclipse.maxLat,
+          lon: eclipse.maxLon,
+          timezone: 0,
+        };
+        startFlyTo(eclipseCityData, sceneObjects, flyToState, controls, earthObjects?.earth.rotation.y ?? 0);
+      }
     });
 
     // Set up cloud animation mode select
@@ -716,6 +744,17 @@ export function initApp(): void {
       if (sceneObjects && timezoneState && timezoneState.visible && timeState) {
         const sliderMinutes = parseInt(timeState.timeSlider.value);
         handleTimezoneHover(event, sceneObjects, timezoneState, sliderMinutes);
+      }
+      // Eclipse hover tooltip
+      if (sceneObjects && eclipseState && eclipseTooltip && eclipseState.visible && eclipseState.currentEclipse) {
+        const isHovering = detectEclipseHover(event.clientX, event.clientY, sceneObjects, eclipseState);
+        if (isHovering) {
+          showEclipseTooltip(eclipseState.currentEclipse, event.clientX, event.clientY, eclipseTooltip);
+        } else {
+          hideEclipseTooltip(eclipseTooltip);
+        }
+      } else if (eclipseTooltip) {
+        hideEclipseTooltip(eclipseTooltip);
       }
     });
 

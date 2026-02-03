@@ -160,8 +160,9 @@ export function getNextEclipse(date: Date): EclipseData | null {
 
 /**
  * Converts latitude and longitude to a 3D position on the Earth surface.
+ * Exported for use by fly-to functionality.
  */
-function latLonToVec3(lat: number, lon: number, radius: number): THREE.Vector3 {
+export function latLonToVec3(lat: number, lon: number, radius: number): THREE.Vector3 {
   const phi = (90 - lat) * (Math.PI / 180);
   const theta = (lon + 180) * (Math.PI / 180);
   const x = -radius * Math.sin(phi) * Math.cos(theta);
@@ -173,14 +174,14 @@ function latLonToVec3(lat: number, lon: number, radius: number): THREE.Vector3 {
 function getEclipseVertexShader(): string {
   return `
     varying vec2 vUv;
-    varying vec3 vWorldPosition;
+    varying vec3 vLocalPosition;
     varying vec3 vNormal;
 
     void main() {
       vUv = uv;
       vNormal = normalize(normalMatrix * normal);
+      vLocalPosition = position;
       vec4 worldPos = modelMatrix * vec4(position, 1.0);
-      vWorldPosition = worldPos.xyz;
       gl_Position = projectionMatrix * viewMatrix * worldPos;
     }
   `;
@@ -194,12 +195,12 @@ function getUmbraFragmentShader(): string {
     uniform float eclipseType; // 0 = total, 1 = annular, 2 = partial
 
     varying vec2 vUv;
-    varying vec3 vWorldPosition;
+    varying vec3 vLocalPosition;
     varying vec3 vNormal;
 
     void main() {
-      // Distance from eclipse center on the sphere surface
-      vec3 surfacePoint = normalize(vWorldPosition);
+      // Distance from eclipse center on the sphere surface (using local coordinates)
+      vec3 surfacePoint = normalize(vLocalPosition);
       vec3 center = normalize(eclipseCenter);
       float angularDist = acos(clamp(dot(surfacePoint, center), -1.0, 1.0));
 
@@ -207,35 +208,64 @@ function getUmbraFragmentShader(): string {
       float umbraDist = angularDist / umbraRadius;
       float penumbraDist = angularDist / penumbraRadius;
 
-      if (penumbraDist > 1.0) {
+      if (penumbraDist > 1.15) {
         discard;
       }
 
       float alpha = 0.0;
+      vec3 color = vec3(0.0, 0.0, 0.05);
+
+      // Outer colored ring for visibility
+      float ringStart = 0.9;
+      float ringEnd = 1.15;
+      bool inRing = penumbraDist > ringStart && penumbraDist <= ringEnd;
 
       if (eclipseType < 0.5) {
-        // Total eclipse: dark umbra core + gradient penumbra
+        // Total eclipse: dark umbra core + gradient penumbra + orange ring
         if (umbraDist < 1.0) {
           alpha = 0.85; // Very dark in umbra
-        } else {
+        } else if (penumbraDist <= 1.0) {
           // Penumbra: smooth falloff
           float t = (penumbraDist - umbraDist) / (1.0 - umbraDist + 0.001);
           alpha = mix(0.6, 0.0, smoothstep(0.0, 1.0, t));
         }
+        // Orange ring for total eclipse
+        if (inRing) {
+          float ringT = (penumbraDist - ringStart) / (ringEnd - ringStart);
+          float ringAlpha = sin(ringT * 3.14159) * 0.7;
+          color = mix(color, vec3(1.0, 0.5, 0.0), ringAlpha);
+          alpha = max(alpha, ringAlpha);
+        }
       } else if (eclipseType < 1.5) {
-        // Annular eclipse: ring of fire (brighter center than total)
+        // Annular eclipse: ring of fire (brighter center than total) + gold ring
         if (umbraDist < 1.0) {
           alpha = 0.55; // Less dark (ring of fire visible)
-        } else {
+        } else if (penumbraDist <= 1.0) {
           float t = (penumbraDist - umbraDist) / (1.0 - umbraDist + 0.001);
           alpha = mix(0.4, 0.0, smoothstep(0.0, 1.0, t));
         }
+        // Gold ring for annular eclipse
+        if (inRing) {
+          float ringT = (penumbraDist - ringStart) / (ringEnd - ringStart);
+          float ringAlpha = sin(ringT * 3.14159) * 0.7;
+          color = mix(color, vec3(1.0, 0.8, 0.2), ringAlpha);
+          alpha = max(alpha, ringAlpha);
+        }
       } else {
-        // Partial eclipse: only penumbra, no umbra
-        alpha = mix(0.4, 0.0, smoothstep(0.0, 1.0, penumbraDist));
+        // Partial eclipse: only penumbra, no umbra + cyan ring
+        if (penumbraDist <= 1.0) {
+          alpha = mix(0.4, 0.0, smoothstep(0.0, 1.0, penumbraDist));
+        }
+        // Cyan ring for partial eclipse
+        if (inRing) {
+          float ringT = (penumbraDist - ringStart) / (ringEnd - ringStart);
+          float ringAlpha = sin(ringT * 3.14159) * 0.6;
+          color = mix(color, vec3(0.2, 0.8, 1.0), ringAlpha);
+          alpha = max(alpha, ringAlpha);
+        }
       }
 
-      gl_FragColor = vec4(0.0, 0.0, 0.05, alpha);
+      gl_FragColor = vec4(color, alpha);
     }
   `;
 }
@@ -425,4 +455,120 @@ export function populateEclipseButtons(
     btn.addEventListener('click', () => onSelect(eclipse.date));
     containerEl.appendChild(btn);
   }
+}
+
+/**
+ * Creates a tooltip element for eclipse hover display.
+ *
+ * @returns The tooltip DOM element
+ */
+export function createEclipseTooltip(): HTMLElement {
+  const tooltip = document.createElement('div');
+  tooltip.className = 'eclipse-tooltip';
+  tooltip.style.cssText = `
+    position: fixed;
+    display: none;
+    background: rgba(10, 10, 20, 0.95);
+    border: 1px solid rgba(255, 160, 0, 0.5);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: #fff;
+    font-size: 13px;
+    pointer-events: none;
+    z-index: 1000;
+    max-width: 280px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  `;
+  document.body.appendChild(tooltip);
+  return tooltip;
+}
+
+/**
+ * Checks if the mouse is hovering over the eclipse shadow using raycasting.
+ *
+ * @param clientX - Mouse X position
+ * @param clientY - Mouse Y position
+ * @param sceneObjects - Scene objects for raycasting
+ * @param eclipseState - Eclipse state to check
+ * @returns True if hovering over visible eclipse
+ */
+export function detectEclipseHover(
+  clientX: number,
+  clientY: number,
+  sceneObjects: SceneObjects,
+  eclipseState: EclipseState
+): boolean {
+  if (!eclipseState.visible || !eclipseState.mesh.visible || !eclipseState.currentEclipse) {
+    return false;
+  }
+
+  const { camera, renderer } = sceneObjects;
+  const rect = renderer.domElement.getBoundingClientRect();
+
+  // Convert mouse to normalized device coordinates
+  const mouse = new THREE.Vector2(
+    ((clientX - rect.left) / rect.width) * 2 - 1,
+    -((clientY - rect.top) / rect.height) * 2 + 1
+  );
+
+  const raycaster = new THREE.Raycaster();
+  raycaster.setFromCamera(mouse, camera);
+
+  // Check intersection with eclipse mesh
+  const intersects = raycaster.intersectObject(eclipseState.mesh);
+
+  if (intersects.length > 0) {
+    // Check if the intersection point is within the eclipse penumbra
+    const intersectPoint = intersects[0].point.clone().normalize();
+    const eclipseCenter = eclipseState.material.uniforms.eclipseCenter.value.clone().normalize();
+    const angularDist = intersectPoint.angleTo(eclipseCenter);
+    const penumbraRadius = eclipseState.material.uniforms.penumbraRadius.value * 1.15;
+
+    return angularDist < penumbraRadius;
+  }
+
+  return false;
+}
+
+/**
+ * Shows the eclipse tooltip at the mouse position.
+ *
+ * @param eclipse - Eclipse data to display
+ * @param clientX - Mouse X position
+ * @param clientY - Mouse Y position
+ * @param tooltip - Tooltip DOM element
+ */
+export function showEclipseTooltip(
+  eclipse: EclipseData,
+  clientX: number,
+  clientY: number,
+  tooltip: HTMLElement
+): void {
+  const typeLabel = eclipse.type.charAt(0).toUpperCase() + eclipse.type.slice(1);
+  const typeColor =
+    eclipse.type === 'total' ? '#ff8000' :
+    eclipse.type === 'annular' ? '#ffcc33' : '#33ccff';
+
+  tooltip.innerHTML = `
+    <div style="font-weight: bold; color: ${typeColor}; margin-bottom: 4px;">
+      ☀ ${typeLabel} Solar Eclipse
+    </div>
+    <div style="color: #ccc; margin-bottom: 4px;">${eclipse.description}</div>
+    <div style="color: #888; font-size: 11px;">
+      Date: ${eclipse.date}<br>
+      Location: ${eclipse.maxLat.toFixed(1)}°${eclipse.maxLat >= 0 ? 'N' : 'S'}, ${Math.abs(eclipse.maxLon).toFixed(1)}°${eclipse.maxLon >= 0 ? 'E' : 'W'}
+    </div>
+  `;
+  tooltip.style.display = 'block';
+  tooltip.style.left = `${clientX + 15}px`;
+  tooltip.style.top = `${clientY + 15}px`;
+}
+
+/**
+ * Hides the eclipse tooltip.
+ *
+ * @param tooltip - Tooltip DOM element
+ */
+export function hideEclipseTooltip(tooltip: HTMLElement): void {
+  tooltip.style.display = 'none';
 }
