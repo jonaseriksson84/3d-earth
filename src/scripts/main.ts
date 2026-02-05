@@ -92,6 +92,10 @@ import {
   updateTimezonesRotation,
   setTimezonesVisible,
   handleTimezoneHover,
+  initSolarIntensity,
+  updateSolarIntensityPosition,
+  updateSolarIntensityRotation,
+  setSolarIntensityVisible,
 } from './earth';
 import type {
   SceneObjects,
@@ -113,6 +117,7 @@ import type {
   CustomMarkerState,
   EclipseState,
   TimezoneState,
+  SolarIntensityState,
   CityData,
 } from './earth';
 
@@ -136,6 +141,7 @@ let cloudAnimState: CloudAnimationState | null = null;
 let customMarkerState: CustomMarkerState | null = null;
 let eclipseState: EclipseState | null = null;
 let timezoneState: TimezoneState | null = null;
+let solarIntensityState: SolarIntensityState | null = null;
 let lastFrameTime: number = 0;
 let lastEclipseDateCheck: string = '';
 let selectedCityForSunTimes: CityData | null = null;
@@ -276,6 +282,15 @@ function animate(): void {
     // Keep timezone boundaries synced with Earth rotation
     if (timezoneState && earthObjects) {
       updateTimezonesRotation(timezoneState, earthObjects.earth.rotation.y);
+    }
+
+    // Update solar intensity visualization
+    if (solarIntensityState && earthObjects) {
+      updateSolarIntensityRotation(solarIntensityState, earthObjects.earth.rotation.y);
+      if (solarIntensityState.visible) {
+        const sunDir = earthObjects.earthMaterial.uniforms.sunDirection.value;
+        updateSolarIntensityPosition(solarIntensityState, sunDir.x, sunDir.y, sunDir.z);
+      }
     }
 
     // Update satellite positions
@@ -435,6 +450,7 @@ export function initApp(): void {
       customMarkerState = null;
       eclipseState = null;
       timezoneState = null;
+      solarIntensityState = null;
       lastFrameTime = 0;
       lastEclipseDateCheck = '';
       citySearchState = null;
@@ -496,6 +512,9 @@ export function initApp(): void {
 
     // Initialize timezone boundaries (disabled by default)
     timezoneState = initTimezones(sceneObjects);
+
+    // Initialize solar intensity visualization (disabled by default)
+    solarIntensityState = initSolarIntensity(sceneObjects);
 
     // Initialize cloud animation (animated by default)
     cloudAnimState = createCloudAnimationState();
@@ -704,6 +723,22 @@ export function initApp(): void {
         const target = event.target as HTMLInputElement;
         if (timezoneState) {
           setTimezonesVisible(timezoneState, target.checked);
+        }
+      });
+    }
+
+    // Set up solar intensity toggle
+    const solarIntensityToggle = document.getElementById('solarIntensityToggle') as HTMLInputElement | null;
+    if (solarIntensityToggle) {
+      solarIntensityToggle.addEventListener('change', (event: Event) => {
+        const target = event.target as HTMLInputElement;
+        if (solarIntensityState) {
+          setSolarIntensityVisible(solarIntensityState, target.checked);
+          // Immediately update position when enabled
+          if (target.checked && earthObjects) {
+            const sunDir = earthObjects.earthMaterial.uniforms.sunDirection.value;
+            updateSolarIntensityPosition(solarIntensityState, sunDir.x, sunDir.y, sunDir.z);
+          }
         }
       });
     }

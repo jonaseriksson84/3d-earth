@@ -736,6 +736,38 @@
       "passes": true
     },
     {
+      "id": "FEATURE-020",
+      "category": "New Feature",
+      "priority": "medium",
+      "description": "Sun intensity visualization with subsolar point indicator",
+      "details": "A combined visualization showing solar intensity with two components controlled by a single toggle: (1) Subsolar Point Indicator - A spike/line extending from Earth's surface at the subsolar point (where sun is directly overhead), plus a circular ring/footprint on the ground. (2) Solar Intensity Overlay - A translucent heat gradient radiating from the subsolar point using warm colors (yellow → orange → red), fading to fully transparent toward the terminator. Night side remains transparent. The subsolar point is already calculated in astronomy.ts (used for day/night shader). The overlay can be a separate mesh with custom shader based on solar angle.",
+      "stepsToVerify": [
+        "Verify 'Sun Intensity' toggle exists in UI controls",
+        "Enable toggle and verify subsolar point spike/line appears",
+        "Verify circular ring/footprint visible at subsolar point on Earth's surface",
+        "Verify heat gradient overlay radiates from subsolar point",
+        "Verify gradient uses warm colors (yellow → orange → red)",
+        "Verify gradient fades to transparent toward terminator",
+        "Verify night side has no overlay (remains transparent)",
+        "Move time slider and verify subsolar point moves correctly",
+        "Change date and verify subsolar point latitude changes with seasons",
+        "Verify both components toggle together with single control"
+      ],
+      "acceptanceCriteria": [
+        "Single UI toggle labeled 'Sun Intensity' enables/disables both components",
+        "Subsolar point marked with vertical spike/line extending from surface",
+        "Circular ring visible on ground at subsolar point location",
+        "Heat gradient overlay rendered as translucent mesh/shader",
+        "Gradient colors: bright yellow at center → orange → red toward edges",
+        "Gradient fully transparent at terminator and beyond",
+        "Night side completely unaffected (no overlay)",
+        "Subsolar point position updates in real-time with time/date changes",
+        "Performance impact less than 2ms per frame when enabled",
+        "Overlay does not obscure city markers or other UI elements"
+      ],
+      "passes": true
+    },
+    {
       "id": "IMPROVEMENT-001",
       "category": "Technical Improvement",
       "priority": "high",
@@ -1019,15 +1051,15 @@
     }
   ],
   "summary": {
-    "totalRequirements": 35,
+    "totalRequirements": 36,
     "bugFixes": 7,
     "refactoring": 2,
-    "newFeatures": 19,
+    "newFeatures": 20,
     "technicalImprovements": 7,
     "performance": 3,
     "byPriority": {
       "high": 7,
-      "medium": 18,
+      "medium": 19,
       "low": 10
     }
   },
@@ -1077,8 +1109,8 @@
     {
       "phase": 8,
       "name": "Visual Polish",
-      "requirements": ["FEATURE-007", "FEATURE-008", "FEATURE-010"],
-      "description": "Atmospheric glow, aurora effects, and animated clouds"
+      "requirements": ["FEATURE-007", "FEATURE-008", "FEATURE-010", "FEATURE-020"],
+      "description": "Atmospheric glow, aurora effects, animated clouds, and sun intensity visualization"
     },
     {
       "phase": 9,

@@ -1025,3 +1025,47 @@
     - No delay in rendering while waiting for geolocation ✓
 - All 251 tests pass
 - Build completes without errors
+
+### FEATURE-020: Sun intensity visualization with subsolar point indicator
+- **Status:** COMPLETED
+- **Date:** 2026-02-05
+- **Changes:** Implemented sun intensity visualization with subsolar point indicator and heat gradient:
+  - Created new `src/scripts/earth/solarIntensity.ts` module with full TypeScript types:
+    - `generateGroundRingPoints()` generates circular footprint points around subsolar point using spherical geometry
+    - `initSolarIntensity()` creates spike line, ground ring, and heat gradient mesh with custom shader
+    - `updateSolarIntensityPosition()` updates all components based on sun direction
+    - `updateSolarIntensityRotation()` syncs visualization with Earth rotation
+    - `setSolarIntensityVisible()` toggles visibility
+  - Subsolar Point Indicator components:
+    - Vertical spike/line extending from Earth surface (configurable height via `SOLAR_INTENSITY_SPIKE_HEIGHT`)
+    - Circular ring footprint on Earth surface at subsolar point (configurable radius via `SOLAR_INTENSITY_RING_RADIUS`)
+    - Both rendered in yellow (`SOLAR_INTENSITY_SPIKE_COLOR: 0xffff00`)
+  - Heat Gradient Overlay:
+    - Custom GLSL vertex/fragment shaders for radial heat visualization
+    - Color gradient: bright yellow at center → orange → red toward edges
+    - Angular distance calculation from subsolar point using dot product
+    - Smooth falloff toward terminator using `smoothstep`
+    - Night side fully transparent (uses sun direction check)
+    - Additive blending for non-obscuring overlay effect
+    - Configurable opacity via `SOLAR_INTENSITY_GRADIENT_OPACITY`
+  - Added `SolarIntensityState` interface to types.ts
+  - Added solar intensity config constants to config.ts and `EarthConfig` interface:
+    - `SOLAR_INTENSITY_SPIKE_HEIGHT: 0.6`
+    - `SOLAR_INTENSITY_SPIKE_COLOR: 0xffff00`
+    - `SOLAR_INTENSITY_RING_RADIUS: 0.15`
+    - `SOLAR_INTENSITY_GRADIENT_OPACITY: 0.5`
+  - Added UI toggle checkbox "Show sun intensity" in index.astro (disabled by default)
+  - Earth's axial tilt applied to visualization group
+  - Visualization rotates with Earth mesh each frame
+  - Position updates in real-time when time/date changes
+  - Updated index.ts exports and main.ts integration
+  - State properly reset in retry handler
+  - Added 11 unit tests for solar intensity module:
+    - Config validation (spike height, color, ring radius, gradient opacity)
+    - Ground ring point generation (count, radius, closed loop)
+    - Ring centering around subsolar point
+    - Different sun positions (north pole, arbitrary position)
+    - Different ring radii
+  - All 263 tests pass
+  - TypeScript compiles without errors
+  - Build completes successfully

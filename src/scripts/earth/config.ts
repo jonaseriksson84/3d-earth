@@ -85,4 +85,10 @@ export const CONFIG: EarthConfig = {
   TIMEZONE_LINE_OPACITY: 0.35,
   TIMEZONE_UTC_COLOR: 0xff4444, // Red for UTC/prime meridian
   TIMEZONE_SEGMENTS: 64, // Latitude segments per timezone line
+
+  // Solar intensity visualization
+  SOLAR_INTENSITY_SPIKE_HEIGHT: 0.6, // Height above Earth surface in scene units
+  SOLAR_INTENSITY_SPIKE_COLOR: 0xffff00, // Yellow for subsolar point indicator
+  SOLAR_INTENSITY_RING_RADIUS: 0.15, // Angular radius of ground ring (radians)
+  SOLAR_INTENSITY_GRADIENT_OPACITY: 0.5, // Opacity of heat gradient overlay
 };

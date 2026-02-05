@@ -102,6 +102,14 @@ export interface EarthConfig {
   TIMEZONE_UTC_COLOR: number;
   /** Number of latitude segments per timezone boundary line */
   TIMEZONE_SEGMENTS: number;
+  /** Height of the subsolar point spike above Earth surface in scene units */
+  SOLAR_INTENSITY_SPIKE_HEIGHT: number;
+  /** Color for the subsolar point spike and ring (hex) */
+  SOLAR_INTENSITY_SPIKE_COLOR: number;
+  /** Radius of the subsolar ground ring footprint (in radians on sphere surface) */
+  SOLAR_INTENSITY_RING_RADIUS: number;
+  /** Opacity of the heat gradient overlay (0-1) */
+  SOLAR_INTENSITY_GRADIENT_OPACITY: number;
 }
 
 /**
@@ -463,6 +471,24 @@ export interface TimezoneState {
   visible: boolean;
   /** Tooltip element for displaying timezone info on hover */
   tooltip: HTMLDivElement | null;
+}
+
+/**
+ * State for the sun intensity visualization with subsolar point indicator.
+ */
+export interface SolarIntensityState {
+  /** Group containing subsolar point spike, ring, and heat gradient mesh */
+  group: THREE.Group;
+  /** Spike/line extending from Earth surface at subsolar point */
+  spikeLine: THREE.Line;
+  /** Circular ring on ground at subsolar point */
+  groundRing: THREE.Line;
+  /** Heat gradient mesh radiating from subsolar point */
+  heatGradientMesh: THREE.Mesh;
+  /** Shader material for heat gradient with uniforms */
+  heatGradientMaterial: THREE.ShaderMaterial;
+  /** Whether the solar intensity visualization is currently visible */
+  visible: boolean;
 }
 
 /**
