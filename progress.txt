@@ -1069,3 +1069,25 @@
   - All 263 tests pass
   - TypeScript compiles without errors
   - Build completes successfully
+
+### UI-REFACTOR-001: Install and configure Tailwind CSS 4
+- **Status:** COMPLETED
+- **Date:** 2026-02-05
+- **Changes:** Installed Tailwind CSS 4 via Astro integration and configured custom theme colors:
+  - Ran `pnpm astro add tailwind --yes` to install Tailwind CSS 4 packages:
+    - `tailwindcss@^4.1.18`
+    - `@tailwindcss/vite@^4.1.18`
+  - Astro config automatically updated with `@tailwindcss/vite` plugin
+  - Updated `src/styles/global.css` with Tailwind CSS 4 syntax:
+    - Added `@import "tailwindcss"` at the top of the file
+    - Added `@theme` block with custom CSS properties for design system:
+      - Accent colors: `--color-accent: #4da6ff`, `--color-accent-hover: #3d8fdb`, `--color-accent-active: #2d7cc4`
+      - Panel/background colors: `--color-panel`, `--color-panel-darker`, `--color-input-bg`, `--color-input-border`
+      - Text colors: `--color-text-primary` through `--color-text-dimmer`
+      - Special colors: `--color-sunrise`, `--color-sunset`, `--color-error`, `--color-eclipse`, `--color-custom-marker`, `--color-timezone-line`, `--color-utc-line`
+  - Existing CSS preserved alongside Tailwind layers
+  - Tailwind utility classes available in all Astro components (flex, grid, hidden, absolute, etc.)
+  - Build output includes both Tailwind base/utilities and custom styles
+  - All 263 existing tests pass (no regressions)
+  - Build completes without errors
+  - Visual appearance unchanged from original design
