@@ -1,0 +1,164 @@
+---
+/**
+ * SearchInput.astro - Search input with clear button and dropdown slot
+ *
+ * @example
+ * <SearchInput
+ *   id="citySearch"
+ *   placeholder="Search cities..."
+ *   resultsId="citySearchResults"
+ *   clearButtonId="citySearchClear"
+ *   ariaLabel="Search for a city"
+ * >
+ *   <div slot="results" id="citySearchResults" class="city-search-results" role="listbox"></div>
+ * </SearchInput>
+ */
+
+interface Props {
+  /** Unique ID for the input element - required for JS event binding */
+  id: string;
+  /** Placeholder text for the input */
+  placeholder?: string;
+  /** ID of the results dropdown element (for aria-controls) */
+  resultsId?: string;
+  /** ID for the clear button */
+  clearButtonId?: string;
+  /** Custom aria-label for accessibility */
+  ariaLabel?: string;
+  /** Additional CSS classes for the container */
+  class?: string;
+}
+
+const {
+  id,
+  placeholder = 'Search...',
+  resultsId,
+  clearButtonId,
+  ariaLabel,
+  class: className,
+} = Astro.props;
+---
+
+<div class:list={["search-input-container", className]} role="search" aria-label={ariaLabel || 'Search'}>
+  <div class="search-input-wrapper">
+    <input
+      type="text"
+      id={id}
+      placeholder={placeholder}
+      autocomplete="off"
+      aria-label={ariaLabel || placeholder}
+      aria-autocomplete="list"
+      aria-controls={resultsId}
+      class="search-input"
+    />
+    <button
+      id={clearButtonId}
+      type="button"
+      class="search-clear-btn"
+      style="display: none;"
+      title="Clear search"
+      aria-label="Clear search"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <slot name="results" />
+</div>
+
+<style>
+  .search-input-container {
+    position: relative;
+    width: 100%;
+  }
+
+  .search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    font-family: inherit;
+    font-size: 0.875rem;
+    color: var(--color-text-primary, #fff);
+    background: var(--color-input-bg, rgba(255, 255, 255, 0.1));
+    border: 1px solid var(--color-input-border, rgba(255, 255, 255, 0.2));
+    border-radius: 0.375rem;
+    outline: none;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .search-input::placeholder {
+    color: var(--color-text-dimmer, rgba(255, 255, 255, 0.5));
+  }
+
+  .search-input:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .search-input:focus {
+    border-color: var(--color-accent, #4da6ff);
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .search-input:focus-visible {
+    outline: 2px solid var(--color-accent, #4da6ff);
+    outline-offset: 2px;
+  }
+
+  .search-clear-btn {
+    position: absolute;
+    right: 0.375rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--color-text-dimmer, rgba(255, 255, 255, 0.5));
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .search-clear-btn:hover {
+    color: var(--color-text-primary, #fff);
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .search-clear-btn:focus-visible {
+    outline: 2px solid var(--color-accent, #4da6ff);
+    outline-offset: 1px;
+  }
+
+  /* Touch-friendly sizing for mobile */
+  @media (pointer: coarse) {
+    .search-input {
+      min-height: 44px;
+      padding: 0.625rem 2.5rem 0.625rem 0.875rem;
+      font-size: 1rem;
+    }
+
+    .search-clear-btn {
+      width: 2rem;
+      height: 2rem;
+      right: 0.5rem;
+    }
+  }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .search-input,
+    .search-clear-btn {
+      transition: none;
+    }
+  }
+</style>

@@ -1091,3 +1091,48 @@
   - All 263 existing tests pass (no regressions)
   - Build completes without errors
   - Visual appearance unchanged from original design
+
+### UI-REFACTOR-002: Create reusable UI base components
+- **Status:** COMPLETED
+- **Date:** 2026-02-05
+- **Changes:** Created foundational Astro components for common UI patterns:
+  - Created `src/components/ui/` directory structure
+  - Created `src/components/ui/Toggle.astro`:
+    - Checkbox toggle with label component
+    - Props: id, label, checked, ariaLabel, class
+    - Touch-friendly sizing for mobile (min 44px)
+    - Focus-visible styles for accessibility
+    - Uses Tailwind CSS custom properties for theming
+  - Created `src/components/ui/Button.astro`:
+    - Button component with four variants: primary, secondary, preset, icon
+    - Props: id, variant, title, ariaLabel, disabled, type, class
+    - Primary: accent-colored CTA button
+    - Secondary: subtle action button with border
+    - Preset: compact buttons for preset selections
+    - Icon: circular icon button (e.g., play/pause)
+    - Touch-friendly sizing and reduced motion support
+  - Created `src/components/ui/Panel.astro`:
+    - Semi-transparent panel container component
+    - Props: id, variant, role, ariaLabel, class
+    - Variants: default, darker, controls, instructions
+    - Controls variant: fixed sidebar with scroll support
+    - Instructions variant: fixed bottom-right helper panel
+    - Backdrop blur effect for glass morphism
+    - Mobile responsive adjustments
+  - Created `src/components/ui/SearchInput.astro`:
+    - Search input with clear button and dropdown slot
+    - Props: id, placeholder, resultsId, clearButtonId, ariaLabel, class
+    - Named slot "results" for dropdown content
+    - Clear button hidden by default (shown via JS)
+    - ARIA attributes for autocomplete accessibility
+    - Touch-friendly sizing for mobile
+  - Created `src/components/ui/index.ts` with component documentation
+  - All components:
+    - Use Tailwind CSS custom properties (--color-accent, --color-panel, etc.)
+    - Preserve existing element IDs for JS compatibility
+    - Include accessibility features (aria-label, focus-visible)
+    - Support reduced motion preference
+    - Have consistent styling patterns
+  - All 263 tests pass
+  - Build completes without errors
+  - TypeScript compiles without errors

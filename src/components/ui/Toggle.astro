@@ -1,0 +1,76 @@
+---
+/**
+ * Toggle.astro - Reusable checkbox toggle with label
+ *
+ * @example
+ * <Toggle id="cloudToggle" label="Show clouds" checked />
+ * <Toggle id="moonToggle" label="Show Moon" ariaLabel="Toggle Moon visibility" />
+ */
+
+interface Props {
+  /** Unique ID for the checkbox element - required for JS event binding */
+  id: string;
+  /** Display label text */
+  label: string;
+  /** Whether the checkbox is checked by default */
+  checked?: boolean;
+  /** Custom aria-label for accessibility (defaults to label text) */
+  ariaLabel?: string;
+  /** Additional CSS classes for the container */
+  class?: string;
+}
+
+const { id, label, checked = false, ariaLabel, class: className } = Astro.props;
+---
+
+<label class:list={["toggle", className]}>
+  <input
+    type="checkbox"
+    id={id}
+    checked={checked}
+    aria-label={ariaLabel || `Toggle ${label.toLowerCase()}`}
+    class="toggle-checkbox"
+  />
+  <span class="toggle-label">{label}</span>
+</label>
+
+<style>
+  .toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .toggle-checkbox {
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--color-accent, #4da6ff);
+    cursor: pointer;
+  }
+
+  .toggle-label {
+    color: var(--color-text-primary, #fff);
+    font-size: 0.875rem;
+  }
+
+  /* Touch-friendly sizing for mobile */
+  @media (pointer: coarse) {
+    .toggle {
+      min-height: 44px;
+      padding: 0.5rem 0;
+    }
+
+    .toggle-checkbox {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+
+  /* Focus styles for accessibility */
+  .toggle-checkbox:focus-visible {
+    outline: 2px solid var(--color-accent, #4da6ff);
+    outline-offset: 2px;
+  }
+</style>
