@@ -17,15 +17,13 @@ import type { SolarIntensityState, SceneObjects } from './types';
 
 /**
  * Vertex shader for the heat gradient overlay.
- * Passes world position and normal to fragment shader for sun direction calculations.
+ * Passes world position to fragment shader for sun direction calculations.
  */
 function getHeatGradientVertexShader(): string {
   return `
     varying vec3 vWorldPosition;
-    varying vec3 vNormal;
 
     void main() {
-      vNormal = normalize(normalMatrix * normal);
       vec4 worldPos = modelMatrix * vec4(position, 1.0);
       vWorldPosition = worldPos.xyz;
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
@@ -45,12 +43,13 @@ function getHeatGradientFragmentShader(): string {
     uniform float opacity;
 
     varying vec3 vWorldPosition;
-    varying vec3 vNormal;
 
     void main() {
+      // For a sphere centered at origin, world normal = normalized world position
+      vec3 worldNormal = normalize(vWorldPosition);
+
       // Check if on day side - gradient only visible where sun shines
-      vec3 normal = normalize(vNormal);
-      float sunDot = dot(normal, sunDirection);
+      float sunDot = dot(worldNormal, sunDirection);
 
       // Fade gradient toward terminator (twilight zone)
       // sunDot = 1.0 at subsolar point, = 0.0 at terminator, negative on night side
@@ -228,19 +227,22 @@ export function initSolarIntensity(sceneObjects: SceneObjects): SolarIntensitySt
   });
   const heatGradientMesh = new THREE.Mesh(gradientGeometry, heatGradientMaterial);
 
-  // Add all components to group
+  // Add spike and ring to group (they rotate with Earth)
   group.add(spikeLine);
   group.add(groundRing);
-  group.add(heatGradientMesh);
+  // Note: heatGradientMesh is NOT added to the group - it stays in world space
+  // because the shader calculates positions in world space
 
-  // Apply Earth's axial tilt
+  // Apply Earth's axial tilt to the group (spike/ring only)
   const tiltRadians = (CONFIG.AXIAL_TILT * Math.PI) / 180;
   group.rotation.z = tiltRadians;
 
   // Start hidden by default
   group.visible = false;
+  heatGradientMesh.visible = false;
 
   scene.add(group);
+  scene.add(heatGradientMesh);
 
   console.log('Sun intensity visualization initialized');
 
@@ -302,9 +304,20 @@ export function updateSolarIntensityPosition(
   ringPositions.needsUpdate = true;
 
   // === Update Heat Gradient Shader Uniforms ===
-  const subsolarPoint = sunDir.clone().multiplyScalar(overlayRadius);
-  state.heatGradientMaterial.uniforms.subsolarPoint.value.copy(subsolarPoint);
-  state.heatGradientMaterial.uniforms.sunDirection.value.set(sunX, sunY, sunZ);
+  // The spike/ring are in the group's local space but rendered in world space.
+  // The heat gradient mesh is directly in the scene (world space).
+  // We need to transform the subsolar point to world space to match where the spike appears.
+  state.group.updateMatrixWorld();
+
+  // Transform subsolar point from group's local space to world space
+  const subsolarLocal = sunDir.clone().multiplyScalar(overlayRadius);
+  const subsolarWorld = subsolarLocal.clone().applyMatrix4(state.group.matrixWorld);
+  state.heatGradientMaterial.uniforms.subsolarPoint.value.copy(subsolarWorld);
+
+  // Transform sun direction by the group's world rotation (extract rotation from world matrix)
+  // For directions, we use transformDirection which applies only the rotation part
+  const sunDirWorld = sunDir.clone().transformDirection(state.group.matrixWorld);
+  state.heatGradientMaterial.uniforms.sunDirection.value.copy(sunDirWorld);
 }
 
 /**
@@ -331,5 +344,6 @@ export function setSolarIntensityVisible(
   visible: boolean
 ): void {
   state.group.visible = visible;
+  state.heatGradientMesh.visible = visible;
   state.visible = visible;
 }
