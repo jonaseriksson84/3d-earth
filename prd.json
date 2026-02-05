@@ -1048,19 +1048,239 @@
         "Memory usage reduced compared to individual meshes"
       ],
       "passes": true
+    },
+    {
+      "id": "UI-REFACTOR-001",
+      "category": "Refactoring",
+      "priority": "high",
+      "description": "Install and configure Tailwind CSS 4",
+      "details": "Install Tailwind CSS 4 using the Astro integration and configure custom theme colors to match existing design. Run `pnpm astro add tailwind` to install Tailwind 4. Update `src/styles/global.css` to use `@import \"tailwindcss\"`. Add CSS custom properties or `@theme` block for existing color palette (#4da6ff accent, dark backgrounds). Import stylesheet in layout. Verify existing functionality unchanged.",
+      "stepsToVerify": [
+        "Run `pnpm astro add tailwind` successfully",
+        "Verify `src/styles/global.css` uses `@import \"tailwindcss\"`",
+        "Verify custom colors available (accent blue #4da6ff, panel backgrounds)",
+        "Tailwind classes work in Astro components",
+        "Build completes without errors",
+        "No visual regressions in existing UI"
+      ],
+      "acceptanceCriteria": [
+        "Tailwind CSS 4 installed via @astrojs/tailwind integration",
+        "Custom theme colors defined matching existing palette",
+        "Tailwind utility classes functional in all Astro components",
+        "Existing functionality unchanged",
+        "Build and dev server work without errors"
+      ],
+      "passes": false
+    },
+    {
+      "id": "UI-REFACTOR-002",
+      "category": "Refactoring",
+      "priority": "high",
+      "description": "Create reusable UI base components",
+      "details": "Create foundational Astro components for common UI patterns: `src/components/ui/Toggle.astro` (checkbox toggle with label), `src/components/ui/Button.astro` (variants: primary, secondary, preset, icon), `src/components/ui/Panel.astro` (semi-transparent panel container), `src/components/ui/SearchInput.astro` (search with clear button and dropdown slot). All components preserve existing IDs for JS compatibility. Use Tailwind utility classes.",
+      "stepsToVerify": [
+        "Toggle component renders checkbox with label correctly",
+        "Button component supports primary, secondary, preset, and icon variants",
+        "Panel component provides consistent semi-transparent container styling",
+        "SearchInput component includes clear button and supports dropdown slot",
+        "All existing JS event bindings work with components",
+        "Accessibility attributes preserved (ARIA labels, focus states)"
+      ],
+      "acceptanceCriteria": [
+        "src/components/ui/Toggle.astro exists and functional",
+        "src/components/ui/Button.astro exists with all variants",
+        "src/components/ui/Panel.astro exists and functional",
+        "src/components/ui/SearchInput.astro exists and functional",
+        "Components use Tailwind utility classes",
+        "Existing element IDs preserved for JS compatibility",
+        "Consistent styling across all component uses"
+      ],
+      "passes": false
+    },
+    {
+      "id": "UI-REFACTOR-003",
+      "category": "Refactoring",
+      "priority": "medium",
+      "description": "Extract Time Controls section",
+      "details": "Group date picker, season presets, time slider, and playback controls into a TimeControls component. Create `src/components/controls/TimeControls.astro` containing: date picker input with season preset buttons, time slider with current time display, play/pause button and speed selector. Preserve all element IDs (datePicker, timeSlider, playPauseBtn, etc.). Group related controls visually with section header.",
+      "stepsToVerify": [
+        "TimeControls.astro exists in src/components/controls/",
+        "Date picker input functions correctly",
+        "Season preset buttons (Spring Eq, Summer Sol, etc.) work",
+        "Time slider updates correctly",
+        "Play/pause button and speed selector function",
+        "Sunrise/sunset times update based on time changes",
+        "All element IDs preserved for JS compatibility"
+      ],
+      "acceptanceCriteria": [
+        "src/components/controls/TimeControls.astro exists",
+        "Contains date picker, season presets, time slider, playback controls",
+        "All element IDs match original (datePicker, timeSlider, playPauseBtn, speedSelect, etc.)",
+        "Time slider updates sun position correctly",
+        "Season presets set correct dates",
+        "Playback controls function as expected"
+      ],
+      "passes": false
+    },
+    {
+      "id": "UI-REFACTOR-004",
+      "category": "Refactoring",
+      "priority": "medium",
+      "description": "Extract Visualization Toggles section",
+      "details": "Group all visualization toggle options into a cohesive VisualizationOptions component. Create `src/components/controls/VisualizationOptions.astro` containing: Clouds toggle + mode selector, Atmosphere toggle, Reference lines toggle, Terminator line toggle, Moon toggle, Aurora toggle, Sun intensity toggle, Satellite orbits toggle, Timezone boundaries toggle. Use consistent toggle styling. Add section header 'Visualization'.",
+      "stepsToVerify": [
+        "VisualizationOptions.astro exists in src/components/controls/",
+        "All toggles render with consistent styling",
+        "Cloud toggle with mode selector functions",
+        "Atmosphere, reference lines, terminator toggles work",
+        "Moon, aurora, sun intensity toggles work",
+        "Satellite orbits and timezone boundary toggles work",
+        "Visual consistency across all toggles"
+      ],
+      "acceptanceCriteria": [
+        "src/components/controls/VisualizationOptions.astro exists",
+        "Contains all 9 visualization toggles",
+        "Cloud mode selector (Static/Animated) functions",
+        "All toggles preserve original element IDs",
+        "Consistent toggle styling using Tailwind",
+        "Section header 'Visualization' displayed"
+      ],
+      "passes": false
+    },
+    {
+      "id": "UI-REFACTOR-005",
+      "category": "Refactoring",
+      "priority": "medium",
+      "description": "Extract Markers section",
+      "details": "Group city markers and custom markers into a Markers component. Create `src/components/controls/Markers.astro` containing: City markers toggle, city search input with autocomplete, custom markers subsection (add button, marker list). Section header 'Markers'. Distinct styling for search vs toggle.",
+      "stepsToVerify": [
+        "Markers.astro exists in src/components/controls/",
+        "City markers toggle functions correctly",
+        "City search autocomplete works",
+        "Custom marker add button works",
+        "Custom marker list displays and updates",
+        "Fly-to on city selection works",
+        "Edit/delete custom markers works"
+      ],
+      "acceptanceCriteria": [
+        "src/components/controls/Markers.astro exists",
+        "Contains city markers toggle, city search, custom markers section",
+        "City search autocomplete dropdown functions",
+        "Custom marker add/edit/delete works",
+        "All element IDs preserved (markerToggle, citySearch, addMarkerBtn, etc.)",
+        "Distinct styling for search input vs toggle controls"
+      ],
+      "passes": false
+    },
+    {
+      "id": "UI-REFACTOR-006",
+      "category": "Refactoring",
+      "priority": "medium",
+      "description": "Extract Eclipse Controls section",
+      "details": "Create dedicated Eclipse Controls component with toggle and quick-jump buttons. Create `src/components/controls/EclipseControls.astro` containing: Eclipse toggle, eclipse notification area, quick-jump buttons container. Section header 'Eclipses'.",
+      "stepsToVerify": [
+        "EclipseControls.astro exists in src/components/controls/",
+        "Eclipse toggle enables visualization",
+        "Eclipse notification area displays correctly",
+        "Quick-jump buttons populate and work",
+        "Clicking quick-jump sets date to eclipse date"
+      ],
+      "acceptanceCriteria": [
+        "src/components/controls/EclipseControls.astro exists",
+        "Contains eclipse toggle, notification area, quick-jump buttons",
+        "All element IDs preserved (eclipseToggle, eclipseNotification, eclipseButtons)",
+        "Section header 'Eclipses' displayed",
+        "Eclipse visualization toggles correctly"
+      ],
+      "passes": false
+    },
+    {
+      "id": "UI-REFACTOR-007",
+      "category": "Refactoring",
+      "priority": "low",
+      "description": "Extract Overlay components",
+      "details": "Extract loading and error overlays into separate components. Create `src/components/overlays/LoadingOverlay.astro` (spinner, progress bar, status text) and `src/components/overlays/ErrorOverlay.astro` (error message, retry button). Convert CSS to Tailwind utilities.",
+      "stepsToVerify": [
+        "LoadingOverlay.astro exists in src/components/overlays/",
+        "ErrorOverlay.astro exists in src/components/overlays/",
+        "Loading overlay shows during texture load",
+        "Progress bar updates correctly",
+        "Error overlay shows on failure",
+        "Retry button triggers reload",
+        "Styles converted to Tailwind utilities"
+      ],
+      "acceptanceCriteria": [
+        "src/components/overlays/LoadingOverlay.astro exists",
+        "src/components/overlays/ErrorOverlay.astro exists",
+        "Loading overlay displays spinner and progress bar",
+        "Error overlay displays message and retry button",
+        "All element IDs preserved (loading-overlay, loading-progress, error-overlay, etc.)",
+        "CSS converted to Tailwind utility classes"
+      ],
+      "passes": false
+    },
+    {
+      "id": "UI-REFACTOR-008",
+      "category": "Refactoring",
+      "priority": "low",
+      "description": "Extract Info Panels",
+      "details": "Extract sun times display and instructions panel into components. Create `src/components/panels/SunTimesDisplay.astro` (sunrise/sunset info) and `src/components/panels/InstructionsPanel.astro` (help text, renderer info). Consistent panel styling.",
+      "stepsToVerify": [
+        "SunTimesDisplay.astro exists in src/components/panels/",
+        "InstructionsPanel.astro exists in src/components/panels/",
+        "Sun times update correctly when location/time changes",
+        "Instructions panel shows controls help",
+        "Renderer info displays correctly",
+        "Panels positioned correctly",
+        "Responsive behavior maintained"
+      ],
+      "acceptanceCriteria": [
+        "src/components/panels/SunTimesDisplay.astro exists",
+        "src/components/panels/InstructionsPanel.astro exists",
+        "Sun times display shows sunrise/sunset for selected location",
+        "Instructions panel shows keyboard/mouse controls",
+        "Renderer info section included",
+        "Consistent panel styling with existing design"
+      ],
+      "passes": false
+    },
+    {
+      "id": "UI-REFACTOR-009",
+      "category": "Refactoring",
+      "priority": "low",
+      "description": "Migrate global.css to Tailwind",
+      "details": "Remove legacy global.css after all components use Tailwind utilities. Systematically convert remaining styles to Tailwind. Use `@apply` sparingly for complex patterns. Add any needed utility classes to theme. Delete `src/styles/global.css` when complete. Verify no orphan styles.",
+      "stepsToVerify": [
+        "All component styles use Tailwind utilities",
+        "No orphan CSS rules remain",
+        "Complex patterns use @apply where necessary",
+        "Custom utilities added to theme if needed",
+        "Legacy global.css deleted or minimal",
+        "Visual parity with original design",
+        "Bundle size is reasonable"
+      ],
+      "acceptanceCriteria": [
+        "All styling via Tailwind utility classes",
+        "Legacy global.css removed or contains only Tailwind imports",
+        "@apply used sparingly for complex repeated patterns",
+        "Visual appearance matches original design exactly",
+        "No CSS file needed except Tailwind import",
+        "Build succeeds without style-related warnings"
+      ],
+      "passes": false
     }
   ],
   "summary": {
-    "totalRequirements": 36,
+    "totalRequirements": 45,
     "bugFixes": 7,
-    "refactoring": 2,
+    "refactoring": 11,
     "newFeatures": 20,
     "technicalImprovements": 7,
     "performance": 3,
     "byPriority": {
-      "high": 7,
-      "medium": 19,
-      "low": 10
+      "high": 9,
+      "medium": 23,
+      "low": 13
     }
   },
   "implementationPhases": [
@@ -1129,6 +1349,12 @@
       "name": "Performance & Future-proofing",
       "requirements": ["PERF-001", "PERF-002", "PERF-003", "IMPROVEMENT-006", "IMPROVEMENT-007"],
       "description": "LOD, texture compression, GPU instancing, WebGPU, and PWA support"
+    },
+    {
+      "phase": 12,
+      "name": "UI Refactoring - Tailwind & Components",
+      "requirements": ["UI-REFACTOR-001", "UI-REFACTOR-002", "UI-REFACTOR-003", "UI-REFACTOR-004", "UI-REFACTOR-005", "UI-REFACTOR-006", "UI-REFACTOR-007", "UI-REFACTOR-008", "UI-REFACTOR-009"],
+      "description": "Migrate monolithic UI to Tailwind CSS 4 with organized Astro components for better maintainability"
     }
   ]
 }
