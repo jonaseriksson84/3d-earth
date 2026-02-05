@@ -1120,7 +1120,7 @@
         "Season presets set correct dates",
         "Playback controls function as expected"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "UI-REFACTOR-004",

@@ -1136,3 +1136,34 @@
   - All 263 tests pass
   - Build completes without errors
   - TypeScript compiles without errors
+
+### UI-REFACTOR-003: Extract Time Controls section
+- **Status:** COMPLETED
+- **Date:** 2026-02-05
+- **Changes:** Created TimeControls component grouping date picker, season presets, time slider, and playback controls:
+  - Created `src/components/controls/TimeControls.astro`:
+    - Date picker with season preset buttons (Spring Eq, Summer Sol, Autumn Eq, Winter Sol)
+    - Time slider with current time display showing local time and UTC
+    - Playback controls with play/pause button and speed selector (1x, 10x, 60x, 360x)
+  - Two grouped sections with subtle dark background for visual hierarchy:
+    - Date section: date picker input + season preset buttons
+    - Time section: time slider + playback controls
+  - All element IDs preserved for JS compatibility:
+    - `datePicker`, `presetSpringEquinox`, `presetSummerSolstice`, `presetAutumnEquinox`, `presetWinterSolstice`
+    - `timeSlider`, `currentTime`, `playPauseBtn`, `playIcon`, `pauseIcon`, `speedSelect`
+  - Accessibility features:
+    - ARIA labels on all interactive elements
+    - `aria-live="polite"` on time display for screen reader announcements
+    - `aria-valuetext` on time slider
+    - Focus-visible styles for keyboard navigation
+    - `role="group"` with `aria-label` on preset buttons container
+  - Styling:
+    - Uses Tailwind CSS custom properties (--color-accent, --color-panel, --color-input-bg, etc.)
+    - Touch-friendly sizing for mobile (44px minimum touch targets)
+    - Reduced motion preference respected
+    - Consistent with existing design system
+  - Updated `src/pages/index.astro`:
+    - Imported TimeControls component
+    - Replaced inline date/time controls with `<TimeControls />` component
+  - All 263 tests pass
+  - Build completes without errors

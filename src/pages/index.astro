@@ -1,6 +1,7 @@
 ---
 // 3D Earth Visualization - Main Page
 import '../styles/global.css';
+import TimeControls from '../components/controls/TimeControls.astro';
 ---
 
 <!DOCTYPE html>
@@ -41,58 +42,7 @@ import '../styles/global.css';
     </button>
 
     <div id="controlsPanel" class="controls" role="region" aria-label="Visualization controls">
-      <div class="slider-container">
-        <div class="slider-container-title">
-          <label for="datePicker">Date</label>
-          <input
-            type="date"
-            id="datePicker"
-            class="date-picker"
-            aria-label="Select date for visualization"
-          />
-        </div>
-        <div class="preset-buttons" role="group" aria-label="Astronomical date presets">
-          <button class="preset-btn" id="presetSpringEquinox" title="Spring Equinox: Day and night are nearly equal length worldwide" aria-label="Set date to Spring Equinox">Spring Eq</button>
-          <button class="preset-btn" id="presetSummerSolstice" title="Summer Solstice: Longest day in the Northern Hemisphere" aria-label="Set date to Summer Solstice">Summer Sol</button>
-          <button class="preset-btn" id="presetAutumnEquinox" title="Autumn Equinox: Day and night are nearly equal length worldwide" aria-label="Set date to Autumn Equinox">Autumn Eq</button>
-          <button class="preset-btn" id="presetWinterSolstice" title="Winter Solstice: Shortest day in the Northern Hemisphere" aria-label="Set date to Winter Solstice">Winter Sol</button>
-        </div>
-      </div>
-
-      <div class="slider-container">
-        <div class="slider-container-title">
-          <label for="timeSlider">Time control</label>
-          <span class="time-display" aria-live="polite">
-            <span id="currentTime">--:-- <span class="time-display-utc">(--:-- UTC)</span></span>
-          </span>
-        </div>
-        <input
-          type="range"
-          id="timeSlider"
-          class="slider"
-          min="0"
-          max="1440"
-          value="720"
-          step="15"
-          aria-label="Time of day slider"
-          aria-valuetext="12:00"
-        />
-        <div class="playback-controls">
-          <button id="playPauseBtn" class="playback-btn" title="Play/Pause (Space)" aria-label="Play time animation">
-            <span id="playIcon" aria-hidden="true">▶</span>
-            <span id="pauseIcon" style="display: none;" aria-hidden="true">⏸</span>
-          </button>
-          <div class="speed-controls">
-            <label for="speedSelect">Speed:</label>
-            <select id="speedSelect" class="speed-select" aria-label="Playback speed multiplier">
-              <option value="1">1×</option>
-              <option value="10">10×</option>
-              <option value="60" selected>60×</option>
-              <option value="360">360×</option>
-            </select>
-          </div>
-        </div>
-      </div>
+      <TimeControls />
 
       <div class="slider-container">
         <label>

@@ -1,0 +1,351 @@
+---
+/**
+ * TimeControls.astro - Time control section component
+ *
+ * Groups date picker, season presets, time slider, and playback controls
+ * into a cohesive time controls section.
+ *
+ * @example
+ * <TimeControls />
+ */
+
+interface Props {
+  /** Additional CSS classes for the container */
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div class:list={["time-controls", className]}>
+  <!-- Date Picker with Season Presets -->
+  <div class="time-controls-section">
+    <div class="time-controls-header">
+      <label for="datePicker">Date</label>
+      <input
+        type="date"
+        id="datePicker"
+        class="date-picker"
+        aria-label="Select date for visualization"
+      />
+    </div>
+    <div class="preset-buttons" role="group" aria-label="Astronomical date presets">
+      <button
+        class="preset-btn"
+        id="presetSpringEquinox"
+        title="Spring Equinox: Day and night are nearly equal length worldwide"
+        aria-label="Set date to Spring Equinox"
+      >Spring Eq</button>
+      <button
+        class="preset-btn"
+        id="presetSummerSolstice"
+        title="Summer Solstice: Longest day in the Northern Hemisphere"
+        aria-label="Set date to Summer Solstice"
+      >Summer Sol</button>
+      <button
+        class="preset-btn"
+        id="presetAutumnEquinox"
+        title="Autumn Equinox: Day and night are nearly equal length worldwide"
+        aria-label="Set date to Autumn Equinox"
+      >Autumn Eq</button>
+      <button
+        class="preset-btn"
+        id="presetWinterSolstice"
+        title="Winter Solstice: Shortest day in the Northern Hemisphere"
+        aria-label="Set date to Winter Solstice"
+      >Winter Sol</button>
+    </div>
+  </div>
+
+  <!-- Time Slider with Playback Controls -->
+  <div class="time-controls-section">
+    <div class="time-controls-header">
+      <label for="timeSlider">Time control</label>
+      <span class="time-display" aria-live="polite">
+        <span id="currentTime">--:-- <span class="time-display-utc">(--:-- UTC)</span></span>
+      </span>
+    </div>
+    <input
+      type="range"
+      id="timeSlider"
+      class="time-slider"
+      min="0"
+      max="1440"
+      value="720"
+      step="15"
+      aria-label="Time of day slider"
+      aria-valuetext="12:00"
+    />
+    <div class="playback-controls">
+      <button
+        id="playPauseBtn"
+        class="playback-btn"
+        title="Play/Pause (Space)"
+        aria-label="Play time animation"
+      >
+        <span id="playIcon" aria-hidden="true">&#9654;</span>
+        <span id="pauseIcon" style="display: none;" aria-hidden="true">&#9208;</span>
+      </button>
+      <div class="speed-controls">
+        <label for="speedSelect">Speed:</label>
+        <select id="speedSelect" class="speed-select" aria-label="Playback speed multiplier">
+          <option value="1">1&times;</option>
+          <option value="10">10&times;</option>
+          <option value="60" selected>60&times;</option>
+          <option value="360">360&times;</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .time-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .time-controls-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: var(--color-panel-darker, rgba(0, 0, 0, 0.2));
+    border-radius: 0.5rem;
+  }
+
+  .time-controls-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .time-controls-header label {
+    color: var(--color-text-primary, #fff);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  /* Date Picker */
+  .date-picker {
+    padding: 0.375rem 0.5rem;
+    background: var(--color-input-bg, rgba(255, 255, 255, 0.1));
+    border: 1px solid var(--color-input-border, rgba(255, 255, 255, 0.2));
+    border-radius: 0.25rem;
+    color: var(--color-text-primary, #fff);
+    font-size: 0.8125rem;
+    font-family: inherit;
+  }
+
+  .date-picker:focus {
+    outline: none;
+    border-color: var(--color-accent, #4da6ff);
+  }
+
+  .date-picker::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+  }
+
+  /* Season Preset Buttons */
+  .preset-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+  }
+
+  .preset-btn {
+    flex: 1 1 auto;
+    min-width: fit-content;
+    padding: 0.375rem 0.625rem;
+    background: var(--color-input-bg, rgba(255, 255, 255, 0.1));
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    color: var(--color-text-secondary, rgba(255, 255, 255, 0.85));
+    font-size: 0.75rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .preset-btn:hover {
+    background: rgba(77, 166, 255, 0.2);
+    color: var(--color-text-primary, #fff);
+  }
+
+  .preset-btn:active,
+  .preset-btn.active {
+    background: rgba(77, 166, 255, 0.3);
+    border-color: var(--color-accent, #4da6ff);
+    color: var(--color-text-primary, #fff);
+  }
+
+  .preset-btn:focus-visible {
+    outline: 2px solid var(--color-accent, #4da6ff);
+    outline-offset: 2px;
+  }
+
+  /* Time Display */
+  .time-display {
+    color: var(--color-text-primary, #fff);
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .time-display-utc {
+    color: var(--color-text-muted, rgba(255, 255, 255, 0.5));
+    font-size: 0.75rem;
+  }
+
+  /* Time Slider */
+  .time-slider {
+    width: 100%;
+    height: 0.375rem;
+    background: var(--color-input-bg, rgba(255, 255, 255, 0.1));
+    border-radius: 0.25rem;
+    appearance: none;
+    cursor: pointer;
+  }
+
+  .time-slider::-webkit-slider-thumb {
+    width: 1rem;
+    height: 1rem;
+    background: var(--color-accent, #4da6ff);
+    border: none;
+    border-radius: 50%;
+    appearance: none;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+  }
+
+  .time-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+  }
+
+  .time-slider::-moz-range-thumb {
+    width: 1rem;
+    height: 1rem;
+    background: var(--color-accent, #4da6ff);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .time-slider:focus-visible {
+    outline: 2px solid var(--color-accent, #4da6ff);
+    outline-offset: 2px;
+  }
+
+  /* Playback Controls */
+  .playback-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.25rem;
+  }
+
+  .playback-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    background: var(--color-accent, #4da6ff);
+    border: none;
+    border-radius: 50%;
+    color: #000;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+  }
+
+  .playback-btn:hover {
+    background: var(--color-accent-hover, #3d8fdb);
+  }
+
+  .playback-btn:active {
+    background: var(--color-accent-active, #2d7cc4);
+    transform: scale(0.95);
+  }
+
+  .playback-btn:focus-visible {
+    outline: 2px solid var(--color-accent, #4da6ff);
+    outline-offset: 2px;
+  }
+
+  .speed-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .speed-controls label {
+    color: var(--color-text-muted, rgba(255, 255, 255, 0.5));
+    font-size: 0.75rem;
+  }
+
+  .speed-select {
+    padding: 0.25rem 0.5rem;
+    background: var(--color-input-bg, rgba(255, 255, 255, 0.1));
+    border: 1px solid var(--color-input-border, rgba(255, 255, 255, 0.2));
+    border-radius: 0.25rem;
+    color: var(--color-text-primary, #fff);
+    font-size: 0.75rem;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .speed-select:focus {
+    outline: none;
+    border-color: var(--color-accent, #4da6ff);
+  }
+
+  /* Touch-friendly sizing for mobile */
+  @media (pointer: coarse) {
+    .time-controls-section {
+      padding: 1rem;
+    }
+
+    .preset-btn {
+      min-height: 44px;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8125rem;
+    }
+
+    .time-slider {
+      height: 0.5rem;
+    }
+
+    .time-slider::-webkit-slider-thumb {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    .time-slider::-moz-range-thumb {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    .playback-btn {
+      width: 2.75rem;
+      height: 2.75rem;
+    }
+
+    .speed-select {
+      min-height: 44px;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.875rem;
+    }
+  }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .preset-btn,
+    .playback-btn,
+    .time-slider::-webkit-slider-thumb {
+      transition: none;
+    }
+  }
+</style>
