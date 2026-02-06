@@ -1290,7 +1290,7 @@
         "Build succeeds without warnings",
         "Dynamic styles use class: directive or conditional classes where possible"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "BUG-008",

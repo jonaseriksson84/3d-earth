@@ -1398,3 +1398,23 @@
 - All 263 tests pass
 - TypeScript compiles without errors
 - Build completes without errors
+
+### UI-REFACTOR-010: Replace component inline styling with Tailwind classes
+- **Status:** COMPLETED
+- **Date:** 2026-02-06
+- **Changes:** Replaced all inline `style="display: none;"` attributes in Astro components with Tailwind `hidden` class:
+  - Updated `src/components/controls/EclipseControls.astro`:
+    - Eclipse notification `div#eclipseNotification`: replaced `style="display: none;"` with `hidden` class
+  - Updated `src/components/controls/TimeControls.astro`:
+    - Pause icon `span#pauseIcon`: replaced `style="display: none;"` with `hidden` class
+  - Updated `src/components/ui/SearchInput.astro`:
+    - Clear button: replaced `style="display: none;"` with `hidden` class
+  - Updated `src/components/controls/Markers.astro`:
+    - City search clear button `button#citySearchClear`: replaced `style="display: none;"` with `hidden` class
+  - All four elements were initially hidden with `style="display: none;"` and toggled by JavaScript via `element.style.display` assignments
+  - Tailwind's `hidden` class outputs `display: none` (no `!important`), so JS inline style assignments continue to override correctly
+  - No dynamic styles (`style={}` or `:style=`) found in any Astro components
+  - Verified no inline `style=` attributes remain in any `.astro` file
+- All 263 tests pass
+- TypeScript compiles without errors (0 errors, 0 warnings via `astro check` and `tsc --noEmit`)
+- Build completes without errors
