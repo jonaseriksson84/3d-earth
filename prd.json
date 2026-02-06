@@ -1386,19 +1386,67 @@
         "Documentation updated if import pattern changes"
       ],
       "passes": true
+    },
+    {
+      "id": "UI-REFACTOR-011",
+      "category": "Refactoring",
+      "priority": "medium",
+      "description": "Compact control panel layout",
+      "details": "Reduce vertical space in the control panel by placing related controls on single lines where possible. For example, toggle + label + related dropdown on one row, or multiple small buttons inline. Maintain usability and touch target sizes while reducing overall panel height.",
+      "stepsToVerify": [
+        "Review each control section for compacting opportunities",
+        "Place toggle + associated control (e.g., dropdown) on same line",
+        "Group small buttons horizontally where logical",
+        "Verify touch targets remain at least 44px",
+        "Verify labels remain readable",
+        "Test on mobile viewport sizes"
+      ],
+      "acceptanceCriteria": [
+        "Control panel height reduced by at least 20%",
+        "Related controls grouped on single lines where appropriate",
+        "Touch targets minimum 44px for accessibility",
+        "Labels and controls remain clearly readable",
+        "No loss of functionality",
+        "Responsive behavior maintained on mobile"
+      ],
+      "passes": false
+    },
+    {
+      "id": "UI-REFACTOR-012",
+      "category": "Refactoring",
+      "priority": "medium",
+      "description": "Add collapsible sections to control panel",
+      "details": "Group related controls under collapsible headers/accordions. Sections like Time, Visualization, Markers, Eclipses should be collapsible to reduce visual clutter and let users focus on relevant controls. Remember collapsed state in localStorage.",
+      "stepsToVerify": [
+        "Add collapsible header component or use disclosure pattern",
+        "Group controls into logical sections with headers",
+        "Clicking header toggles section visibility",
+        "Add expand/collapse indicator (chevron or +/-)",
+        "Persist collapsed state to localStorage",
+        "Verify keyboard accessibility for collapse toggle"
+      ],
+      "acceptanceCriteria": [
+        "Control sections are collapsible via header click",
+        "Visual indicator shows expanded/collapsed state",
+        "Collapsed state persists across page reloads (localStorage)",
+        "Smooth animation on expand/collapse",
+        "Keyboard accessible (Enter/Space to toggle)",
+        "At least 4 collapsible sections: Time, Visualization, Markers, Eclipses"
+      ],
+      "passes": false
     }
   ],
   "summary": {
-    "totalRequirements": 50,
+    "totalRequirements": 52,
     "bugFixes": 8,
-    "refactoring": 12,
+    "refactoring": 14,
     "newFeatures": 20,
     "technicalImprovements": 7,
     "tooling": 2,
     "performance": 3,
     "byPriority": {
       "high": 10,
-      "medium": 26,
+      "medium": 28,
       "low": 14
     }
   },
@@ -1492,6 +1540,8 @@
         "UI-REFACTOR-008",
         "UI-REFACTOR-009",
         "UI-REFACTOR-010",
+        "UI-REFACTOR-011",
+        "UI-REFACTOR-012",
         "REFACTOR-003"
       ],
       "description": "Migrate monolithic UI to Tailwind CSS 4 with organized Astro components for better maintainability"
