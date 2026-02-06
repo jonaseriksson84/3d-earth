@@ -1273,22 +1273,22 @@
       "id": "UI-REFACTOR-010",
       "category": "Refactoring",
       "priority": "medium",
-      "description": "Replace component inline styling with Tailwind classes",
-      "details": "Audit all Astro components for inline style attributes and convert them to Tailwind utility classes. Inline styles break consistency and make theming difficult. Identify all style=\"...\" attributes in .astro files and replace with equivalent Tailwind classes.",
+      "description": "Replace component <style> tags with Tailwind classes",
+      "details": "Astro components currently use <style> tags for component-specific CSS. Convert these styles to Tailwind utility classes applied directly to elements. This improves consistency, reduces CSS bundle size, and makes styling more maintainable. Audit all .astro files for <style> blocks and migrate rules to Tailwind classes.",
       "stepsToVerify": [
-        "Search for style= attributes in all .astro component files",
-        "Convert each inline style to Tailwind utility classes",
+        "Identify all .astro components with <style> tags",
+        "Convert CSS rules to equivalent Tailwind utility classes",
+        "Remove <style> tags after migration",
         "Verify visual appearance unchanged after conversion",
-        "Check for any dynamic styles that need special handling",
-        "Ensure no inline styles remain except where absolutely necessary",
+        "Check for any complex selectors that need special handling",
         "Build completes without errors"
       ],
       "acceptanceCriteria": [
-        "No inline style attributes in Astro components (except dynamic styles)",
-        "All styling uses Tailwind utility classes",
+        "No <style> tags in Astro components (except where Tailwind cannot replicate)",
+        "All styling uses Tailwind utility classes on elements",
         "Visual appearance identical to before",
         "Build succeeds without warnings",
-        "Dynamic styles use class: directive or conditional classes where possible"
+        "Complex CSS patterns documented if retained"
       ],
       "passes": true
     },

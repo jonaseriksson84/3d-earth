@@ -1469,3 +1469,32 @@
 - All 263 tests pass
 - Build completes without errors
 - Biome linting passes with zero errors
+
+### UI-REFACTOR-010: Replace component <style> tags with Tailwind classes
+- **Status:** COMPLETED
+- **Date:** 2026-02-06
+- **Changes:** Converted component `<style>` blocks to Tailwind utility classes across all Astro components:
+  - **Fully converted (no `<style>` remaining) - 7 components:**
+    - `src/components/ui/Toggle.astro`: Converted toggle, checkbox, label, focus, and mobile touch styles to Tailwind
+    - `src/components/ui/Panel.astro`: Converted panel variants (default, darker, controls, instructions), mobile responsive, and reduced motion styles to Tailwind via frontmatter variant classes
+    - `src/components/ui/SearchInput.astro`: Converted input, clear button, hover/focus, and mobile touch styles to Tailwind
+    - `src/components/controls/VisualizationOptions.astro`: Converted section, option groups, toggles, cloud mode selector, and mobile touch styles to Tailwind with shared class constants in frontmatter
+    - `src/components/controls/Markers.astro`: Converted section, toggles, search input, custom markers area, add button, and mobile touch styles to Tailwind
+    - `src/components/controls/EclipseControls.astro`: Converted section, toggle, notification, buttons container, and mobile touch styles to Tailwind
+    - `src/components/panels/InstructionsPanel.astro`: Converted panel, title, list, renderer info, responsive, and mobile hide styles to Tailwind
+  - **Partially converted (minimal `<style>` retained for CSS Tailwind cannot replicate) - 5 components:**
+    - `src/components/ui/Button.astro`: All variant styles in Tailwind via frontmatter maps; retained `<style>` only for `:global(.btn-preset.active)` (JS-added class)
+    - `src/components/controls/TimeControls.astro`: All layout/spacing/color styles in Tailwind; retained `<style>` only for browser pseudo-elements (`::-webkit-slider-thumb`, `::-moz-range-thumb`, `::-webkit-calendar-picker-indicator`) and JS-added `.preset-btn.active`
+    - `src/components/overlays/LoadingOverlay.astro`: Already Tailwind; retained `<style>` for `:global(.fade-out)` JS class and `prefers-reduced-motion` spinner override
+    - `src/components/overlays/ErrorOverlay.astro`: Already Tailwind; retained `<style>` for `:global(.error-overlay-visible)` JS class and mobile touch target
+    - `src/components/panels/SunTimesDisplay.astro`: Container in Tailwind; retained `<style>` for `:global()` selectors targeting JS-dynamically-created child elements
+  - Reduction: 12 `<style>` blocks → 5 (all containing only CSS that Tailwind cannot express)
+  - Used `pointer-coarse:` Tailwind 4 variant for `@media (pointer: coarse)` touch device styles
+  - Used `motion-reduce:` variant for `@media (prefers-reduced-motion: reduce)` styles
+  - Used `max-[480px]:` and `max-[768px]:` arbitrary breakpoint variants for responsive styles
+  - Shared class constants in frontmatter for repeated toggle/checkbox/label patterns
+  - Visual appearance preserved (same CSS output, different authoring approach)
+- All 263 tests pass
+- TypeScript compiles without errors (0 errors, 0 warnings via `astro check` and `tsc --noEmit`)
+- Build completes without errors
+- Biome linting passes with zero errors

@@ -35,6 +35,19 @@ const {
   type = 'button',
   class: className,
 } = Astro.props;
+
+const baseClasses =
+  'inline-flex items-center justify-center gap-1.5 font-inherit text-sm font-medium border-none rounded-md cursor-pointer transition-[background-color,border-color,transform] duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent)] motion-reduce:transition-none pointer-coarse:min-h-[44px] pointer-coarse:min-w-[44px]';
+
+const variantClasses: Record<string, string> = {
+  primary:
+    'px-5 py-2.5 bg-[color:var(--color-accent)] text-black hover:not-disabled:bg-[color:var(--color-accent-hover)] active:not-disabled:bg-[color:var(--color-accent-active)] active:not-disabled:scale-[0.98]',
+  secondary:
+    'px-4 py-2 bg-[color:var(--color-input-bg)] text-[color:var(--color-text-primary)] border border-[color:var(--color-input-border)] hover:not-disabled:bg-white/15 hover:not-disabled:border-white/30 active:not-disabled:bg-white/20',
+  preset:
+    'btn-preset flex-auto min-w-fit px-2.5 py-1.5 bg-[color:var(--color-input-bg)] text-[color:var(--color-text-secondary)] text-xs border border-transparent hover:not-disabled:bg-[rgba(77,166,255,0.2)] hover:not-disabled:text-[color:var(--color-text-primary)] active:not-disabled:bg-[rgba(77,166,255,0.3)] active:not-disabled:border-[color:var(--color-accent)] active:not-disabled:text-[color:var(--color-text-primary)] pointer-coarse:py-2 pointer-coarse:px-3 pointer-coarse:text-[0.8125rem]',
+  icon: 'size-9 p-0 bg-[color:var(--color-accent)] text-black rounded-full text-sm hover:not-disabled:bg-[color:var(--color-accent-hover)] active:not-disabled:bg-[color:var(--color-accent-active)] active:not-disabled:scale-95 pointer-coarse:size-11',
+};
 ---
 
 <button
@@ -43,132 +56,16 @@ const {
   title={title}
   aria-label={ariaLabel}
   disabled={disabled}
-  class:list={["btn", `btn-${variant}`, className]}
+  class:list={[baseClasses, variantClasses[variant], className]}
 >
   <slot />
 </button>
 
 <style>
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.375rem;
-    font-family: inherit;
-    font-size: 0.875rem;
-    font-weight: 500;
-    border: none;
-    border-radius: 0.375rem;
-    cursor: pointer;
-    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
-  }
-
-  .btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .btn:focus-visible {
-    outline: 2px solid var(--color-accent, #4da6ff);
-    outline-offset: 2px;
-  }
-
-  /* Primary variant - main CTA button */
-  .btn-primary {
-    padding: 0.625rem 1.25rem;
-    background: var(--color-accent, #4da6ff);
-    color: #000;
-  }
-
-  .btn-primary:hover:not(:disabled) {
-    background: var(--color-accent-hover, #3d8fdb);
-  }
-
-  .btn-primary:active:not(:disabled) {
-    background: var(--color-accent-active, #2d7cc4);
-    transform: scale(0.98);
-  }
-
-  /* Secondary variant - subtle action button */
-  .btn-secondary {
-    padding: 0.5rem 1rem;
-    background: var(--color-input-bg, rgba(255, 255, 255, 0.1));
-    color: var(--color-text-primary, #fff);
-    border: 1px solid var(--color-input-border, rgba(255, 255, 255, 0.2));
-  }
-
-  .btn-secondary:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
-  }
-
-  .btn-secondary:active:not(:disabled) {
-    background: rgba(255, 255, 255, 0.2);
-  }
-
-  /* Preset variant - compact buttons for preset selections */
-  .btn-preset {
-    padding: 0.375rem 0.625rem;
-    background: var(--color-input-bg, rgba(255, 255, 255, 0.1));
-    color: var(--color-text-secondary, rgba(255, 255, 255, 0.85));
-    font-size: 0.75rem;
-    border: 1px solid transparent;
-  }
-
-  .btn-preset:hover:not(:disabled) {
-    background: rgba(77, 166, 255, 0.2);
-    color: var(--color-text-primary, #fff);
-  }
-
-  .btn-preset:active:not(:disabled),
-  .btn-preset.active {
+  /* JS-added .active class for preset buttons - cannot be expressed as Tailwind utility */
+  :global(.btn-preset.active) {
     background: rgba(77, 166, 255, 0.3);
     border-color: var(--color-accent, #4da6ff);
     color: var(--color-text-primary, #fff);
-  }
-
-  /* Icon variant - circular icon button */
-  .btn-icon {
-    width: 2.25rem;
-    height: 2.25rem;
-    padding: 0;
-    background: var(--color-accent, #4da6ff);
-    color: #000;
-    border-radius: 50%;
-    font-size: 0.875rem;
-  }
-
-  .btn-icon:hover:not(:disabled) {
-    background: var(--color-accent-hover, #3d8fdb);
-  }
-
-  .btn-icon:active:not(:disabled) {
-    background: var(--color-accent-active, #2d7cc4);
-    transform: scale(0.95);
-  }
-
-  /* Touch-friendly sizing for mobile */
-  @media (pointer: coarse) {
-    .btn {
-      min-height: 44px;
-      min-width: 44px;
-    }
-
-    .btn-preset {
-      padding: 0.5rem 0.75rem;
-      font-size: 0.8125rem;
-    }
-
-    .btn-icon {
-      width: 2.75rem;
-      height: 2.75rem;
-    }
-  }
-
-  /* Reduced motion preference */
-  @media (prefers-reduced-motion: reduce) {
-    .btn {
-      transition: none;
-    }
   }
 </style>

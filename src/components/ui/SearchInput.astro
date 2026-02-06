@@ -39,8 +39,8 @@ const {
 } = Astro.props;
 ---
 
-<div class:list={["search-input-container", className]} role="search" aria-label={ariaLabel || 'Search'}>
-  <div class="search-input-wrapper">
+<div class:list={["relative w-full", className]} role="search" aria-label={ariaLabel || 'Search'}>
+  <div class="relative flex items-center">
     <input
       type="text"
       id={id}
@@ -49,12 +49,12 @@ const {
       aria-label={ariaLabel || placeholder}
       aria-autocomplete="list"
       aria-controls={resultsId}
-      class="search-input"
+      class="w-full py-2 pr-8 pl-3 font-inherit text-sm text-[color:var(--color-text-primary)] bg-[color:var(--color-input-bg)] border border-[color:var(--color-input-border)] rounded-md outline-none transition-[border-color,background-color] duration-150 ease-in-out placeholder:text-[color:var(--color-text-dimmer)] hover:border-white/30 focus:border-[color:var(--color-accent)] focus:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent)] pointer-coarse:min-h-[44px] pointer-coarse:py-2.5 pointer-coarse:pr-10 pointer-coarse:pl-3.5 pointer-coarse:text-base motion-reduce:transition-none"
     />
     <button
       id={clearButtonId}
       type="button"
-      class="search-clear-btn hidden"
+      class="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center justify-center size-6 p-0 text-base font-bold text-[color:var(--color-text-dimmer)] bg-transparent border-none rounded-full cursor-pointer transition-[color,background-color] duration-150 ease-in-out hover:text-[color:var(--color-text-primary)] hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[color:var(--color-accent)] pointer-coarse:size-8 pointer-coarse:right-2 hidden motion-reduce:transition-none"
       title="Clear search"
       aria-label="Clear search"
     >
@@ -63,101 +63,3 @@ const {
   </div>
   <slot name="results" />
 </div>
-
-<style>
-  .search-input-container {
-    position: relative;
-    width: 100%;
-  }
-
-  .search-input-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-
-  .search-input {
-    width: 100%;
-    padding: 0.5rem 2rem 0.5rem 0.75rem;
-    font-family: inherit;
-    font-size: 0.875rem;
-    color: var(--color-text-primary, #fff);
-    background: var(--color-input-bg, rgba(255, 255, 255, 0.1));
-    border: 1px solid var(--color-input-border, rgba(255, 255, 255, 0.2));
-    border-radius: 0.375rem;
-    outline: none;
-    transition: border-color 0.15s ease, background-color 0.15s ease;
-  }
-
-  .search-input::placeholder {
-    color: var(--color-text-dimmer, rgba(255, 255, 255, 0.5));
-  }
-
-  .search-input:hover {
-    border-color: rgba(255, 255, 255, 0.3);
-  }
-
-  .search-input:focus {
-    border-color: var(--color-accent, #4da6ff);
-    background: rgba(255, 255, 255, 0.15);
-  }
-
-  .search-input:focus-visible {
-    outline: 2px solid var(--color-accent, #4da6ff);
-    outline-offset: 2px;
-  }
-
-  .search-clear-btn {
-    position: absolute;
-    right: 0.375rem;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.5rem;
-    height: 1.5rem;
-    padding: 0;
-    font-size: 1rem;
-    font-weight: bold;
-    color: var(--color-text-dimmer, rgba(255, 255, 255, 0.5));
-    background: transparent;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: color 0.15s ease, background-color 0.15s ease;
-  }
-
-  .search-clear-btn:hover {
-    color: var(--color-text-primary, #fff);
-    background: rgba(255, 255, 255, 0.1);
-  }
-
-  .search-clear-btn:focus-visible {
-    outline: 2px solid var(--color-accent, #4da6ff);
-    outline-offset: 1px;
-  }
-
-  /* Touch-friendly sizing for mobile */
-  @media (pointer: coarse) {
-    .search-input {
-      min-height: 44px;
-      padding: 0.625rem 2.5rem 0.625rem 0.875rem;
-      font-size: 1rem;
-    }
-
-    .search-clear-btn {
-      width: 2rem;
-      height: 2rem;
-      right: 0.5rem;
-    }
-  }
-
-  /* Reduced motion preference */
-  @media (prefers-reduced-motion: reduce) {
-    .search-input,
-    .search-clear-btn {
-      transition: none;
-    }
-  }
-</style>
