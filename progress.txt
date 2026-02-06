@@ -1358,3 +1358,24 @@
   - All 263 tests pass
   - TypeScript compiles without errors
   - Build completes without errors
+
+### TOOLING-001: Fix JSX IntrinsicElements TypeScript error in IDE
+- **Status:** COMPLETED
+- **Date:** 2026-02-06
+- **Changes:** Fixed JSX IntrinsicElements TypeScript error that appeared in IDE for all Astro components:
+  - Created `src/env.d.ts` with Astro type references:
+    - `/// <reference path="../.astro/types.d.ts" />` for generated Astro types
+    - `/// <reference types="astro/client" />` for Astro client types (IntrinsicElements, ImportMeta, etc.)
+    - This is the canonical Astro approach for ensuring IDE type resolution
+  - Fixed `src/components/ui/Panel.astro` type error:
+    - Changed `role` prop type from `string` to `astroHTML.JSX.HTMLAttributes['role']`
+    - This matches the `AriaRole` union type expected by Astro's JSX type system
+    - Resolved `astro check` error: "Type 'string' is not assignable to type 'AriaRole | null | undefined'"
+  - Verification:
+    - `pnpm typecheck` passes (both `astro check` and `tsc --noEmit`)
+    - `astro check` reports 0 errors, 0 warnings, 0 hints across 62 files
+    - `tsc --noEmit` reports no errors
+    - IDE now properly resolves HTML element types in .astro files
+    - IntelliSense works for HTML attributes in Astro components
+  - All 263 tests pass
+  - Build completes without errors

@@ -1337,7 +1337,7 @@
         "tsconfig.json properly configured for Astro JSX",
         "Build and type-check pass without JSX-related errors"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "TOOLING-002",
