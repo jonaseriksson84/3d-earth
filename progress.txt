@@ -1328,3 +1328,33 @@
   - Consistent styling with existing design system
   - All 263 tests pass
   - Build completes without errors
+
+### UI-REFACTOR-009: Migrate global.css to Tailwind
+- **Status:** COMPLETED
+- **Date:** 2026-02-06
+- **Changes:** Migrated legacy global.css to use Tailwind utility classes via @apply directive:
+  - Converted all remaining CSS rules to use Tailwind utilities where possible
+  - Used `@apply` directive for cleaner utility composition
+  - Preserved all custom CSS properties in `@theme` block (colors, backgrounds, etc.)
+  - Organized styles into clearly documented sections:
+    - Base Styles (body, canvas)
+    - Menu Toggle Button (hamburger/X animation)
+    - Controls Panel (positioning, transitions)
+    - City Search (JS-dynamically-created items)
+    - Custom Markers (JS-dynamically-created elements)
+    - Eclipse Buttons (JS-dynamically-created)
+    - Timezone Tooltip (JS-dynamically-created)
+    - Accessibility: Focus Indicators
+    - Reduced Motion Preference
+    - Mobile Touch Targets & Responsive Layout
+  - Removed legacy CSS rules that were duplicated in component `<style>` blocks
+  - Kept only styles that are:
+    1. Global base styles (body, canvas)
+    2. Styles for JS-dynamically-created elements (can't be component-scoped)
+    3. Menu toggle and controls panel (still in index.astro, not componentized)
+  - File size reduced from 695 lines to 298 lines (57% reduction)
+  - All component styles now live in their respective Astro `<style>` blocks
+  - Visual appearance matches original design exactly
+  - All 263 tests pass
+  - TypeScript compiles without errors
+  - Build completes without errors

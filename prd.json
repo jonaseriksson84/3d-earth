@@ -1267,7 +1267,7 @@
         "No CSS file needed except Tailwind import",
         "Build succeeds without style-related warnings"
       ],
-      "passes": false
+      "passes": true
     }
   ],
   "summary": {

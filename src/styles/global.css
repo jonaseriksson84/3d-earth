@@ -30,56 +30,47 @@
   --color-utc-line: #ff4444;
 }
 
+/* =============================================================================
+   Base Styles
+   ============================================================================= */
+
 body {
-  margin: 0;
-  overflow: hidden;
-  background: #000;
-  font-family: Arial, sans-serif;
+  @apply m-0 overflow-hidden bg-black font-sans;
 }
 
 canvas {
-  display: none;
-  touch-action: none; /* Prevent browser default touch gestures on canvas */
+  @apply hidden;
+  touch-action: none;
 }
 
-/* Menu toggle button */
+/* =============================================================================
+   Menu Toggle Button
+   ============================================================================= */
+
 .menu-toggle {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  width: 44px;
-  height: 44px;
-  background: rgba(0, 0, 0, 0.7);
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  z-index: 101;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @apply absolute left-5 top-5 z-[101] flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg border-none;
+  background: var(--color-panel);
   transition: background 0.2s;
 }
 
 .menu-toggle:hover {
-  background: rgba(30, 30, 30, 0.9);
+  background: var(--color-panel-darker);
+}
+
+.menu-toggle:focus-visible {
+  @apply outline-2 outline-offset-2;
+  outline-color: var(--color-accent);
 }
 
 .menu-toggle-icon {
-  width: 20px;
-  height: 2px;
-  background: white;
-  position: relative;
+  @apply relative h-0.5 w-5 bg-white;
   transition: background 0.2s;
 }
 
 .menu-toggle-icon::before,
 .menu-toggle-icon::after {
+  @apply absolute left-0 h-0.5 w-5 bg-white;
   content: '';
-  position: absolute;
-  width: 20px;
-  height: 2px;
-  background: white;
-  left: 0;
   transition: transform 0.2s;
 }
 
@@ -93,386 +84,117 @@ canvas {
 
 /* X icon when menu is open */
 .menu-toggle[aria-expanded="true"] .menu-toggle-icon {
-  background: transparent;
+  @apply bg-transparent;
 }
 
 .menu-toggle[aria-expanded="true"] .menu-toggle-icon::before {
+  @apply top-0;
   transform: rotate(45deg);
-  top: 0;
 }
 
 .menu-toggle[aria-expanded="true"] .menu-toggle-icon::after {
+  @apply top-0;
   transform: rotate(-45deg);
-  top: 0;
 }
 
-.menu-toggle:focus-visible {
-  outline: 2px solid #4da6ff;
-  outline-offset: 2px;
-}
+/* =============================================================================
+   Controls Panel
+   ============================================================================= */
 
 .controls {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  background: rgba(0, 0, 0, 0.7);
+  @apply absolute left-5 top-5 z-[100] min-w-[300px] rounded-lg text-white;
+  background: var(--color-panel);
   padding: 15px;
-  padding-top: 54px; /* Space for toggle button */
-  border-radius: 8px;
-  color: white;
-  min-width: 300px;
-  z-index: 100;
+  padding-top: 54px;
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-/* Collapsed state */
 .controls.collapsed {
+  @apply pointer-events-none opacity-0;
   transform: translateX(-100%);
-  opacity: 0;
-  pointer-events: none;
 }
 
-.slider-container {
-  margin: 10px 0;
-}
-
-.slider-container-title {
-  justify-content: space-between;
-  display: flex;
-}
-
-.slider {
-  width: 100%;
-  margin: 8px 0;
-}
-
-.date-picker {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 4px;
-  color: white;
-  padding: 4px 8px;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.date-picker::-webkit-calendar-picker-indicator {
-  filter: invert(1);
-  cursor: pointer;
-}
-
-/* Preset Buttons */
-.preset-buttons {
-  display: flex;
-  gap: 4px;
-  margin-top: 8px;
-  flex-wrap: wrap;
-}
-
-.preset-btn {
-  flex: 1;
-  min-width: 0;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-  color: #ccc;
-  padding: 4px 2px;
-  font-size: 11px;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
-  white-space: nowrap;
-}
-
-.preset-btn:hover {
-  background: rgba(77, 166, 255, 0.2);
-  border-color: rgba(77, 166, 255, 0.5);
-  color: white;
-}
-
-.preset-btn:active {
-  background: rgba(77, 166, 255, 0.3);
-}
-
-.preset-btn.active {
-  background: rgba(77, 166, 255, 0.25);
-  border-color: #4da6ff;
-  color: white;
-}
-
-.time-display {
-  font-size: 14px;
-  margin: 5px 0;
-}
-
-/* Playback Controls */
-.playback-controls {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-top: 8px;
-}
-
-.playback-btn {
-  width: 36px;
-  height: 36px;
-  border: none;
-  border-radius: 50%;
-  background: #4da6ff;
-  color: white;
-  font-size: 14px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s, transform 0.1s;
-}
-
-.playback-btn:hover {
-  background: #3d8fdb;
-  transform: scale(1.05);
-}
-
-.playback-btn:active {
-  background: #2d7cc4;
-  transform: scale(0.95);
-}
-
-.speed-controls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.speed-controls label {
-  font-size: 13px;
-  color: #aaa;
-}
-
-.speed-select {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 4px;
-  color: white;
-  padding: 4px 8px;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.speed-select option {
-  background: #333;
-  color: white;
-}
-
-.cloud-mode-controls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 4px;
-  padding-left: 22px;
-}
-
-.cloud-mode-controls label {
-  font-size: 13px;
-  color: #aaa;
-}
-
-.cloud-mode-select {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 4px;
-  color: white;
-  padding: 2px 8px;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.cloud-mode-select option {
-  background: #333;
-  color: white;
-}
-
-/* Loading, Error Overlay, and Info Panel styles have been moved to:
- * - src/components/overlays/LoadingOverlay.astro
- * - src/components/overlays/ErrorOverlay.astro
- * - src/components/panels/SunTimesDisplay.astro
- * - src/components/panels/InstructionsPanel.astro
- */
-
-/* City Search */
-.city-search-container {
-  position: relative;
-  margin-top: 8px;
-}
-
-.city-search-input {
-  width: 100%;
-  box-sizing: border-box;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 4px;
-  color: white;
-  padding: 6px 28px 6px 8px;
-  font-size: 13px;
-}
-
-.city-search-input::placeholder {
-  color: #888;
-}
-
-.city-search-input:focus {
-  outline: none;
-  border-color: #4da6ff;
-}
-
-.city-search-clear {
-  position: absolute;
-  right: 4px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: #888;
-  cursor: pointer;
-  font-size: 12px;
-  padding: 2px 4px;
-  line-height: 1;
-}
-
-.city-search-clear:hover {
-  color: white;
-}
+/* =============================================================================
+   City Search (JS-dynamically-created items)
+   ============================================================================= */
 
 .city-search-results {
-  display: none;
-  position: absolute;
+  @apply absolute left-0 right-0 z-[100] mt-0.5 hidden max-h-[200px] overflow-y-auto rounded;
   top: 100%;
-  left: 0;
-  right: 0;
-  background: rgba(30, 30, 30, 0.95);
+  background: var(--color-panel-darker);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-  margin-top: 2px;
-  max-height: 200px;
-  overflow-y: auto;
-  z-index: 100;
 }
 
 .city-search-item {
-  padding: 6px 10px;
-  cursor: pointer;
-  font-size: 13px;
+  @apply cursor-pointer px-2.5 py-1.5 text-[13px];
   color: #ddd;
 }
 
 .city-search-item:hover,
 .city-search-item.active {
+  @apply text-white;
   background: rgba(77, 166, 255, 0.3);
-  color: white;
 }
 
 .city-search-item.no-results {
-  color: #888;
-  cursor: default;
-  font-style: italic;
+  @apply cursor-default italic;
+  color: var(--color-text-dimmer);
 }
 
 .city-search-item.no-results:hover {
-  background: none;
-  color: #888;
+  @apply bg-transparent;
+  color: var(--color-text-dimmer);
 }
 
-/* Sunrise & Sunset display styles moved to src/components/panels/SunTimesDisplay.astro */
+/* =============================================================================
+   Custom Markers (JS-dynamically-created elements)
+   ============================================================================= */
 
-/* Marker cursor styles */
 canvas.clickable-marker {
-  cursor: pointer;
+  @apply cursor-pointer;
 }
 
 canvas.placing-marker {
-  cursor: crosshair;
-}
-
-/* Custom markers */
-.add-marker-btn {
-  width: 100%;
-  padding: 6px 12px;
-  background: rgba(255, 102, 204, 0.2);
-  border: 1px solid rgba(255, 102, 204, 0.5);
-  border-radius: 4px;
-  color: #ff66cc;
-  cursor: pointer;
-  font-size: 13px;
-  margin-top: 4px;
-  transition: background 0.15s;
-}
-
-.add-marker-btn:hover {
-  background: rgba(255, 102, 204, 0.35);
+  @apply cursor-crosshair;
 }
 
 .add-marker-btn.placing-active {
   background: rgba(255, 102, 204, 0.5);
-  border-color: #ff66cc;
-}
-
-.custom-marker-count {
-  font-size: 12px;
-  color: #999;
-}
-
-.custom-markers-list {
-  max-height: 150px;
-  overflow-y: auto;
-  margin-top: 6px;
+  border-color: var(--color-custom-marker);
 }
 
 .custom-markers-empty {
+  @apply py-1 text-xs;
   color: #777;
-  font-size: 12px;
-  padding: 4px 0;
 }
 
 .custom-marker-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 4px 0;
+  @apply flex items-center justify-between py-1;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .custom-marker-item:last-child {
-  border-bottom: none;
+  @apply border-b-0;
 }
 
 .custom-marker-name {
-  cursor: pointer;
-  font-size: 13px;
-  color: #ff66cc;
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  margin-right: 8px;
+  @apply mr-2 flex-1 cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap text-[13px];
+  color: var(--color-custom-marker);
 }
 
 .custom-marker-name:hover {
-  text-decoration: underline;
+  @apply underline;
 }
 
 .custom-marker-actions {
-  display: flex;
-  gap: 4px;
-  flex-shrink: 0;
+  @apply flex shrink-0 gap-1;
 }
 
 .custom-marker-btn {
-  padding: 2px 6px;
+  @apply cursor-pointer rounded px-1.5 py-0.5 text-[11px];
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 3px;
   background: rgba(255, 255, 255, 0.05);
   color: #ccc;
-  font-size: 11px;
-  cursor: pointer;
 }
 
 .custom-marker-btn:hover {
@@ -485,210 +207,91 @@ canvas.placing-marker {
   color: #ff8080;
 }
 
-/* Accessibility: Focus indicators for keyboard navigation */
-.controls *:focus-visible {
-  outline: 2px solid #4da6ff;
-  outline-offset: 2px;
-}
-
-.preset-btn:focus-visible {
-  outline: 2px solid #4da6ff;
-  outline-offset: 2px;
-  background: rgba(77, 166, 255, 0.2);
-}
-
-.playback-btn:focus-visible {
-  outline: 2px solid #4da6ff;
-  outline-offset: 2px;
-}
-
-/* Retry button focus-visible now in ErrorOverlay.astro */
-
-.city-search-input:focus-visible {
-  outline: 2px solid #4da6ff;
-  outline-offset: 1px;
-  border-color: #4da6ff;
-}
-
-.city-search-clear:focus-visible {
-  outline: 2px solid #4da6ff;
-  outline-offset: 2px;
-  color: white;
-}
-
-/* Accessibility: Respect reduced motion preference */
-@media (prefers-reduced-motion: reduce) {
-  .menu-toggle,
-  .menu-toggle-icon,
-  .menu-toggle-icon::before,
-  .menu-toggle-icon::after {
-    transition: none;
-  }
-
-  .controls {
-    transition: none;
-  }
-
-  /* Loading overlay reduced-motion now in LoadingOverlay.astro */
-
-  .preset-btn,
-  .playback-btn {
-    transition: none;
-  }
-}
-
-/* Mobile touch target sizes - ensure minimum 44x44px for interactive elements */
-@media (pointer: coarse) {
-  .preset-btn {
-    min-height: 44px;
-    font-size: 13px;
-  }
-
-  .playback-btn {
-    width: 44px;
-    height: 44px;
-    font-size: 16px;
-  }
-
-  .speed-select,
-  .cloud-mode-select {
-    min-height: 44px;
-    font-size: 14px;
-    padding: 8px 12px;
-  }
-
-  .date-picker {
-    min-height: 44px;
-    font-size: 16px;
-    padding: 8px 12px;
-  }
-
-  .city-search-input {
-    min-height: 44px;
-    font-size: 16px;
-    padding: 8px 28px 8px 10px;
-  }
-
-  .city-search-item {
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    font-size: 15px;
-  }
-
-  .city-search-clear {
-    min-width: 44px;
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-  }
-
-  .slider {
-    height: 44px;
-  }
-
-  .controls label {
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .controls input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-  }
-
-  /* Retry button mobile sizing now in ErrorOverlay.astro */
-
-  /* Prevent text selection on touch drag */
-  .controls {
-    -webkit-user-select: none;
-    user-select: none;
-  }
-
-  /* Instructions panel mobile hide is now in InstructionsPanel.astro */
-}
-
-/* Eclipse notification and buttons */
-.eclipse-notification {
-  margin-top: 6px;
-  padding: 6px 8px;
-  background: rgba(255, 160, 0, 0.2);
-  border: 1px solid rgba(255, 160, 0, 0.5);
-  border-radius: 4px;
-  font-size: 12px;
-  color: #ffa500;
-  line-height: 1.4;
-}
-
-.eclipse-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin-top: 6px;
-}
+/* =============================================================================
+   Eclipse Buttons (JS-dynamically-created)
+   ============================================================================= */
 
 .eclipse-btn {
+  @apply cursor-pointer rounded px-[7px] py-[3px] text-[11px];
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 4px;
   color: #ccc;
-  padding: 3px 7px;
-  font-size: 11px;
-  cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
 }
 
 .eclipse-btn:hover {
   background: rgba(255, 160, 0, 0.25);
   border-color: rgba(255, 160, 0, 0.5);
-  color: #ffa500;
+  color: var(--color-eclipse);
 }
 
-/* Timezone tooltip */
+/* =============================================================================
+   Timezone Tooltip (JS-dynamically-created)
+   ============================================================================= */
+
 .timezone-tooltip {
-  position: fixed;
+  @apply pointer-events-none fixed whitespace-nowrap rounded px-2 py-1 font-mono text-xs z-[1000];
   background: rgba(10, 22, 40, 0.9);
   border: 1px solid rgba(68, 170, 204, 0.6);
-  border-radius: 4px;
   color: #88ddee;
-  padding: 4px 8px;
-  font-size: 12px;
-  font-family: 'Courier New', monospace;
-  pointer-events: none;
-  z-index: 1000;
-  white-space: nowrap;
 }
 
-/* Controls panel responsive layout for mobile */
-@media (max-width: 768px) {
-  .menu-toggle {
-    left: 10px;
-    top: 10px;
+/* =============================================================================
+   Accessibility: Focus Indicators
+   ============================================================================= */
+
+.controls *:focus-visible {
+  @apply outline-2 outline-offset-2;
+  outline-color: var(--color-accent);
+}
+
+/* =============================================================================
+   Reduced Motion Preference
+   ============================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-toggle,
+  .menu-toggle-icon,
+  .menu-toggle-icon::before,
+  .menu-toggle-icon::after,
+  .controls,
+  .eclipse-btn {
+    transition: none;
+  }
+}
+
+/* =============================================================================
+   Mobile Touch Targets & Responsive Layout
+   ============================================================================= */
+
+@media (pointer: coarse) {
+  .city-search-item {
+    @apply flex min-h-[44px] items-center text-[15px];
   }
 
   .controls {
-    min-width: unset;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .menu-toggle {
+    @apply left-2.5 top-2.5;
+  }
+
+  .controls {
+    @apply left-2.5 top-2.5 max-h-[70vh] min-w-0 overflow-y-auto p-2.5;
     width: calc(100% - 20px);
-    left: 10px;
-    top: 10px;
-    max-height: 70vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 10px;
     padding-top: 54px;
-    /* Start collapsed on mobile by default */
+    -webkit-overflow-scrolling: touch;
     transform: translateX(calc(-100% - 10px));
     opacity: 0;
     pointer-events: none;
   }
 
   .controls.expanded {
+    @apply pointer-events-auto opacity-100;
     transform: translateX(0);
-    opacity: 1;
-    pointer-events: auto;
   }
 }
