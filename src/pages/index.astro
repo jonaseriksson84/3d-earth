@@ -5,6 +5,8 @@ import TimeControls from '../components/controls/TimeControls.astro';
 import VisualizationOptions from '../components/controls/VisualizationOptions.astro';
 import Markers from '../components/controls/Markers.astro';
 import EclipseControls from '../components/controls/EclipseControls.astro';
+import LoadingOverlay from '../components/overlays/LoadingOverlay.astro';
+import ErrorOverlay from '../components/overlays/ErrorOverlay.astro';
 ---
 
 <!DOCTYPE html>
@@ -21,24 +23,8 @@ import EclipseControls from '../components/controls/EclipseControls.astro';
   </head>
 
   <body>
-    <div id="loading-overlay" class="loading-overlay" role="alert" aria-live="polite" aria-label="Loading Earth visualization">
-      <div class="loading-content">
-        <div class="loading-spinner" aria-hidden="true"></div>
-        <p class="loading-text">Loading Earth textures...</p>
-        <div class="loading-progress-container" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Texture loading progress">
-          <div id="loading-progress" class="loading-progress"></div>
-        </div>
-        <p id="loading-status" class="loading-status">0%</p>
-      </div>
-    </div>
-
-    <div id="error-overlay" class="error-overlay" style="display: none;" role="alert" aria-live="assertive">
-      <div class="error-content">
-        <p class="error-icon" aria-hidden="true">⚠</p>
-        <p id="error-message" class="error-message">Failed to load textures</p>
-        <button id="retry-button" class="retry-button">Retry</button>
-      </div>
-    </div>
+    <LoadingOverlay />
+    <ErrorOverlay />
 
     <button id="menuToggle" class="menu-toggle" aria-label="Toggle controls menu" aria-expanded="true" aria-controls="controlsPanel">
       <span class="menu-toggle-icon" aria-hidden="true"></span>

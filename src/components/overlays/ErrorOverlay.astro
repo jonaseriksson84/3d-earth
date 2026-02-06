@@ -1,0 +1,66 @@
+---
+/**
+ * ErrorOverlay Component
+ *
+ * Displays a full-screen error overlay with error icon, message, and retry button.
+ * Used when texture loading or other critical operations fail.
+ *
+ * Element IDs (for JS compatibility):
+ * - error-overlay: Main overlay container
+ * - error-message: Error message text
+ * - retry-button: Retry action button
+ */
+
+interface Props {
+  /** Default error message to display */
+  defaultMessage?: string;
+}
+
+const { defaultMessage = 'Failed to load textures' } = Astro.props;
+---
+
+<div
+  id="error-overlay"
+  class="fixed inset-0 z-[1001] hidden items-center justify-center bg-black"
+  role="alert"
+  aria-live="assertive"
+>
+  <div class="text-center text-white">
+    <!-- Error icon -->
+    <p class="m-0 mb-4 text-5xl" aria-hidden="true">
+      ⚠
+    </p>
+
+    <!-- Error message -->
+    <p
+      id="error-message"
+      class="m-0 mb-5 text-base text-[color:var(--color-error)]"
+    >
+      {defaultMessage}
+    </p>
+
+    <!-- Retry button -->
+    <button
+      id="retry-button"
+      class="cursor-pointer rounded-[5px] border-none bg-[color:var(--color-accent)] px-[30px] py-3 text-base text-white transition-colors duration-200 hover:bg-[color:var(--color-accent-hover)] active:bg-[color:var(--color-accent-active)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent)]"
+    >
+      Retry
+    </button>
+  </div>
+</div>
+
+<style>
+  /* Show state - added via JS when error occurs */
+  :global(.error-overlay-visible) {
+    display: flex !important;
+  }
+
+  /* Mobile touch target size */
+  @media (pointer: coarse) {
+    #retry-button {
+      min-height: 44px;
+      font-size: 18px;
+      padding: 12px 36px;
+    }
+  }
+</style>

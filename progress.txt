@@ -1262,3 +1262,37 @@
     - Replaced inline eclipse toggle, notification, and buttons with `<EclipseControls />` component
   - All 263 tests pass
   - Build completes without errors
+
+### UI-REFACTOR-007: Extract Overlay components
+- **Status:** COMPLETED
+- **Date:** 2026-02-06
+- **Changes:** Extracted loading and error overlays into separate Astro components:
+  - Created `src/components/overlays/LoadingOverlay.astro`:
+    - Full-screen loading overlay with spinner animation
+    - Progress bar with percentage display
+    - Status text showing loading progress
+    - Uses Tailwind CSS utility classes
+    - Supports reduced motion preference
+    - Fade-out animation on completion
+  - Created `src/components/overlays/ErrorOverlay.astro`:
+    - Full-screen error overlay with warning icon
+    - Error message display area
+    - Retry button with hover/active states
+    - Uses Tailwind CSS utility classes
+    - Mobile touch-friendly sizing (44px minimum)
+    - Focus-visible styles for accessibility
+  - All element IDs preserved for JS compatibility:
+    - `loading-overlay`, `loading-progress`, `loading-status`
+    - `error-overlay`, `error-message`, `retry-button`
+  - Updated `src/pages/index.astro`:
+    - Imported LoadingOverlay and ErrorOverlay components
+    - Replaced inline overlay HTML with component tags
+  - Updated `src/styles/global.css`:
+    - Removed legacy overlay CSS (now in components)
+    - Added comments noting style locations
+  - Accessibility features:
+    - `role="alert"` and `aria-live` on overlays
+    - `role="progressbar"` with aria-valuenow/min/max
+    - Focus-visible styles on retry button
+  - All 263 tests pass
+  - Build completes without errors
