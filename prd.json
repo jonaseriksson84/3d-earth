@@ -1170,7 +1170,7 @@
         "All element IDs preserved (markerToggle, citySearch, addMarkerBtn, etc.)",
         "Distinct styling for search input vs toggle controls"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "UI-REFACTOR-006",

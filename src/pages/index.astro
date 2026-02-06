@@ -3,6 +3,7 @@
 import '../styles/global.css';
 import TimeControls from '../components/controls/TimeControls.astro';
 import VisualizationOptions from '../components/controls/VisualizationOptions.astro';
+import Markers from '../components/controls/Markers.astro';
 ---
 
 <!DOCTYPE html>
@@ -47,34 +48,7 @@ import VisualizationOptions from '../components/controls/VisualizationOptions.as
 
       <VisualizationOptions />
 
-      <div class="slider-container">
-        <label>
-          <input type="checkbox" id="markerToggle" checked aria-label="Toggle city markers visibility" /> Show city markers
-        </label>
-        <div class="city-search-container" role="search" aria-label="City search">
-          <input
-            type="text"
-            id="citySearch"
-            class="city-search-input"
-            placeholder="Search cities..."
-            autocomplete="off"
-            aria-label="Search for a city"
-            aria-autocomplete="list"
-            aria-controls="citySearchResults"
-          />
-          <button id="citySearchClear" class="city-search-clear" style="display: none;" title="Clear search" aria-label="Clear city search">✕</button>
-          <div id="citySearchResults" class="city-search-results" role="listbox" aria-label="City search results"></div>
-        </div>
-      </div>
-
-      <div class="slider-container custom-markers-section">
-        <div class="slider-container-title">
-          <label>Custom markers</label>
-          <span class="custom-marker-count" id="customMarkerCount"></span>
-        </div>
-        <button id="addMarkerBtn" class="add-marker-btn" aria-label="Place a custom marker on the globe">+ Add marker</button>
-        <div id="customMarkersList" class="custom-markers-list" aria-label="Custom markers list"></div>
-      </div>
+      <Markers />
 
       <div class="slider-container">
         <label>

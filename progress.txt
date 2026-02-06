@@ -1203,3 +1203,34 @@
     - Eclipse toggle kept separate (has additional UI: notification + quick-jump buttons)
   - All 263 tests pass
   - Build completes without errors
+
+### UI-REFACTOR-005: Extract Markers section
+- **Status:** COMPLETED
+- **Date:** 2026-02-06
+- **Changes:** Created Markers component grouping city markers and custom markers:
+  - Created `src/components/controls/Markers.astro`:
+    - City markers toggle with checkbox and label
+    - City search input with autocomplete dropdown
+    - Custom markers subsection with add button and marker list
+  - Component structure:
+    - Section header "Markers" for visual hierarchy
+    - Option groups with subtle separator borders
+    - Search input with clear button positioned inside input
+    - Custom markers header with title and count indicator
+    - Add marker button with dashed border styling
+    - Scrollable marker list container (max 150px height)
+  - All element IDs preserved for JS compatibility:
+    - `markerToggle`, `citySearch`, `citySearchClear`, `citySearchResults`
+    - `customMarkerCount`, `addMarkerBtn`, `customMarkersList`
+  - Styling:
+    - Uses Tailwind CSS custom properties (--color-accent, --color-panel, etc.)
+    - Touch-friendly sizing for mobile (44px minimum touch targets)
+    - Focus-visible styles for accessibility
+    - Reduced motion preference respected
+    - Dark panel background for visual grouping
+    - Distinct styling between toggle, search input, and add button
+  - Updated `src/pages/index.astro`:
+    - Imported Markers component
+    - Replaced inline city markers toggle, city search, and custom markers section with `<Markers />` component
+  - All 263 tests pass
+  - Build completes without errors

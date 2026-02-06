@@ -1,0 +1,355 @@
+---
+/**
+ * Markers.astro - Markers section component
+ *
+ * Groups city markers and custom markers into a cohesive section including:
+ * - City markers toggle
+ * - City search input with autocomplete
+ * - Custom markers subsection (add button, marker list)
+ *
+ * @example
+ * <Markers />
+ */
+
+interface Props {
+  /** Additional CSS classes for the container */
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div class:list={["markers-section", className]}>
+  <h3 class="section-header">Markers</h3>
+
+  <!-- City markers toggle -->
+  <div class="option-group">
+    <label class="toggle">
+      <input
+        type="checkbox"
+        id="markerToggle"
+        checked
+        aria-label="Toggle city markers visibility"
+        class="toggle-checkbox"
+      />
+      <span class="toggle-label">Show city markers</span>
+    </label>
+  </div>
+
+  <!-- City search -->
+  <div class="option-group search-group">
+    <div class="city-search-container" role="search" aria-label="City search">
+      <input
+        type="text"
+        id="citySearch"
+        class="city-search-input"
+        placeholder="Search cities..."
+        autocomplete="off"
+        aria-label="Search for a city"
+        aria-autocomplete="list"
+        aria-controls="citySearchResults"
+      />
+      <button
+        id="citySearchClear"
+        class="city-search-clear"
+        style="display: none;"
+        title="Clear search"
+        aria-label="Clear city search"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <div
+        id="citySearchResults"
+        class="city-search-results"
+        role="listbox"
+        aria-label="City search results"
+      ></div>
+    </div>
+  </div>
+
+  <!-- Custom markers -->
+  <div class="option-group custom-markers-group">
+    <div class="custom-markers-header">
+      <span class="custom-markers-title">Custom markers</span>
+      <span class="custom-marker-count" id="customMarkerCount"></span>
+    </div>
+    <button
+      id="addMarkerBtn"
+      class="add-marker-btn"
+      aria-label="Place a custom marker on the globe"
+    >
+      + Add marker
+    </button>
+    <div
+      id="customMarkersList"
+      class="custom-markers-list"
+      aria-label="Custom markers list"
+    ></div>
+  </div>
+</div>
+
+<style>
+  .markers-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem;
+    background: var(--color-panel-darker, rgba(0, 0, 0, 0.2));
+    border-radius: 0.5rem;
+  }
+
+  .section-header {
+    margin: 0 0 0.5rem 0;
+    padding: 0;
+    color: var(--color-text-primary, #fff);
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.025em;
+  }
+
+  .option-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    padding: 0.375rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .option-group:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .option-group:first-of-type {
+    padding-top: 0;
+  }
+
+  /* Toggle styling */
+  .toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .toggle-checkbox {
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--color-accent, #4da6ff);
+    cursor: pointer;
+  }
+
+  .toggle-label {
+    color: var(--color-text-primary, #fff);
+    font-size: 0.8125rem;
+  }
+
+  /* Search group */
+  .search-group {
+    padding-top: 0.25rem;
+  }
+
+  /* City search container */
+  .city-search-container {
+    position: relative;
+    width: 100%;
+  }
+
+  .city-search-input {
+    width: 100%;
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    font-family: inherit;
+    font-size: 0.8125rem;
+    color: var(--color-text-primary, #fff);
+    background: var(--color-input-bg, rgba(255, 255, 255, 0.1));
+    border: 1px solid var(--color-input-border, rgba(255, 255, 255, 0.2));
+    border-radius: 0.25rem;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+
+  .city-search-input::placeholder {
+    color: var(--color-text-dimmer, rgba(255, 255, 255, 0.5));
+  }
+
+  .city-search-input:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .city-search-input:focus {
+    border-color: var(--color-accent, #4da6ff);
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .city-search-input:focus-visible {
+    outline: 2px solid var(--color-accent, #4da6ff);
+    outline-offset: 2px;
+  }
+
+  .city-search-clear {
+    position: absolute;
+    right: 0.375rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--color-text-dimmer, rgba(255, 255, 255, 0.5));
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .city-search-clear:hover {
+    color: var(--color-text-primary, #fff);
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .city-search-clear:focus-visible {
+    outline: 2px solid var(--color-accent, #4da6ff);
+    outline-offset: 1px;
+  }
+
+  .city-search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    max-height: 200px;
+    overflow-y: auto;
+    background: var(--color-panel, rgba(10, 22, 40, 0.95));
+    border: 1px solid var(--color-input-border, rgba(255, 255, 255, 0.2));
+    border-top: none;
+    border-radius: 0 0 0.25rem 0.25rem;
+    display: none;
+  }
+
+  /* Custom markers group */
+  .custom-markers-group {
+    gap: 0.5rem;
+  }
+
+  .custom-markers-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .custom-markers-title {
+    color: var(--color-text-primary, #fff);
+    font-size: 0.8125rem;
+  }
+
+  .custom-marker-count {
+    color: var(--color-text-muted, rgba(255, 255, 255, 0.5));
+    font-size: 0.75rem;
+  }
+
+  .add-marker-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-family: inherit;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--color-text-primary, #fff);
+    background: var(--color-input-bg, rgba(255, 255, 255, 0.1));
+    border: 1px dashed var(--color-input-border, rgba(255, 255, 255, 0.3));
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .add-marker-btn:hover {
+    background: rgba(77, 166, 255, 0.15);
+    border-color: var(--color-accent, #4da6ff);
+  }
+
+  .add-marker-btn:focus-visible {
+    outline: 2px solid var(--color-accent, #4da6ff);
+    outline-offset: 2px;
+  }
+
+  .add-marker-btn.placing {
+    background: rgba(77, 166, 255, 0.25);
+    border-color: var(--color-accent, #4da6ff);
+    border-style: solid;
+  }
+
+  .custom-markers-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    max-height: 150px;
+    overflow-y: auto;
+  }
+
+  /* Touch-friendly sizing for mobile */
+  @media (pointer: coarse) {
+    .markers-section {
+      padding: 1rem;
+    }
+
+    .option-group {
+      padding: 0.5rem 0;
+    }
+
+    .toggle {
+      min-height: 44px;
+    }
+
+    .toggle-checkbox {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    .toggle-label {
+      font-size: 0.875rem;
+    }
+
+    .city-search-input {
+      min-height: 44px;
+      padding: 0.625rem 2.5rem 0.625rem 0.875rem;
+      font-size: 0.875rem;
+    }
+
+    .city-search-clear {
+      width: 2rem;
+      height: 2rem;
+      right: 0.5rem;
+    }
+
+    .add-marker-btn {
+      min-height: 44px;
+      font-size: 0.875rem;
+    }
+  }
+
+  /* Focus styles for accessibility */
+  .toggle-checkbox:focus-visible {
+    outline: 2px solid var(--color-accent, #4da6ff);
+    outline-offset: 2px;
+  }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .toggle-checkbox,
+    .city-search-input,
+    .city-search-clear,
+    .add-marker-btn {
+      transition: none;
+    }
+  }
+</style>
