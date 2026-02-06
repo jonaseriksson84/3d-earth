@@ -1167,3 +1167,39 @@
     - Replaced inline date/time controls with `<TimeControls />` component
   - All 263 tests pass
   - Build completes without errors
+
+### UI-REFACTOR-004: Extract Visualization Toggles section
+- **Status:** COMPLETED
+- **Date:** 2026-02-06
+- **Changes:** Created VisualizationOptions component grouping all visualization toggles:
+  - Created `src/components/controls/VisualizationOptions.astro`:
+    - Clouds toggle with animation mode selector (Static/Animated)
+    - Atmosphere toggle (checked by default)
+    - Reference lines toggle
+    - Terminator line toggle
+    - Moon toggle
+    - Aurora toggle
+    - Sun intensity toggle
+    - Satellite orbits toggle
+    - Timezone boundaries toggle
+  - Component structure:
+    - Section header "Visualization" for visual hierarchy
+    - Option groups with subtle separator borders
+    - Cloud mode selector indented under clouds toggle
+    - Consistent toggle styling across all options
+  - All element IDs preserved for JS compatibility:
+    - `cloudToggle`, `cloudModeSelect`, `atmosphereToggle`, `refLinesToggle`
+    - `terminatorToggle`, `moonToggle`, `auroraToggle`, `solarIntensityToggle`
+    - `satelliteToggle`, `timezoneToggle`
+  - Styling:
+    - Uses Tailwind CSS custom properties (--color-accent, --color-panel, etc.)
+    - Touch-friendly sizing for mobile (44px minimum touch targets)
+    - Focus-visible styles for accessibility
+    - Reduced motion preference respected
+    - Dark panel background for visual grouping
+  - Updated `src/pages/index.astro`:
+    - Imported VisualizationOptions component
+    - Replaced 9 individual visualization toggle divs with `<VisualizationOptions />` component
+    - Eclipse toggle kept separate (has additional UI: notification + quick-jump buttons)
+  - All 263 tests pass
+  - Build completes without errors

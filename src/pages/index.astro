@@ -2,6 +2,7 @@
 // 3D Earth Visualization - Main Page
 import '../styles/global.css';
 import TimeControls from '../components/controls/TimeControls.astro';
+import VisualizationOptions from '../components/controls/VisualizationOptions.astro';
 ---
 
 <!DOCTYPE html>
@@ -44,18 +45,7 @@ import TimeControls from '../components/controls/TimeControls.astro';
     <div id="controlsPanel" class="controls" role="region" aria-label="Visualization controls">
       <TimeControls />
 
-      <div class="slider-container">
-        <label>
-          <input type="checkbox" id="cloudToggle" checked aria-label="Toggle cloud layer visibility" /> Show clouds
-        </label>
-        <div class="cloud-mode-controls">
-          <label for="cloudModeSelect">Mode:</label>
-          <select id="cloudModeSelect" class="cloud-mode-select" aria-label="Cloud animation mode">
-            <option value="static">Static</option>
-            <option value="animated" selected>Animated</option>
-          </select>
-        </div>
-      </div>
+      <VisualizationOptions />
 
       <div class="slider-container">
         <label>
@@ -88,58 +78,10 @@ import TimeControls from '../components/controls/TimeControls.astro';
 
       <div class="slider-container">
         <label>
-          <input type="checkbox" id="refLinesToggle" aria-label="Toggle reference lines visibility" /> Show reference lines
-        </label>
-      </div>
-
-      <div class="slider-container">
-        <label>
-          <input type="checkbox" id="terminatorToggle" aria-label="Toggle day/night terminator line visibility" /> Show terminator line
-        </label>
-      </div>
-
-      <div class="slider-container">
-        <label>
-          <input type="checkbox" id="moonToggle" aria-label="Toggle Moon visibility" /> Show Moon
-        </label>
-      </div>
-
-      <div class="slider-container">
-        <label>
-          <input type="checkbox" id="satelliteToggle" aria-label="Toggle satellite orbit visibility" /> Show satellite orbits
-        </label>
-      </div>
-
-      <div class="slider-container">
-        <label>
-          <input type="checkbox" id="auroraToggle" aria-label="Toggle aurora borealis and australis visualization" /> Show auroras
-        </label>
-      </div>
-
-      <div class="slider-container">
-        <label>
           <input type="checkbox" id="eclipseToggle" aria-label="Toggle solar eclipse visualization" /> Show eclipses
         </label>
         <div id="eclipseNotification" class="eclipse-notification" style="display: none;" aria-live="polite"></div>
         <div id="eclipseButtons" class="eclipse-buttons" aria-label="Quick-jump to upcoming eclipses"></div>
-      </div>
-
-      <div class="slider-container">
-        <label>
-          <input type="checkbox" id="atmosphereToggle" checked aria-label="Toggle atmospheric glow effect" /> Show atmosphere
-        </label>
-      </div>
-
-      <div class="slider-container">
-        <label>
-          <input type="checkbox" id="timezoneToggle" aria-label="Toggle timezone boundary lines" /> Show timezone boundaries
-        </label>
-      </div>
-
-      <div class="slider-container">
-        <label>
-          <input type="checkbox" id="solarIntensityToggle" aria-label="Toggle sun intensity gradient and subsolar point indicator" /> Show sun intensity
-        </label>
       </div>
 
       <div class="slider-container sun-times-container">
