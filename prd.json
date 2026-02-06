@@ -1192,7 +1192,7 @@
         "Section header 'Eclipses' displayed",
         "Eclipse visualization toggles correctly"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "UI-REFACTOR-007",

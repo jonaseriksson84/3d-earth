@@ -1234,3 +1234,31 @@
     - Replaced inline city markers toggle, city search, and custom markers section with `<Markers />` component
   - All 263 tests pass
   - Build completes without errors
+
+### UI-REFACTOR-006: Extract Eclipse Controls section
+- **Status:** COMPLETED
+- **Date:** 2026-02-06
+- **Changes:** Created dedicated Eclipse Controls component with toggle and quick-jump buttons:
+  - Created `src/components/controls/EclipseControls.astro`:
+    - Eclipse toggle checkbox with label
+    - Eclipse notification area for displaying eclipse info
+    - Quick-jump buttons container for upcoming eclipses
+  - Component structure:
+    - Section header "Eclipses" for visual hierarchy
+    - Toggle using consistent styling pattern
+    - Notification styled with orange theme matching eclipse color
+    - Buttons container with flex-wrap for responsive layout
+  - All element IDs preserved for JS compatibility:
+    - `eclipseToggle`, `eclipseNotification`, `eclipseButtons`
+  - Styling:
+    - Uses Tailwind CSS custom properties (--color-accent, --color-panel, --color-eclipse, etc.)
+    - Touch-friendly sizing for mobile (44px minimum touch targets)
+    - Focus-visible styles for accessibility
+    - Reduced motion preference respected
+    - Dark panel background for visual grouping
+    - Eclipse notification with orange theme (rgba(255, 160, 0, *))
+  - Updated `src/pages/index.astro`:
+    - Imported EclipseControls component
+    - Replaced inline eclipse toggle, notification, and buttons with `<EclipseControls />` component
+  - All 263 tests pass
+  - Build completes without errors

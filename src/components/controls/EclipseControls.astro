@@ -1,0 +1,164 @@
+---
+/**
+ * EclipseControls.astro - Eclipse Controls section component
+ *
+ * Dedicated Eclipse Controls component with toggle and quick-jump buttons including:
+ * - Eclipse toggle checkbox
+ * - Eclipse notification area
+ * - Quick-jump buttons container for upcoming eclipses
+ *
+ * @example
+ * <EclipseControls />
+ */
+
+interface Props {
+  /** Additional CSS classes for the container */
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div class:list={["eclipse-section", className]}>
+  <h3 class="section-header">Eclipses</h3>
+
+  <!-- Eclipse toggle -->
+  <div class="option-group">
+    <label class="toggle">
+      <input
+        type="checkbox"
+        id="eclipseToggle"
+        aria-label="Toggle solar eclipse visualization"
+        class="toggle-checkbox"
+      />
+      <span class="toggle-label">Show eclipses</span>
+    </label>
+  </div>
+
+  <!-- Eclipse notification area -->
+  <div
+    id="eclipseNotification"
+    class="eclipse-notification"
+    style="display: none;"
+    aria-live="polite"
+    aria-label="Eclipse information notification"
+  ></div>
+
+  <!-- Quick-jump buttons for upcoming eclipses -->
+  <div
+    id="eclipseButtons"
+    class="eclipse-buttons-container"
+    role="group"
+    aria-label="Quick-jump to upcoming eclipses"
+  ></div>
+</div>
+
+<style>
+  .eclipse-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem;
+    background: var(--color-panel-darker, rgba(0, 0, 0, 0.2));
+    border-radius: 0.5rem;
+  }
+
+  .section-header {
+    margin: 0 0 0.5rem 0;
+    padding: 0;
+    color: var(--color-text-primary, #fff);
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.025em;
+  }
+
+  .option-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    padding: 0.375rem 0;
+  }
+
+  /* Toggle styling */
+  .toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .toggle-checkbox {
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--color-accent, #4da6ff);
+    cursor: pointer;
+  }
+
+  .toggle-label {
+    color: var(--color-text-primary, #fff);
+    font-size: 0.8125rem;
+  }
+
+  /* Eclipse notification */
+  .eclipse-notification {
+    margin-top: 0.375rem;
+    padding: 0.375rem 0.5rem;
+    background: rgba(255, 160, 0, 0.2);
+    border: 1px solid rgba(255, 160, 0, 0.5);
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    color: var(--color-eclipse, #ffa500);
+    line-height: 1.4;
+  }
+
+  /* Eclipse quick-jump buttons container */
+  .eclipse-buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-top: 0.375rem;
+  }
+
+  /* Touch-friendly sizing for mobile */
+  @media (pointer: coarse) {
+    .eclipse-section {
+      padding: 1rem;
+    }
+
+    .option-group {
+      padding: 0.5rem 0;
+    }
+
+    .toggle {
+      min-height: 44px;
+    }
+
+    .toggle-checkbox {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    .toggle-label {
+      font-size: 0.875rem;
+    }
+
+    .eclipse-notification {
+      padding: 0.5rem 0.625rem;
+      font-size: 0.8125rem;
+    }
+  }
+
+  /* Focus styles for accessibility */
+  .toggle-checkbox:focus-visible {
+    outline: 2px solid var(--color-accent, #4da6ff);
+    outline-offset: 2px;
+  }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .toggle-checkbox {
+      transition: none;
+    }
+  }
+</style>
