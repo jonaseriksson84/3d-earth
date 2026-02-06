@@ -7,6 +7,8 @@ import Markers from '../components/controls/Markers.astro';
 import EclipseControls from '../components/controls/EclipseControls.astro';
 import LoadingOverlay from '../components/overlays/LoadingOverlay.astro';
 import ErrorOverlay from '../components/overlays/ErrorOverlay.astro';
+import SunTimesDisplay from '../components/panels/SunTimesDisplay.astro';
+import InstructionsPanel from '../components/panels/InstructionsPanel.astro';
 ---
 
 <!DOCTYPE html>
@@ -39,28 +41,10 @@ import ErrorOverlay from '../components/overlays/ErrorOverlay.astro';
 
       <EclipseControls />
 
-      <div class="slider-container sun-times-container">
-        <div class="slider-container-title">
-          <label>Sunrise &amp; Sunset</label>
-        </div>
-        <div id="sunTimesDisplay" class="sun-times-display" aria-live="polite" aria-label="Sunrise and sunset times">
-          <span class="sun-times-loading">Select a city or detect location...</span>
-        </div>
-      </div>
+      <SunTimesDisplay />
     </div>
 
-    <div class="instructions" role="complementary" aria-label="Keyboard and mouse controls help">
-      <h4>Controls</h4>
-      <ul>
-        <li>Drag to rotate Earth</li>
-        <li>Scroll / pinch to zoom</li>
-        <li>Tap a marker to fly to city</li>
-        <li>Use slider to change time</li>
-        <li>Space: Play/Pause</li>
-        <li>← → Arrow keys: Step time</li>
-      </ul>
-      <div id="rendererInfo" class="renderer-info" aria-label="Rendering backend information"></div>
-    </div>
+    <InstructionsPanel />
 
     <script>
       import '../scripts/main';

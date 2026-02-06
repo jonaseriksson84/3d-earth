@@ -1296,3 +1296,35 @@
     - Focus-visible styles on retry button
   - All 263 tests pass
   - Build completes without errors
+
+### UI-REFACTOR-008: Extract Info Panels
+- **Status:** COMPLETED
+- **Date:** 2026-02-06
+- **Changes:** Extracted sun times display and instructions panel into separate Astro components:
+  - Created `src/components/panels/SunTimesDisplay.astro`:
+    - Sunrise/sunset info display for selected location
+    - Header label with "Sunrise & Sunset" title
+    - Dynamic content area updated by JS
+    - Uses Tailwind CSS custom properties for theming
+    - Global styles for JS-created elements (sun-rise, sun-set, etc.)
+    - Mobile touch-friendly sizing
+  - Created `src/components/panels/InstructionsPanel.astro`:
+    - Keyboard/mouse control instructions list
+    - Renderer info display area
+    - Fixed positioning at bottom-right
+    - Hidden on mobile touch devices to save screen space
+    - Responsive adjustments for smaller screens
+    - Uses Tailwind CSS custom properties for theming
+  - All element IDs preserved for JS compatibility:
+    - `sunTimesDisplay`
+    - `rendererInfo`
+  - Updated `src/pages/index.astro`:
+    - Imported SunTimesDisplay and InstructionsPanel components
+    - Replaced inline sun times and instructions HTML with component tags
+  - Updated `src/styles/global.css`:
+    - Removed legacy `.instructions`, `.renderer-info`, and `.sun-times-*` CSS rules
+    - Added comments noting style locations in components
+    - Updated mobile media query comment
+  - Consistent styling with existing design system
+  - All 263 tests pass
+  - Build completes without errors

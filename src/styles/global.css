@@ -291,44 +291,11 @@ canvas {
   color: white;
 }
 
-.instructions {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  background: rgba(0, 0, 0, 0.7);
-  padding: 15px;
-  border-radius: 8px;
-  color: white;
-  font-size: 12px;
-  max-width: 200px;
-}
-
-.instructions h4 {
-  margin: 0 0 8px 0;
-  font-size: 14px;
-}
-
-.instructions ul {
-  margin: 0;
-  padding-left: 15px;
-}
-
-.instructions li {
-  margin: 4px 0;
-}
-
-.renderer-info {
-  margin-top: 8px;
-  padding-top: 6px;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
-  font-size: 10px;
-  color: #999;
-  opacity: 0.7;
-}
-
-/* Loading and Error Overlay styles have been moved to:
+/* Loading, Error Overlay, and Info Panel styles have been moved to:
  * - src/components/overlays/LoadingOverlay.astro
  * - src/components/overlays/ErrorOverlay.astro
+ * - src/components/panels/SunTimesDisplay.astro
+ * - src/components/panels/InstructionsPanel.astro
  */
 
 /* City Search */
@@ -414,47 +381,7 @@ canvas {
   color: #888;
 }
 
-/* Sunrise & Sunset display */
-.sun-times-container {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: 8px;
-}
-
-.sun-times-display {
-  font-size: 13px;
-  color: #ccc;
-  margin-top: 4px;
-  line-height: 1.5;
-}
-
-.sun-times-display .sun-times-loading {
-  color: #999;
-  font-style: italic;
-}
-
-.sun-times-display .sun-times-location {
-  color: #fff;
-  font-weight: bold;
-  margin-bottom: 2px;
-}
-
-.sun-times-display .sun-times-row {
-  display: flex;
-  justify-content: space-between;
-}
-
-.sun-times-display .sun-rise {
-  color: #ffcc44;
-}
-
-.sun-times-display .sun-set {
-  color: #ff8844;
-}
-
-.sun-times-display .sun-polar {
-  color: #aaa;
-  font-style: italic;
-}
+/* Sunrise & Sunset display styles moved to src/components/panels/SunTimesDisplay.astro */
 
 /* Marker cursor styles */
 canvas.clickable-marker {
@@ -682,10 +609,7 @@ canvas.placing-marker {
     user-select: none;
   }
 
-  /* Hide instructions panel on small mobile screens */
-  .instructions {
-    display: none;
-  }
+  /* Instructions panel mobile hide is now in InstructionsPanel.astro */
 }
 
 /* Eclipse notification and buttons */

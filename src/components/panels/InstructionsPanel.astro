@@ -1,0 +1,100 @@
+---
+/**
+ * InstructionsPanel Component
+ *
+ * Displays keyboard and mouse control instructions.
+ * Shows renderer backend information.
+ * Positioned at bottom-right of the screen.
+ *
+ * Element IDs (preserved for JS compatibility):
+ * - rendererInfo: Renderer backend information display
+ */
+---
+
+<div class="instructions-panel" role="complementary" aria-label="Keyboard and mouse controls help">
+  <h4 class="instructions-title">Controls</h4>
+  <ul class="instructions-list">
+    <li>Drag to rotate Earth</li>
+    <li>Scroll / pinch to zoom</li>
+    <li>Tap a marker to fly to city</li>
+    <li>Use slider to change time</li>
+    <li>Space: Play/Pause</li>
+    <li>&larr; &rarr; Arrow keys: Step time</li>
+  </ul>
+  <div
+    id="rendererInfo"
+    class="renderer-info"
+    aria-label="Rendering backend information"
+  ></div>
+</div>
+
+<style>
+  .instructions-panel {
+    position: absolute;
+    bottom: 1.25rem;
+    right: 1.25rem;
+    background: var(--color-panel, rgba(0, 0, 0, 0.7));
+    padding: 0.9375rem;
+    border-radius: 0.5rem;
+    color: var(--color-text-primary, #ffffff);
+    font-size: 0.75rem;
+    max-width: 12.5rem;
+    z-index: 50;
+  }
+
+  .instructions-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text-primary, #ffffff);
+  }
+
+  .instructions-list {
+    margin: 0;
+    padding-left: 0.9375rem;
+    color: var(--color-text-secondary, #cccccc);
+  }
+
+  .instructions-list li {
+    margin: 0.25rem 0;
+    line-height: 1.4;
+  }
+
+  .renderer-info {
+    margin-top: 0.5rem;
+    padding-top: 0.375rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    font-size: 0.625rem;
+    color: var(--color-text-dim, #999999);
+    opacity: 0.7;
+  }
+
+  /* Hide on mobile touch devices to save screen space */
+  @media (pointer: coarse) {
+    .instructions-panel {
+      display: none;
+    }
+  }
+
+  /* Responsive positioning for smaller screens */
+  @media (max-width: 768px) {
+    .instructions-panel {
+      bottom: 0.625rem;
+      right: 0.625rem;
+      padding: 0.625rem;
+      max-width: 10rem;
+      font-size: 0.6875rem;
+    }
+
+    .instructions-title {
+      font-size: 0.75rem;
+    }
+  }
+
+  /* Respect reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .instructions-panel {
+      transition: none;
+    }
+  }
+</style>

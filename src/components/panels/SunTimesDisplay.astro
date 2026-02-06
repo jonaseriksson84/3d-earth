@@ -1,0 +1,96 @@
+---
+/**
+ * SunTimesDisplay Component
+ *
+ * Displays sunrise and sunset times for selected location.
+ * Shows user location or selected city sun times.
+ * Updates dynamically when date or location changes.
+ *
+ * Element IDs (preserved for JS compatibility):
+ * - sunTimesDisplay: Main display container
+ */
+---
+
+<div class="sun-times-container">
+  <div class="sun-times-header">
+    <label class="sun-times-label">Sunrise & Sunset</label>
+  </div>
+  <div
+    id="sunTimesDisplay"
+    class="sun-times-display"
+    aria-live="polite"
+    aria-label="Sunrise and sunset times"
+  >
+    <span class="sun-times-loading">Select a city or detect location...</span>
+  </div>
+</div>
+
+<style>
+  .sun-times-container {
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 0.375rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .sun-times-header {
+    margin-bottom: 0.5rem;
+  }
+
+  .sun-times-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text-primary, #ffffff);
+  }
+
+  .sun-times-display {
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary, #cccccc);
+    line-height: 1.5;
+  }
+
+  /* Loading state */
+  .sun-times-display :global(.sun-times-loading) {
+    color: var(--color-text-dim, #999999);
+    font-style: italic;
+  }
+
+  /* Location name (set by JS) */
+  .sun-times-display :global(.sun-times-location) {
+    color: var(--color-text-primary, #ffffff);
+    font-weight: bold;
+    margin-bottom: 0.125rem;
+  }
+
+  /* Row layout for times (set by JS) */
+  .sun-times-display :global(.sun-times-row) {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* Sunrise color (set by JS) */
+  .sun-times-display :global(.sun-rise) {
+    color: var(--color-sunrise, #ffcc44);
+  }
+
+  /* Sunset color (set by JS) */
+  .sun-times-display :global(.sun-set) {
+    color: var(--color-sunset, #ff8844);
+  }
+
+  /* Polar day/night message (set by JS) */
+  .sun-times-display :global(.sun-polar) {
+    color: var(--color-text-muted, #aaaaaa);
+    font-style: italic;
+  }
+
+  /* Mobile touch target sizing */
+  @media (pointer: coarse) {
+    .sun-times-label {
+      min-height: 2.75rem;
+      display: flex;
+      align-items: center;
+    }
+  }
+</style>
