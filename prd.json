@@ -1268,33 +1268,152 @@
         "Build succeeds without style-related warnings"
       ],
       "passes": true
+    },
+    {
+      "id": "UI-REFACTOR-010",
+      "category": "Refactoring",
+      "priority": "medium",
+      "description": "Replace component inline styling with Tailwind classes",
+      "details": "Audit all Astro components for inline style attributes and convert them to Tailwind utility classes. Inline styles break consistency and make theming difficult. Identify all style=\"...\" attributes in .astro files and replace with equivalent Tailwind classes.",
+      "stepsToVerify": [
+        "Search for style= attributes in all .astro component files",
+        "Convert each inline style to Tailwind utility classes",
+        "Verify visual appearance unchanged after conversion",
+        "Check for any dynamic styles that need special handling",
+        "Ensure no inline styles remain except where absolutely necessary",
+        "Build completes without errors"
+      ],
+      "acceptanceCriteria": [
+        "No inline style attributes in Astro components (except dynamic styles)",
+        "All styling uses Tailwind utility classes",
+        "Visual appearance identical to before",
+        "Build succeeds without warnings",
+        "Dynamic styles use class: directive or conditional classes where possible"
+      ],
+      "passes": false
+    },
+    {
+      "id": "BUG-008",
+      "category": "Bug Fix",
+      "priority": "medium",
+      "description": "Control section needs to be scrollable",
+      "details": "The controls panel on the left side of the UI does not scroll when content overflows the viewport height. On smaller screens or when many options are visible, users cannot access controls that extend below the visible area. Add overflow scrolling to the controls container.",
+      "stepsToVerify": [
+        "Resize browser window to small height",
+        "Verify controls panel shows scrollbar when content overflows",
+        "Verify all controls are accessible via scrolling",
+        "Verify scroll behavior is smooth",
+        "Test on mobile viewport sizes",
+        "Verify scrollbar styling matches UI theme"
+      ],
+      "acceptanceCriteria": [
+        "Controls panel scrolls vertically when content exceeds viewport height",
+        "Scrollbar visible when needed (or subtle scrollbar styling)",
+        "All controls accessible regardless of viewport size",
+        "Scroll behavior is smooth (not janky)",
+        "Works on both desktop and mobile viewports",
+        "Panel header remains visible during scroll (optional sticky header)"
+      ],
+      "passes": false
+    },
+    {
+      "id": "TOOLING-001",
+      "category": "Tooling",
+      "priority": "high",
+      "description": "Fix JSX IntrinsicElements TypeScript error in IDE",
+      "details": "All Astro components show the TypeScript error 'JSX element implicitly has type any because no interface JSX.IntrinsicElements exists' when opened in the IDE. This is likely due to missing or misconfigured TypeScript/Astro type definitions. The error prevents proper IDE intellisense and type checking for JSX elements.",
+      "stepsToVerify": [
+        "Open any .astro file in VS Code or other IDE",
+        "Verify no JSX.IntrinsicElements error appears",
+        "Verify HTML elements have proper type information",
+        "Verify Astro component props have proper typing",
+        "Run tsc --noEmit and verify no JSX-related errors",
+        "Verify VS Code Astro extension is properly configured"
+      ],
+      "acceptanceCriteria": [
+        "No JSX.IntrinsicElements errors in IDE",
+        "TypeScript properly recognizes HTML elements in Astro files",
+        "IDE intellisense works for HTML attributes",
+        "tsconfig.json properly configured for Astro JSX",
+        "Build and type-check pass without JSX-related errors"
+      ],
+      "passes": false
+    },
+    {
+      "id": "TOOLING-002",
+      "category": "Tooling",
+      "priority": "medium",
+      "description": "Add Biome configuration for linting and formatting",
+      "details": "Add Biome as the project's linter and formatter. Biome is a fast, modern alternative to ESLint + Prettier. Configure biome.json with appropriate rules for TypeScript, Astro, and the project's code style. Add npm scripts for linting and formatting.",
+      "stepsToVerify": [
+        "Install @biomejs/biome as devDependency",
+        "Create biome.json configuration file",
+        "Configure rules appropriate for Astro/TypeScript project",
+        "Add 'pnpm lint' script to package.json",
+        "Add 'pnpm format' script to package.json",
+        "Run linter on codebase and fix any issues",
+        "Verify Biome integrates with VS Code extension"
+      ],
+      "acceptanceCriteria": [
+        "@biomejs/biome in devDependencies",
+        "biome.json exists with project-appropriate configuration",
+        "pnpm lint runs Biome linter",
+        "pnpm format runs Biome formatter",
+        "Codebase passes linting without errors",
+        "VS Code Biome extension works for real-time feedback"
+      ],
+      "passes": false
+    },
+    {
+      "id": "REFACTOR-003",
+      "category": "Refactoring",
+      "priority": "low",
+      "description": "Evaluate and remove unnecessary UI barrel export",
+      "details": "The src/components/ui/index.ts barrel export file may be unnecessary if components are imported directly. Evaluate whether this barrel export provides value or just adds indirection. If unused or providing no benefit, remove it to simplify the codebase.",
+      "stepsToVerify": [
+        "Check if any files import from 'components/ui' barrel",
+        "Verify if barrel provides tree-shaking benefits",
+        "Evaluate if direct imports are used instead",
+        "If barrel is unused, remove src/components/ui/index.ts",
+        "Update any imports if barrel is removed",
+        "Verify build succeeds after changes"
+      ],
+      "acceptanceCriteria": [
+        "Barrel export either provides clear value or is removed",
+        "No unused re-exports in the codebase",
+        "Import paths are consistent across the project",
+        "Build succeeds without import errors",
+        "Documentation updated if import pattern changes"
+      ],
+      "passes": false
     }
   ],
   "summary": {
-    "totalRequirements": 45,
-    "bugFixes": 7,
-    "refactoring": 11,
+    "totalRequirements": 50,
+    "bugFixes": 8,
+    "refactoring": 12,
     "newFeatures": 20,
     "technicalImprovements": 7,
+    "tooling": 2,
     "performance": 3,
     "byPriority": {
-      "high": 9,
-      "medium": 23,
-      "low": 13
+      "high": 10,
+      "medium": 26,
+      "low": 14
     }
   },
   "implementationPhases": [
     {
       "phase": 1,
       "name": "Foundation - Bug Fixes",
-      "requirements": ["BUG-001", "BUG-002", "BUG-003", "BUG-004", "BUG-005", "BUG-006", "BUG-007"],
+      "requirements": ["BUG-001", "BUG-002", "BUG-003", "BUG-004", "BUG-005", "BUG-006", "BUG-007", "BUG-008"],
       "description": "Fix all identified bugs and security issues in the current codebase"
     },
     {
       "phase": 2,
-      "name": "Architecture - Refactoring",
-      "requirements": ["REFACTOR-001", "REFACTOR-002"],
-      "description": "Migrate to Astro + TypeScript with modular architecture"
+      "name": "Architecture - Refactoring & Tooling",
+      "requirements": ["REFACTOR-001", "REFACTOR-002", "TOOLING-001", "TOOLING-002"],
+      "description": "Migrate to Astro + TypeScript with modular architecture, fix IDE tooling issues, add Biome linting"
     },
     {
       "phase": 3,
@@ -1353,7 +1472,7 @@
     {
       "phase": 12,
       "name": "UI Refactoring - Tailwind & Components",
-      "requirements": ["UI-REFACTOR-001", "UI-REFACTOR-002", "UI-REFACTOR-003", "UI-REFACTOR-004", "UI-REFACTOR-005", "UI-REFACTOR-006", "UI-REFACTOR-007", "UI-REFACTOR-008", "UI-REFACTOR-009"],
+      "requirements": ["UI-REFACTOR-001", "UI-REFACTOR-002", "UI-REFACTOR-003", "UI-REFACTOR-004", "UI-REFACTOR-005", "UI-REFACTOR-006", "UI-REFACTOR-007", "UI-REFACTOR-008", "UI-REFACTOR-009", "UI-REFACTOR-010", "REFACTOR-003"],
       "description": "Migrate monolithic UI to Tailwind CSS 4 with organized Astro components for better maintainability"
     }
   ]
