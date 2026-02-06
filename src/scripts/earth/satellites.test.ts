@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { SATELLITES, calculateSatellitePosition, generateOrbitPoints } from './satellites';
+import { describe, expect, it } from 'vitest';
+import { calculateSatellitePosition, generateOrbitPoints, SATELLITES } from './satellites';
 
 describe('SATELLITES constant', () => {
   it('should contain ISS, GPS, and Geostationary satellites', () => {

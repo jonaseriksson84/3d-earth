@@ -77,11 +77,7 @@ export function initAtmosphere(sceneObjects: SceneObjects): AtmosphereState {
         : CONFIG.GEOMETRY_LOW;
 
   // Create atmosphere geometry slightly larger than clouds
-  const atmosphereGeometry = new THREE.SphereGeometry(
-    CONFIG.ATMOSPHERE_RADIUS,
-    segments,
-    segments
-  );
+  const atmosphereGeometry = new THREE.SphereGeometry(CONFIG.ATMOSPHERE_RADIUS, segments, segments);
 
   // Create Fresnel shader material
   const atmosphereMaterial = new THREE.ShaderMaterial({
@@ -123,7 +119,7 @@ export function initAtmosphere(sceneObjects: SceneObjects): AtmosphereState {
  */
 export function updateAtmosphereRotation(
   atmosphere: AtmosphereState,
-  earthRotationY: number
+  earthRotationY: number,
 ): void {
   atmosphere.mesh.rotation.y = earthRotationY;
 }
@@ -134,10 +130,7 @@ export function updateAtmosphereRotation(
  * @param atmosphere - Atmosphere state to update
  * @param visible - Whether the atmosphere should be visible
  */
-export function setAtmosphereVisible(
-  atmosphere: AtmosphereState,
-  visible: boolean
-): void {
+export function setAtmosphereVisible(atmosphere: AtmosphereState, visible: boolean): void {
   atmosphere.mesh.visible = visible;
   atmosphere.visible = visible;
 }

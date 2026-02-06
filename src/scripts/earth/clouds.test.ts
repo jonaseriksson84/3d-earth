@@ -1,10 +1,6 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
+import { createCloudAnimationState, setCloudAnimationMode, updateCloudAnimation } from './clouds';
 import { CONFIG } from './config';
-import {
-  createCloudAnimationState,
-  setCloudAnimationMode,
-  updateCloudAnimation,
-} from './clouds';
 
 describe('createCloudAnimationState', () => {
   it('creates state with static mode by default', () => {
@@ -72,7 +68,7 @@ describe('updateCloudAnimation', () => {
     expect(state.rotationOffset).toBeCloseTo(CONFIG.CLOUD_DRIFT_SPEED, 5);
     expect(earth.clouds.rotation.y).toBeCloseTo(
       earth.earth.rotation.y + CONFIG.CLOUD_DRIFT_SPEED,
-      5
+      5,
     );
   });
 

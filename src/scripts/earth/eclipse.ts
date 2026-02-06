@@ -10,7 +10,7 @@
 
 import * as THREE from 'three';
 import { CONFIG } from './config';
-import type { SceneObjects, EclipseState, EclipseData } from './types';
+import type { EclipseData, EclipseState, SceneObjects } from './types';
 
 /**
  * Database of solar eclipses from 2024 to 2030.
@@ -327,10 +327,7 @@ export function initEclipse(sceneObjects: SceneObjects): EclipseState {
  * @param eclipseState - Eclipse state to update
  * @param dateStr - Current date in YYYY-MM-DD format
  */
-export function updateEclipseForDate(
-  eclipseState: EclipseState,
-  dateStr: string
-): void {
+export function updateEclipseForDate(eclipseState: EclipseState, dateStr: string): void {
   const eclipse = findEclipseForDate(dateStr);
 
   if (!eclipse) {
@@ -378,10 +375,7 @@ export function updateEclipseForDate(
  * @param eclipseState - Eclipse state to update
  * @param earthRotationY - Current Earth Y-axis rotation in radians
  */
-export function updateEclipseRotation(
-  eclipseState: EclipseState,
-  earthRotationY: number
-): void {
+export function updateEclipseRotation(eclipseState: EclipseState, earthRotationY: number): void {
   eclipseState.group.rotation.y = earthRotationY;
 }
 
@@ -410,7 +404,7 @@ export function setEclipseVisible(eclipseState: EclipseState, visible: boolean):
  */
 export function updateEclipseNotification(
   eclipse: EclipseData | null,
-  notificationEl: HTMLElement | null
+  notificationEl: HTMLElement | null,
 ): void {
   if (!notificationEl) return;
 
@@ -433,7 +427,7 @@ export function updateEclipseNotification(
  */
 export function populateEclipseButtons(
   containerEl: HTMLElement | null,
-  onSelect: (dateStr: string) => void
+  onSelect: (dateStr: string) => void,
 ): void {
   if (!containerEl) return;
 
@@ -496,7 +490,7 @@ export function detectEclipseHover(
   clientX: number,
   clientY: number,
   sceneObjects: SceneObjects,
-  eclipseState: EclipseState
+  eclipseState: EclipseState,
 ): boolean {
   if (!eclipseState.visible || !eclipseState.mesh.visible || !eclipseState.currentEclipse) {
     return false;
@@ -508,7 +502,7 @@ export function detectEclipseHover(
   // Convert mouse to normalized device coordinates
   const mouse = new THREE.Vector2(
     ((clientX - rect.left) / rect.width) * 2 - 1,
-    -((clientY - rect.top) / rect.height) * 2 + 1
+    -((clientY - rect.top) / rect.height) * 2 + 1,
   );
 
   const raycaster = new THREE.Raycaster();
@@ -542,12 +536,11 @@ export function showEclipseTooltip(
   eclipse: EclipseData,
   clientX: number,
   clientY: number,
-  tooltip: HTMLElement
+  tooltip: HTMLElement,
 ): void {
   const typeLabel = eclipse.type.charAt(0).toUpperCase() + eclipse.type.slice(1);
   const typeColor =
-    eclipse.type === 'total' ? '#ff8000' :
-    eclipse.type === 'annular' ? '#ffcc33' : '#33ccff';
+    eclipse.type === 'total' ? '#ff8000' : eclipse.type === 'annular' ? '#ffcc33' : '#33ccff';
 
   tooltip.innerHTML = `
     <div style="font-weight: bold; color: ${typeColor}; margin-bottom: 4px;">

@@ -8,117 +8,117 @@
  */
 
 import type { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import {
-  initWebGL,
-  initScene,
-  initEarth,
-  updateEarthLOD,
-  initLighting,
-  initControls,
-  setupCanvasTouchHandling,
-  createLocationState,
-  getLocation,
-  createTimeState,
-  initTimeControls,
-  initEventListeners,
-  handleSunUpdate,
-  updatePlayback,
-  initMarkers,
-  updateUserMarker,
-  handleMarkerHover,
-  handleMarkerClick,
-  detectMarkerAtPosition,
-  showMarkerTooltip,
-  hideMarkerTooltip,
-  updateMarkersRotation,
-  setMarkersVisible,
-  initCitySearch,
-  updateSearchResults,
-  clearCitySearch,
-  initStars,
-  initReferenceLines,
-  updateReferenceLinesRotation,
-  setReferenceLinesVisible,
-  createLoadingState,
-  setupRetryButton,
-  createFlyToState,
-  startFlyTo,
-  updateFlyTo,
-  cancelFlyTo,
-  shouldCancelFlyTo,
-  searchCities,
-  handleSearchKeydown,
-  initAtmosphere,
-  updateAtmosphereRotation,
-  setAtmosphereVisible,
-  initTerminator,
-  updateTerminatorPosition,
-  setTerminatorVisible,
-  initMoon,
-  updateMoonPosition,
-  setMoonVisible,
-  updateSunTimesDisplay,
-  initSatellites,
-  updateSatellitePositions,
-  updateSatellitesRotation,
-  setSatellitesVisible,
-  initAurora,
-  updateAurora,
-  updateAuroraRotation,
-  setAuroraVisible,
-  getDayOfYear,
-  createCloudAnimationState,
-  setCloudAnimationMode,
-  updateCloudAnimation,
-  initCustomMarkers,
-  setPlacingMode,
-  screenToLatLon,
-  addCustomMarker,
-  removeCustomMarker,
-  editCustomMarkerLabel,
-  updateCustomMarkersList,
-  initEclipse,
-  updateEclipseForDate,
-  updateEclipseRotation,
-  setEclipseVisible,
-  findEclipseForDate,
-  updateEclipseNotification,
-  populateEclipseButtons,
-  createEclipseTooltip,
-  detectEclipseHover,
-  showEclipseTooltip,
-  hideEclipseTooltip,
-  initTimezones,
-  updateTimezonesRotation,
-  setTimezonesVisible,
-  handleTimezoneHover,
-  initSolarIntensity,
-  updateSolarIntensityPosition,
-  updateSolarIntensityRotation,
-  setSolarIntensityVisible,
-} from './earth';
 import type {
-  SceneObjects,
-  EarthObjects,
-  LightingObjects,
-  TimeState,
-  LocationState,
-  MarkerState,
-  ReferenceLinesState,
-  LoadingState,
-  FlyToState,
   AtmosphereState,
-  CitySearchState,
-  TerminatorState,
-  MoonState,
-  SatelliteState,
   AuroraState,
+  CityData,
+  CitySearchState,
   CloudAnimationState,
   CustomMarkerState,
+  EarthObjects,
   EclipseState,
-  TimezoneState,
+  FlyToState,
+  LightingObjects,
+  LoadingState,
+  LocationState,
+  MarkerState,
+  MoonState,
+  ReferenceLinesState,
+  SatelliteState,
+  SceneObjects,
   SolarIntensityState,
-  CityData,
+  TerminatorState,
+  TimeState,
+  TimezoneState,
+} from './earth';
+import {
+  addCustomMarker,
+  cancelFlyTo,
+  clearCitySearch,
+  createCloudAnimationState,
+  createEclipseTooltip,
+  createFlyToState,
+  createLoadingState,
+  createLocationState,
+  createTimeState,
+  detectEclipseHover,
+  detectMarkerAtPosition,
+  editCustomMarkerLabel,
+  findEclipseForDate,
+  getDayOfYear,
+  getLocation,
+  handleMarkerClick,
+  handleMarkerHover,
+  handleSearchKeydown,
+  handleSunUpdate,
+  handleTimezoneHover,
+  hideEclipseTooltip,
+  hideMarkerTooltip,
+  initAtmosphere,
+  initAurora,
+  initCitySearch,
+  initControls,
+  initCustomMarkers,
+  initEarth,
+  initEclipse,
+  initEventListeners,
+  initLighting,
+  initMarkers,
+  initMoon,
+  initReferenceLines,
+  initSatellites,
+  initScene,
+  initSolarIntensity,
+  initStars,
+  initTerminator,
+  initTimeControls,
+  initTimezones,
+  initWebGL,
+  populateEclipseButtons,
+  removeCustomMarker,
+  screenToLatLon,
+  searchCities,
+  setAtmosphereVisible,
+  setAuroraVisible,
+  setCloudAnimationMode,
+  setEclipseVisible,
+  setMarkersVisible,
+  setMoonVisible,
+  setPlacingMode,
+  setReferenceLinesVisible,
+  setSatellitesVisible,
+  setSolarIntensityVisible,
+  setTerminatorVisible,
+  setTimezonesVisible,
+  setupCanvasTouchHandling,
+  setupRetryButton,
+  shouldCancelFlyTo,
+  showEclipseTooltip,
+  showMarkerTooltip,
+  startFlyTo,
+  updateAtmosphereRotation,
+  updateAurora,
+  updateAuroraRotation,
+  updateCloudAnimation,
+  updateCustomMarkersList,
+  updateEarthLOD,
+  updateEclipseForDate,
+  updateEclipseNotification,
+  updateEclipseRotation,
+  updateFlyTo,
+  updateMarkersRotation,
+  updateMoonPosition,
+  updatePlayback,
+  updateReferenceLinesRotation,
+  updateSatellitePositions,
+  updateSatellitesRotation,
+  updateSearchResults,
+  updateSolarIntensityPosition,
+  updateSolarIntensityRotation,
+  updateSunTimesDisplay,
+  updateTerminatorPosition,
+  updateTimezonesRotation,
+  updateUserMarker,
 } from './earth';
 
 let sceneObjects: SceneObjects | null = null;
@@ -156,7 +156,7 @@ function getLocationWithMarkerUpdate(
   locState: LocationState,
   earthObjs: EarthObjects,
   markers: MarkerState,
-  onGeolocationSuccess?: (lat: number, lon: number) => void
+  onGeolocationSuccess?: (lat: number, lon: number) => void,
 ): void {
   // Add user marker at default location immediately (no delay in rendering)
   updateUserMarker(markers, locState);
@@ -180,7 +180,7 @@ function refreshSunTimesPanel(): void {
     locationState.userLongitude,
     timeState.selectedDate,
     userTimezone,
-    selectedCityForSunTimes ?? undefined
+    selectedCityForSunTimes ?? undefined,
   );
 }
 
@@ -247,7 +247,7 @@ function animate(): void {
     }
 
     // Update Moon position based on date and sun direction
-    if (moonState && moonState.visible && earthObjects && timeState) {
+    if (moonState?.visible && earthObjects && timeState) {
       const sunDir = earthObjects.earthMaterial.uniforms.sunDirection.value;
       updateMoonPosition(moonState, timeState.selectedDate, sunDir.x, sunDir.y, sunDir.z);
     }
@@ -294,8 +294,8 @@ function animate(): void {
     }
 
     // Update satellite positions
-    if (satelliteState && satelliteState.visible && earthObjects && timeState) {
-      const sliderMinutes = parseInt(timeState.timeSlider.value);
+    if (satelliteState?.visible && earthObjects && timeState) {
+      const sliderMinutes = parseInt(timeState.timeSlider.value, 10);
       const dayOfYearVal = getDayOfYear(timeState.selectedDate);
       updateSatellitePositions(satelliteState, sliderMinutes, dayOfYearVal);
       updateSatellitesRotation(satelliteState, earthObjects.earth.rotation.y);
@@ -345,7 +345,7 @@ function refreshCustomMarkersList(): void {
       const marker = customMarkerState.markers.find((m) => m.id === id);
       if (!marker) return;
       const newLabel = prompt('Enter new label:', marker.label);
-      if (newLabel !== null && newLabel.trim()) {
+      if (newLabel?.trim()) {
         editCustomMarkerLabel(customMarkerState, id, newLabel.trim());
         refreshCustomMarkersList();
       }
@@ -362,7 +362,7 @@ function refreshCustomMarkersList(): void {
       startFlyTo(cityData, sceneObjects, flyToState, controls, earthObjects?.earth.rotation.y ?? 0);
       selectedCityForSunTimes = cityData;
       refreshSunTimesPanel();
-    }
+    },
   );
 }
 
@@ -568,7 +568,13 @@ export function initApp(): void {
         debounceTimer = setTimeout(() => {
           updateSearchResults(searchStateRef, searchInput.value, (city) => {
             if (sceneObjects && flyToState && controls) {
-              startFlyTo(city, sceneObjects, flyToState, controls, earthObjects?.earth.rotation.y ?? 0);
+              startFlyTo(
+                city,
+                sceneObjects,
+                flyToState,
+                controls,
+                earthObjects?.earth.rotation.y ?? 0,
+              );
             }
           });
         }, 200);
@@ -580,7 +586,13 @@ export function initApp(): void {
           const matches = searchCities(searchInput.value).slice(0, 8);
           const city = handleSearchKeydown(event.key, searchStateRef, matches, (c) => {
             if (sceneObjects && flyToState && controls) {
-              startFlyTo(c, sceneObjects, flyToState, controls, earthObjects?.earth.rotation.y ?? 0);
+              startFlyTo(
+                c,
+                sceneObjects,
+                flyToState,
+                controls,
+                earthObjects?.earth.rotation.y ?? 0,
+              );
             }
           });
           if (city) {
@@ -601,7 +613,13 @@ export function initApp(): void {
         if (searchInput.value.trim()) {
           updateSearchResults(searchStateRef, searchInput.value, (city) => {
             if (sceneObjects && flyToState && controls) {
-              startFlyTo(city, sceneObjects, flyToState, controls, earthObjects?.earth.rotation.y ?? 0);
+              startFlyTo(
+                city,
+                sceneObjects,
+                flyToState,
+                controls,
+                earthObjects?.earth.rotation.y ?? 0,
+              );
             }
           });
         }
@@ -660,13 +678,7 @@ export function initApp(): void {
           // Immediately update position when enabled
           if (target.checked && earthObjects && timeState) {
             const sunDir = earthObjects.earthMaterial.uniforms.sunDirection.value;
-            updateMoonPosition(
-              moonState,
-              timeState.selectedDate,
-              sunDir.x,
-              sunDir.y,
-              sunDir.z
-            );
+            updateMoonPosition(moonState, timeState.selectedDate, sunDir.x, sunDir.y, sunDir.z);
           }
         }
       });
@@ -681,7 +693,7 @@ export function initApp(): void {
           setSatellitesVisible(satelliteState, target.checked);
           // Immediately update positions when enabled
           if (target.checked && timeState) {
-            const sliderMinutes = parseInt(timeState.timeSlider.value);
+            const sliderMinutes = parseInt(timeState.timeSlider.value, 10);
             const dayOfYearVal = getDayOfYear(timeState.selectedDate);
             updateSatellitePositions(satelliteState, sliderMinutes, dayOfYearVal);
           }
@@ -728,7 +740,9 @@ export function initApp(): void {
     }
 
     // Set up solar intensity toggle
-    const solarIntensityToggle = document.getElementById('solarIntensityToggle') as HTMLInputElement | null;
+    const solarIntensityToggle = document.getElementById(
+      'solarIntensityToggle',
+    ) as HTMLInputElement | null;
     if (solarIntensityToggle) {
       solarIntensityToggle.addEventListener('change', (event: Event) => {
         const target = event.target as HTMLInputElement;
@@ -748,7 +762,7 @@ export function initApp(): void {
     populateEclipseButtons(eclipseButtonsEl, (dateStr: string) => {
       if (timeState) {
         timeState.datePicker.value = dateStr;
-        timeState.selectedDate = new Date(dateStr + 'T12:00:00');
+        timeState.selectedDate = new Date(`${dateStr}T12:00:00`);
         timeState.lastDateValue = dateStr;
         timeState.needsSunUpdate = true;
         // Set time to noon for best eclipse viewing
@@ -775,7 +789,13 @@ export function initApp(): void {
           lon: eclipse.maxLon,
           timezone: 0,
         };
-        startFlyTo(eclipseCityData, sceneObjects, flyToState, controls, earthObjects?.earth.rotation.y ?? 0);
+        startFlyTo(
+          eclipseCityData,
+          sceneObjects,
+          flyToState,
+          controls,
+          earthObjects?.earth.rotation.y ?? 0,
+        );
       }
     });
 
@@ -793,19 +813,35 @@ export function initApp(): void {
     // Set up marker hover events
     window.addEventListener('mousemove', (event: MouseEvent) => {
       if (sceneObjects && markerState && timeState) {
-        const sliderMinutes = parseInt(timeState.timeSlider.value);
+        const sliderMinutes = parseInt(timeState.timeSlider.value, 10);
         handleMarkerHover(event, sceneObjects, markerState, sliderMinutes, timeState.selectedDate);
       }
       // Timezone hover tooltip
       if (sceneObjects && timezoneState && timezoneState.visible && timeState) {
-        const sliderMinutes = parseInt(timeState.timeSlider.value);
+        const sliderMinutes = parseInt(timeState.timeSlider.value, 10);
         handleTimezoneHover(event, sceneObjects, timezoneState, sliderMinutes);
       }
       // Eclipse hover tooltip
-      if (sceneObjects && eclipseState && eclipseTooltip && eclipseState.visible && eclipseState.currentEclipse) {
-        const isHovering = detectEclipseHover(event.clientX, event.clientY, sceneObjects, eclipseState);
+      if (
+        sceneObjects &&
+        eclipseState &&
+        eclipseTooltip &&
+        eclipseState.visible &&
+        eclipseState.currentEclipse
+      ) {
+        const isHovering = detectEclipseHover(
+          event.clientX,
+          event.clientY,
+          sceneObjects,
+          eclipseState,
+        );
         if (isHovering) {
-          showEclipseTooltip(eclipseState.currentEclipse, event.clientX, event.clientY, eclipseTooltip);
+          showEclipseTooltip(
+            eclipseState.currentEclipse,
+            event.clientX,
+            event.clientY,
+            eclipseTooltip,
+          );
         } else {
           hideEclipseTooltip(eclipseTooltip);
         }
@@ -817,7 +853,7 @@ export function initApp(): void {
     // Set up marker click events for fly-to animation and custom marker placement
     window.addEventListener('click', (event: MouseEvent) => {
       // Check if we're in placing mode first
-      if (customMarkerState && customMarkerState.placingMode) {
+      if (customMarkerState?.placingMode) {
         // Only handle placement on canvas clicks
         if (event.target instanceof HTMLElement && event.target.tagName === 'CANVAS') {
           handleCustomMarkerPlacement(event.clientX, event.clientY);
@@ -828,7 +864,13 @@ export function initApp(): void {
       if (sceneObjects && markerState && flyToState && controls) {
         const cityData = handleMarkerClick(event, sceneObjects, markerState);
         if (cityData) {
-          startFlyTo(cityData, sceneObjects, flyToState, controls, earthObjects?.earth.rotation.y ?? 0);
+          startFlyTo(
+            cityData,
+            sceneObjects,
+            flyToState,
+            controls,
+            earthObjects?.earth.rotation.y ?? 0,
+          );
           selectedCityForSunTimes = cityData;
           refreshSunTimesPanel();
         }
@@ -838,7 +880,7 @@ export function initApp(): void {
     // Allow user interaction to cancel fly-to animation
     window.addEventListener('mousedown', (event: MouseEvent) => {
       // Only cancel fly-to when clicking on the canvas (globe interaction)
-      if (flyToState && flyToState.isAnimating && controls && shouldCancelFlyTo(event.target)) {
+      if (flyToState?.isAnimating && controls && shouldCancelFlyTo(event.target)) {
         // Check if this is a marker click
         if (sceneObjects && markerState) {
           const cityData = handleMarkerClick(event, sceneObjects, markerState);
@@ -852,7 +894,7 @@ export function initApp(): void {
 
     // Also cancel on scroll/zoom
     window.addEventListener('wheel', () => {
-      if (flyToState && flyToState.isAnimating && controls) {
+      if (flyToState?.isAnimating && controls) {
         cancelFlyTo(flyToState, controls);
       }
     });
@@ -864,83 +906,101 @@ export function initApp(): void {
     const TAP_THRESHOLD = 15; // max pixels moved to count as tap
     const TAP_TIMEOUT = 300; // max ms for a tap
 
-    window.addEventListener('touchstart', (event: TouchEvent) => {
-      if (event.touches.length === 1) {
-        const touch = event.touches[0];
-        touchStartX = touch.clientX;
-        touchStartY = touch.clientY;
-        touchStartTime = performance.now();
-      }
-    }, { passive: true });
+    window.addEventListener(
+      'touchstart',
+      (event: TouchEvent) => {
+        if (event.touches.length === 1) {
+          const touch = event.touches[0];
+          touchStartX = touch.clientX;
+          touchStartY = touch.clientY;
+          touchStartTime = performance.now();
+        }
+      },
+      { passive: true },
+    );
 
-    window.addEventListener('touchend', (event: TouchEvent) => {
-      // Only process single-finger taps (not pinch-zoom releases)
-      if (event.changedTouches.length !== 1) return;
+    window.addEventListener(
+      'touchend',
+      (event: TouchEvent) => {
+        // Only process single-finger taps (not pinch-zoom releases)
+        if (event.changedTouches.length !== 1) return;
 
-      const touch = event.changedTouches[0];
-      const dx = touch.clientX - touchStartX;
-      const dy = touch.clientY - touchStartY;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      const elapsed = performance.now() - touchStartTime;
+        const touch = event.changedTouches[0];
+        const dx = touch.clientX - touchStartX;
+        const dy = touch.clientY - touchStartY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const elapsed = performance.now() - touchStartTime;
 
-      // Determine if this was a tap (short distance, short time)
-      if (distance > TAP_THRESHOLD || elapsed > TAP_TIMEOUT) return;
+        // Determine if this was a tap (short distance, short time)
+        if (distance > TAP_THRESHOLD || elapsed > TAP_TIMEOUT) return;
 
-      // Check if the tap target is the canvas
-      if (!(touch.target instanceof HTMLElement) || touch.target.tagName !== 'CANVAS') return;
+        // Check if the tap target is the canvas
+        if (!(touch.target instanceof HTMLElement) || touch.target.tagName !== 'CANVAS') return;
 
-      // Handle custom marker placement on tap
-      if (customMarkerState && customMarkerState.placingMode) {
-        handleCustomMarkerPlacement(touch.clientX, touch.clientY);
-        return;
-      }
-
-      if (!sceneObjects || !markerState || !timeState) return;
-
-      const cityData = detectMarkerAtPosition(
-        touch.clientX,
-        touch.clientY,
-        sceneObjects,
-        markerState
-      );
-
-      if (cityData) {
-        // Show tooltip at tap position
-        const sliderMinutes = parseInt(timeState.timeSlider.value);
-        showMarkerTooltip(
-          cityData,
-          touch.clientX,
-          touch.clientY,
-          markerState,
-          sliderMinutes,
-          timeState.selectedDate
-        );
-
-        // Trigger fly-to on tap
-        if (flyToState && controls) {
-          startFlyTo(cityData, sceneObjects, flyToState, controls, earthObjects?.earth.rotation.y ?? 0);
-          selectedCityForSunTimes = cityData;
-          refreshSunTimesPanel();
+        // Handle custom marker placement on tap
+        if (customMarkerState?.placingMode) {
+          handleCustomMarkerPlacement(touch.clientX, touch.clientY);
+          return;
         }
 
-        // Auto-hide tooltip after 3 seconds
-        setTimeout(() => {
-          if (markerState) {
-            hideMarkerTooltip(markerState);
+        if (!sceneObjects || !markerState || !timeState) return;
+
+        const cityData = detectMarkerAtPosition(
+          touch.clientX,
+          touch.clientY,
+          sceneObjects,
+          markerState,
+        );
+
+        if (cityData) {
+          // Show tooltip at tap position
+          const sliderMinutes = parseInt(timeState.timeSlider.value, 10);
+          showMarkerTooltip(
+            cityData,
+            touch.clientX,
+            touch.clientY,
+            markerState,
+            sliderMinutes,
+            timeState.selectedDate,
+          );
+
+          // Trigger fly-to on tap
+          if (flyToState && controls) {
+            startFlyTo(
+              cityData,
+              sceneObjects,
+              flyToState,
+              controls,
+              earthObjects?.earth.rotation.y ?? 0,
+            );
+            selectedCityForSunTimes = cityData;
+            refreshSunTimesPanel();
           }
-        }, 3000);
-      } else {
-        // Tap on empty space hides tooltip
-        hideMarkerTooltip(markerState);
-      }
-    }, { passive: true });
+
+          // Auto-hide tooltip after 3 seconds
+          setTimeout(() => {
+            if (markerState) {
+              hideMarkerTooltip(markerState);
+            }
+          }, 3000);
+        } else {
+          // Tap on empty space hides tooltip
+          hideMarkerTooltip(markerState);
+        }
+      },
+      { passive: true },
+    );
 
     // Cancel fly-to on multi-touch (pinch) gestures
-    window.addEventListener('touchmove', (event: TouchEvent) => {
-      if (event.touches.length >= 2 && flyToState && flyToState.isAnimating && controls) {
-        cancelFlyTo(flyToState, controls);
-      }
-    }, { passive: true });
+    window.addEventListener(
+      'touchmove',
+      (event: TouchEvent) => {
+        if (event.touches.length >= 2 && flyToState && flyToState.isAnimating && controls) {
+          cancelFlyTo(flyToState, controls);
+        }
+      },
+      { passive: true },
+    );
 
     // Start location detection and animation
     locationState = createLocationState();
@@ -955,7 +1015,13 @@ export function initApp(): void {
           lon,
           timezone: userTimezone,
         };
-        startFlyTo(userLocationData, sceneObjects, flyToState, controls, earthObjects?.earth.rotation.y ?? 0);
+        startFlyTo(
+          userLocationData,
+          sceneObjects,
+          flyToState,
+          controls,
+          earthObjects?.earth.rotation.y ?? 0,
+        );
         selectedCityForSunTimes = userLocationData;
         refreshSunTimesPanel();
       }
@@ -981,7 +1047,7 @@ export function initApp(): void {
     strongEl.textContent = 'Error:';
     errorDiv.appendChild(strongEl);
     errorDiv.appendChild(
-      document.createTextNode(' Application failed to start. Check console for details.')
+      document.createTextNode(' Application failed to start. Check console for details.'),
     );
     document.body.appendChild(errorDiv);
   }

@@ -9,7 +9,7 @@
 
 import * as THREE from 'three';
 import { CONFIG } from './config';
-import type { SceneObjects, ReferenceLinesState } from './types';
+import type { ReferenceLinesState, SceneObjects } from './types';
 
 const AXIS_COLOR = 0x00aaff; // Blue for axis
 const EQUATOR_COLOR = 0xffaa00; // Orange for equator
@@ -23,11 +23,7 @@ const ARCTIC_LATITUDE = 66.5;
 /**
  * Creates a circle geometry for latitude lines
  */
-function createLatitudeCircle(
-  latitude: number,
-  color: number,
-  radius: number
-): THREE.Line {
+function createLatitudeCircle(latitude: number, color: number, radius: number): THREE.Line {
   const latRad = (latitude * Math.PI) / 180;
   const circleRadius = radius * Math.cos(latRad);
   const circleY = radius * Math.sin(latRad);
@@ -57,10 +53,7 @@ function createLatitudeCircle(
  */
 function createAxisLine(radius: number): THREE.Line {
   const axisLength = radius * AXIS_LENGTH_MULTIPLIER;
-  const points = [
-    new THREE.Vector3(0, -axisLength, 0),
-    new THREE.Vector3(0, axisLength, 0),
-  ];
+  const points = [new THREE.Vector3(0, -axisLength, 0), new THREE.Vector3(0, axisLength, 0)];
 
   const geometry = new THREE.BufferGeometry().setFromPoints(points);
   const material = new THREE.LineBasicMaterial({
@@ -80,9 +73,7 @@ function createAxisLine(radius: number): THREE.Line {
  * @param sceneObjects - Core scene objects to add reference lines to
  * @returns Reference lines state with group and visibility flag
  */
-export function initReferenceLines(
-  sceneObjects: SceneObjects
-): ReferenceLinesState {
+export function initReferenceLines(sceneObjects: SceneObjects): ReferenceLinesState {
   const { scene } = sceneObjects;
   // Radius above cloud layer (5.05) so reference lines render on top of clouds
   const radius = CONFIG.EARTH_RADIUS + 0.06;
@@ -129,7 +120,7 @@ export function initReferenceLines(
  */
 export function updateReferenceLinesRotation(
   state: ReferenceLinesState,
-  earthRotationY: number
+  earthRotationY: number,
 ): void {
   state.group.rotation.y = earthRotationY;
 }
@@ -140,10 +131,7 @@ export function updateReferenceLinesRotation(
  * @param state - Reference lines state to update
  * @param visible - Whether reference lines should be visible
  */
-export function setReferenceLinesVisible(
-  state: ReferenceLinesState,
-  visible: boolean
-): void {
+export function setReferenceLinesVisible(state: ReferenceLinesState, visible: boolean): void {
   state.group.visible = visible;
   state.visible = visible;
 }

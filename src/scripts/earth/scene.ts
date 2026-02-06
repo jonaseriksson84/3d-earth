@@ -68,7 +68,7 @@ export function initWebGL(): void {
   if (!checkWebGLSupport()) {
     showError(
       'WebGL Not Supported',
-      'This application requires WebGL to display 3D graphics. Please update your browser or enable WebGL in settings.'
+      'This application requires WebGL to display 3D graphics. Please update your browser or enable WebGL in settings.',
     );
     throw new Error('WebGL not supported');
   }
@@ -90,7 +90,7 @@ export function initScene(): SceneObjects {
       CONFIG.CAMERA_FOV,
       window.innerWidth / window.innerHeight,
       CONFIG.CAMERA_NEAR,
-      CONFIG.CAMERA_FAR
+      CONFIG.CAMERA_FAR,
     );
 
     // Create renderer with automatic WebGPU/WebGL selection
@@ -98,7 +98,10 @@ export function initScene(): SceneObjects {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x000000, 1);
     renderer.domElement.setAttribute('role', 'img');
-    renderer.domElement.setAttribute('aria-label', 'Interactive 3D Earth visualization. Use mouse to rotate and scroll to zoom.');
+    renderer.domElement.setAttribute(
+      'aria-label',
+      'Interactive 3D Earth visualization. Use mouse to rotate and scroll to zoom.',
+    );
     document.body.appendChild(renderer.domElement);
 
     console.log(`Scene initialized successfully (${renderer.rendererInfo.backend} backend)`);
@@ -108,7 +111,7 @@ export function initScene(): SceneObjects {
     console.error('Failed to initialize renderer:', error);
     showError(
       'Graphics Initialization Failed',
-      'Unable to start the 3D graphics system. Please refresh the page or try a different browser.'
+      'Unable to start the 3D graphics system. Please refresh the page or try a different browser.',
     );
     throw error;
   }

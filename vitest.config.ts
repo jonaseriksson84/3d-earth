@@ -8,11 +8,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/scripts/earth/*.ts'],
-      exclude: [
-        'src/scripts/earth/index.ts',
-        'src/scripts/earth/types.ts',
-        'src/scripts/main.ts',
-      ],
+      exclude: ['src/scripts/earth/index.ts', 'src/scripts/earth/types.ts', 'src/scripts/main.ts'],
       reporter: ['text', 'html'],
       thresholds: {
         lines: 70,

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { STARS_CONFIG } from './stars';
 
 describe('STARS_CONFIG', () => {

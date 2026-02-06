@@ -33,7 +33,7 @@ export function createCloudAnimationState(): CloudAnimationState {
  */
 export function setCloudAnimationMode(
   state: CloudAnimationState,
-  mode: 'static' | 'animated'
+  mode: 'static' | 'animated',
 ): void {
   state.mode = mode;
   if (mode === 'static') {
@@ -55,7 +55,7 @@ export function setCloudAnimationMode(
 export function updateCloudAnimation(
   state: CloudAnimationState,
   earthObjects: EarthObjects,
-  deltaTime: number
+  deltaTime: number,
 ): void {
   if (state.mode === 'animated') {
     // Accumulate a slow drift offset (clouds rotate slightly slower = drift eastward relative to surface)

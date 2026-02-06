@@ -70,7 +70,7 @@ canvas {
 .menu-toggle-icon::before,
 .menu-toggle-icon::after {
   @apply absolute left-0 h-0.5 w-5 bg-white;
-  content: '';
+  content: "";
   transition: transform 0.2s;
 }
 
@@ -108,7 +108,9 @@ canvas {
   padding-top: 54px;
   max-height: calc(100vh - 40px);
   overflow-y: auto;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
@@ -238,7 +240,9 @@ canvas.placing-marker {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.25);
   color: #ccc;
-  transition: background 0.15s, border-color 0.15s;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
 }
 
 .eclipse-btn:hover {

@@ -112,7 +112,7 @@ export function createRenderer(options: { antialias?: boolean } = {}): AppRender
       } else {
         console.log(
           '[Renderer] Three.js WebGPURenderer not available in this version (0.128). ' +
-            'Upgrade to Three.js r150+ to enable WebGPU rendering.'
+            'Upgrade to Three.js r150+ to enable WebGPU rendering.',
         );
       }
     } catch {

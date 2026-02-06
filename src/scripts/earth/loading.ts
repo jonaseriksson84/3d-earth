@@ -49,7 +49,7 @@ export function createLoadingState(): LoadingState {
 export function createTextureLoadingManager(
   loadingState: LoadingState,
   onComplete: () => void,
-  onError: (url: string) => void
+  onError: (url: string) => void,
 ): THREE.LoadingManager {
   const manager = new THREE.LoadingManager();
 
@@ -167,10 +167,7 @@ export function hideErrorOverlay(loadingState: LoadingState): void {
  * @param loadingState - Loading state containing the retry button element
  * @param retryCallback - Function to call when retry is clicked
  */
-export function setupRetryButton(
-  loadingState: LoadingState,
-  retryCallback: () => void
-): void {
+export function setupRetryButton(loadingState: LoadingState, retryCallback: () => void): void {
   const { retryButton } = loadingState;
 
   if (retryButton) {

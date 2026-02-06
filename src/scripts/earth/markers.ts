@@ -9,8 +9,8 @@
 
 import * as THREE from 'three';
 import { CONFIG } from './config';
-import type { SceneObjects, LocationState, CityData, MarkerState, CitySearchState } from './types';
 import { calculateSunriseSunset, formatSunTimesForTooltip } from './sunrise';
+import type { CityData, CitySearchState, LocationState, MarkerState, SceneObjects } from './types';
 
 /**
  * Array of 55+ major world cities with geographic coordinates and UTC timezone offsets.
@@ -93,11 +93,7 @@ export const CITIES: CityData[] = [
  * const pos = latLonToPosition(51.5, -0.12, 5); // London on radius-5 sphere
  * ```
  */
-export function latLonToPosition(
-  lat: number,
-  lon: number,
-  radius: number
-): THREE.Vector3 {
+export function latLonToPosition(lat: number, lon: number, radius: number): THREE.Vector3 {
   const phi = (90 - lat) * (Math.PI / 180);
   const theta = (lon + 180) * (Math.PI / 180);
 
@@ -120,10 +116,7 @@ let sharedUserMaterial: THREE.SpriteMaterial | null = null;
 /**
  * Create a circular marker texture using canvas
  */
-function createMarkerTexture(
-  color: string,
-  isUserLocation: boolean = false
-): THREE.CanvasTexture {
+function createMarkerTexture(color: string, isUserLocation: boolean = false): THREE.CanvasTexture {
   const size = 64;
   const canvas = document.createElement('canvas');
   canvas.width = size;
@@ -212,10 +205,7 @@ function getSharedUserMaterial(): THREE.SpriteMaterial {
  * Create a sprite marker for a city using shared materials for GPU efficiency.
  * City markers all share a single texture/material pair, reducing draw calls.
  */
-function createMarkerSprite(
-  _color: string,
-  isUserLocation: boolean = false
-): THREE.Sprite {
+function createMarkerSprite(_color: string, isUserLocation: boolean = false): THREE.Sprite {
   const material = isUserLocation ? getSharedUserMaterial() : getSharedCityMaterial();
   const sprite = new THREE.Sprite(material);
   const scale = isUserLocation ? 0.35 : 0.25;
@@ -256,10 +246,7 @@ function createTooltip(): HTMLDivElement {
  * @param timezoneOffset - Target city's UTC offset in hours (e.g., -5 for EST)
  * @returns Formatted time string in "HH:MM" format
  */
-export function calculateLocalTime(
-  sliderMinutes: number,
-  timezoneOffset: number
-): string {
+export function calculateLocalTime(sliderMinutes: number, timezoneOffset: number): string {
   // sliderMinutes is local time in the user's timezone
   // We need to convert to UTC first, then to target timezone
   const now = new Date();
@@ -329,15 +316,12 @@ export function initMarkers(sceneObjects: SceneObjects): MarkerState {
  * @param markerState - Marker state containing the markers group
  * @param locationState - User's current geolocation coordinates
  */
-export function updateUserMarker(
-  markerState: MarkerState,
-  locationState: LocationState
-): void {
+export function updateUserMarker(markerState: MarkerState, locationState: LocationState): void {
   const markerRadius = CONFIG.EARTH_RADIUS + 0.05;
   const position = latLonToPosition(
     locationState.userLatitude,
     locationState.userLongitude,
-    markerRadius
+    markerRadius,
   );
 
   if (markerState.userMarker) {
@@ -365,10 +349,7 @@ export function updateUserMarker(
  * @param markerState - Marker state to update
  * @param visible - Whether markers should be visible
  */
-export function setMarkersVisible(
-  markerState: MarkerState,
-  visible: boolean
-): void {
+export function setMarkersVisible(markerState: MarkerState, visible: boolean): void {
   markerState.visible = visible;
   markerState.markersGroup.visible = visible;
   if (!visible && markerState.tooltip) {
@@ -391,7 +372,7 @@ export function handleMarkerHover(
   sceneObjects: SceneObjects,
   markerState: MarkerState,
   sliderMinutes: number,
-  selectedDate?: Date
+  selectedDate?: Date,
 ): void {
   if (!markerState.visible || !markerState.tooltip) return;
 
@@ -401,7 +382,14 @@ export function handleMarkerHover(
   const canvas = document.querySelector('canvas');
 
   if (cityData) {
-    showMarkerTooltip(cityData, event.clientX, event.clientY, markerState, sliderMinutes, selectedDate);
+    showMarkerTooltip(
+      cityData,
+      event.clientX,
+      event.clientY,
+      markerState,
+      sliderMinutes,
+      selectedDate,
+    );
 
     // Set pointer cursor
     if (canvas) {
@@ -424,10 +412,7 @@ export function handleMarkerHover(
  * @param markerState - Marker state with the markers group
  * @param earthRotationY - Current Earth Y rotation in radians
  */
-export function updateMarkersRotation(
-  markerState: MarkerState,
-  earthRotationY: number
-): void {
+export function updateMarkersRotation(markerState: MarkerState, earthRotationY: number): void {
   markerState.markersGroup.rotation.y = earthRotationY;
 }
 
@@ -442,7 +427,7 @@ export function updateMarkersRotation(
 export function handleMarkerClick(
   event: MouseEvent,
   sceneObjects: SceneObjects,
-  markerState: MarkerState
+  markerState: MarkerState,
 ): CityData | null {
   if (!markerState.visible) return null;
 
@@ -489,7 +474,7 @@ export function detectMarkerAtPosition(
   clientX: number,
   clientY: number,
   sceneObjects: SceneObjects,
-  markerState: MarkerState
+  markerState: MarkerState,
 ): CityData | null {
   if (!markerState.visible) return null;
 
@@ -537,7 +522,7 @@ export function showMarkerTooltip(
   clientY: number,
   markerState: MarkerState,
   sliderMinutes: number,
-  selectedDate?: Date
+  selectedDate?: Date,
 ): void {
   if (!markerState.tooltip) return;
 
@@ -613,7 +598,7 @@ export function initCitySearch(): CitySearchState | null {
 export function updateSearchResults(
   searchState: CitySearchState,
   query: string,
-  onSelect: (city: CityData) => void
+  onSelect: (city: CityData) => void,
 ): void {
   const { results, clearButton } = searchState;
 
@@ -679,7 +664,7 @@ export function handleSearchKeydown(
   key: string,
   searchState: CitySearchState,
   matches: CityData[],
-  onSelect: (city: CityData) => void
+  onSelect: (city: CityData) => void,
 ): CityData | null {
   if (key === 'ArrowDown') {
     searchState.activeIndex = Math.min(searchState.activeIndex + 1, matches.length - 1);

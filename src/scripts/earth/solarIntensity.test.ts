@@ -4,7 +4,7 @@
  * Tests configuration validation and ground ring geometry generation.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { CONFIG } from './config';
 import { generateGroundRingPoints } from './solarIntensity';
 
@@ -67,7 +67,9 @@ describe('generateGroundRingPoints', () => {
   });
 
   it('should generate ring centered around subsolar point', () => {
-    const sunX = 1, sunY = 0, sunZ = 0;
+    const sunX = 1,
+      sunY = 0,
+      sunZ = 0;
     const radius = 5.0;
     const ringRadius = 0.1; // radians
     const points = generateGroundRingPoints(sunX, sunY, sunZ, radius, ringRadius, 32);

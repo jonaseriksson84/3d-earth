@@ -55,7 +55,7 @@ function createMeridianLine(
   color: number,
   opacity: number,
   radius: number,
-  segments: number
+  segments: number,
 ): THREE.Line {
   const lonRad = (longitude * Math.PI) / 180;
   const points: THREE.Vector3[] = [];
@@ -106,16 +106,14 @@ export function initTimezones(sceneObjects: SceneObjects): TimezoneState {
   for (const info of infos) {
     const isUTC = info.offset === 0;
     const color = isUTC ? CONFIG.TIMEZONE_UTC_COLOR : CONFIG.TIMEZONE_LINE_COLOR;
-    const opacity = isUTC
-      ? CONFIG.TIMEZONE_LINE_OPACITY + 0.2
-      : CONFIG.TIMEZONE_LINE_OPACITY;
+    const opacity = isUTC ? CONFIG.TIMEZONE_LINE_OPACITY + 0.2 : CONFIG.TIMEZONE_LINE_OPACITY;
 
     const line = createMeridianLine(
       info.longitude,
       color,
       opacity,
       radius,
-      CONFIG.TIMEZONE_SEGMENTS
+      CONFIG.TIMEZONE_SEGMENTS,
     );
     line.userData.label = info.label;
     group.add(line);
@@ -151,10 +149,7 @@ export function initTimezones(sceneObjects: SceneObjects): TimezoneState {
  * @param state - Timezone state to update
  * @param earthRotationY - Current Earth Y rotation in radians
  */
-export function updateTimezonesRotation(
-  state: TimezoneState,
-  earthRotationY: number
-): void {
+export function updateTimezonesRotation(state: TimezoneState, earthRotationY: number): void {
   state.group.rotation.y = earthRotationY;
 }
 
@@ -164,10 +159,7 @@ export function updateTimezonesRotation(
  * @param state - Timezone state to update
  * @param visible - Whether timezone boundaries should be visible
  */
-export function setTimezonesVisible(
-  state: TimezoneState,
-  visible: boolean
-): void {
+export function setTimezonesVisible(state: TimezoneState, visible: boolean): void {
   state.group.visible = visible;
   state.visible = visible;
   if (!visible && state.tooltip) {
@@ -188,7 +180,7 @@ export function handleTimezoneHover(
   event: MouseEvent,
   sceneObjects: SceneObjects,
   state: TimezoneState,
-  sliderMinutes: number
+  sliderMinutes: number,
 ): void {
   if (!state.visible || !state.tooltip) return;
 
@@ -196,7 +188,7 @@ export function handleTimezoneHover(
   const rect = renderer.domElement.getBoundingClientRect();
   const mouse = new THREE.Vector2(
     ((event.clientX - rect.left) / rect.width) * 2 - 1,
-    -((event.clientY - rect.top) / rect.height) * 2 + 1
+    -((event.clientY - rect.top) / rect.height) * 2 + 1,
   );
 
   const raycaster = new THREE.Raycaster();
@@ -236,7 +228,7 @@ export function handleTimezoneHover(
 
   // Calculate local time in this timezone
   const utcMinutes = sliderMinutes;
-  const localMinutes = ((utcMinutes + clampedOffset * 60) % 1440 + 1440) % 1440;
+  const localMinutes = (((utcMinutes + clampedOffset * 60) % 1440) + 1440) % 1440;
   const hours = Math.floor(localMinutes / 60);
   const mins = localMinutes % 60;
   const timeStr = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;

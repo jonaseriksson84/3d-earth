@@ -8,7 +8,6 @@
  */
 
 import * as THREE from 'three';
-// @ts-ignore - Three.js 0.128 examples don't have type declarations
 import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js';
 import type { AppRenderer } from './webgpu';
 
@@ -58,7 +57,7 @@ export function supportsCompressedTextures(renderer: AppRenderer): boolean {
  */
 export function createKTX2Loader(
   renderer: AppRenderer,
-  manager: THREE.LoadingManager
+  manager: THREE.LoadingManager,
 ): InstanceType<typeof KTX2Loader> {
   const loader = new KTX2Loader(manager);
   loader.setTranscoderPath(TRANSCODER_PATH);
@@ -86,7 +85,7 @@ export interface TextureLoadResult {
  */
 export function loadTexturesWithCompression(
   renderer: AppRenderer,
-  manager: THREE.LoadingManager
+  manager: THREE.LoadingManager,
 ): TextureLoadResult {
   const hasCompression = supportsCompressedTextures(renderer);
 
@@ -100,19 +99,19 @@ export function loadTexturesWithCompression(
         KTX2_TEXTURES.day,
         () => {},
         undefined,
-        () => console.warn('KTX2 day texture failed, will use JPEG fallback')
+        () => console.warn('KTX2 day texture failed, will use JPEG fallback'),
       );
       const nightTexture = ktx2Loader.load(
         KTX2_TEXTURES.night,
         () => {},
         undefined,
-        () => console.warn('KTX2 night texture failed, will use JPEG fallback')
+        () => console.warn('KTX2 night texture failed, will use JPEG fallback'),
       );
       const cloudTexture = ktx2Loader.load(
         KTX2_TEXTURES.clouds,
         () => {},
         undefined,
-        () => console.warn('KTX2 cloud texture failed, will use JPEG fallback')
+        () => console.warn('KTX2 cloud texture failed, will use JPEG fallback'),
       );
 
       return { dayTexture, nightTexture, cloudTexture, compressed: true };
@@ -138,23 +137,14 @@ export function loadJPEGTextures(manager: THREE.LoadingManager): TextureLoadResu
 
   console.log('Loading JPEG textures');
 
-  const dayTexture = textureLoader.load(
-    JPEG_TEXTURES.day,
-    undefined,
-    undefined,
-    () => console.warn('Day texture failed')
+  const dayTexture = textureLoader.load(JPEG_TEXTURES.day, undefined, undefined, () =>
+    console.warn('Day texture failed'),
   );
-  const nightTexture = textureLoader.load(
-    JPEG_TEXTURES.night,
-    undefined,
-    undefined,
-    () => console.warn('Night lights texture failed')
+  const nightTexture = textureLoader.load(JPEG_TEXTURES.night, undefined, undefined, () =>
+    console.warn('Night lights texture failed'),
   );
-  const cloudTexture = textureLoader.load(
-    JPEG_TEXTURES.clouds,
-    undefined,
-    undefined,
-    () => console.warn('Cloud texture failed')
+  const cloudTexture = textureLoader.load(JPEG_TEXTURES.clouds, undefined, undefined, () =>
+    console.warn('Cloud texture failed'),
   );
 
   return { dayTexture, nightTexture, cloudTexture, compressed: false };

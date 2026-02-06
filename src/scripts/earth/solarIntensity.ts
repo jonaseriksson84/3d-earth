@@ -13,7 +13,7 @@
 
 import * as THREE from 'three';
 import { CONFIG } from './config';
-import type { SolarIntensityState, SceneObjects } from './types';
+import type { SceneObjects, SolarIntensityState } from './types';
 
 /**
  * Vertex shader for the heat gradient overlay.
@@ -120,7 +120,7 @@ export function generateGroundRingPoints(
   sunZ: number,
   radius: number,
   ringRadius: number,
-  segments: number
+  segments: number,
 ): THREE.Vector3[] {
   const points: THREE.Vector3[] = [];
 
@@ -129,9 +129,7 @@ export function generateGroundRingPoints(
 
   // Create orthonormal basis on the tangent plane at subsolar point
   // Find a vector not parallel to sunDir
-  const up = Math.abs(sunDir.y) < 0.9
-    ? new THREE.Vector3(0, 1, 0)
-    : new THREE.Vector3(1, 0, 0);
+  const up = Math.abs(sunDir.y) < 0.9 ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(1, 0, 0);
 
   const tangent1 = new THREE.Vector3().crossVectors(sunDir, up).normalize();
   const tangent2 = new THREE.Vector3().crossVectors(sunDir, tangent1).normalize();
@@ -198,7 +196,14 @@ export function initSolarIntensity(sceneObjects: SceneObjects): SolarIntensitySt
   // === Ground Ring (Circular Footprint) ===
   const ringGeometry = new THREE.BufferGeometry();
   // Initial ring points (will be updated in updateSolarIntensityPosition)
-  const initialRingPoints = generateGroundRingPoints(1, 0, 0, overlayRadius, CONFIG.SOLAR_INTENSITY_RING_RADIUS, 64);
+  const initialRingPoints = generateGroundRingPoints(
+    1,
+    0,
+    0,
+    overlayRadius,
+    CONFIG.SOLAR_INTENSITY_RING_RADIUS,
+    64,
+  );
   ringGeometry.setFromPoints(initialRingPoints);
 
   const ringMaterial = new THREE.LineBasicMaterial({
@@ -269,7 +274,7 @@ export function updateSolarIntensityPosition(
   state: SolarIntensityState,
   sunX: number,
   sunY: number,
-  sunZ: number
+  sunZ: number,
 ): void {
   const overlayRadius = CONFIG.EARTH_RADIUS + 0.07;
 
@@ -279,7 +284,9 @@ export function updateSolarIntensityPosition(
   // === Update Spike Position ===
   // The spike should point from subsolar point outward
   const spikeStart = sunDir.clone().multiplyScalar(overlayRadius);
-  const spikeEnd = sunDir.clone().multiplyScalar(overlayRadius + CONFIG.SOLAR_INTENSITY_SPIKE_HEIGHT);
+  const spikeEnd = sunDir
+    .clone()
+    .multiplyScalar(overlayRadius + CONFIG.SOLAR_INTENSITY_SPIKE_HEIGHT);
 
   const spikePositions = state.spikeLine.geometry.attributes.position as THREE.BufferAttribute;
   spikePositions.setXYZ(0, spikeStart.x, spikeStart.y, spikeStart.z);
@@ -293,7 +300,7 @@ export function updateSolarIntensityPosition(
     sunZ,
     overlayRadius,
     CONFIG.SOLAR_INTENSITY_RING_RADIUS,
-    64
+    64,
   );
   const ringGeometry = state.groundRing.geometry;
   const ringPositions = ringGeometry.attributes.position as THREE.BufferAttribute;
@@ -328,7 +335,7 @@ export function updateSolarIntensityPosition(
  */
 export function updateSolarIntensityRotation(
   state: SolarIntensityState,
-  earthRotationY: number
+  earthRotationY: number,
 ): void {
   state.group.rotation.y = earthRotationY;
 }
@@ -339,10 +346,7 @@ export function updateSolarIntensityRotation(
  * @param state - Solar intensity state to update
  * @param visible - Whether the visualization should be visible
  */
-export function setSolarIntensityVisible(
-  state: SolarIntensityState,
-  visible: boolean
-): void {
+export function setSolarIntensityVisible(state: SolarIntensityState, visible: boolean): void {
   state.group.visible = visible;
   state.heatGradientMesh.visible = visible;
   state.visible = visible;

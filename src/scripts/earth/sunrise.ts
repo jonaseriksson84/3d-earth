@@ -38,7 +38,7 @@ export function calculateSunriseSunset(
   lat: number,
   lon: number,
   date: Date,
-  timezoneOffset: number
+  timezoneOffset: number,
 ): SunTimes {
   const doy = getDayOfYear(date);
   const gamma = ((2 * Math.PI) / 365) * (doy - 1);
@@ -68,8 +68,7 @@ export function calculateSunriseSunset(
   // When the sun center is at -0.8333 degrees (accounting for refraction and solar disk radius)
   const zenith = (90.8333 * Math.PI) / 180;
   const cosHourAngle =
-    (Math.cos(zenith) - Math.sin(latRad) * Math.sin(decl)) /
-    (Math.cos(latRad) * Math.cos(decl));
+    (Math.cos(zenith) - Math.sin(latRad) * Math.sin(decl)) / (Math.cos(latRad) * Math.cos(decl));
 
   // Check for polar day/night
   if (cosHourAngle > 1) {
@@ -143,7 +142,7 @@ export function updateSunTimesDisplay(
   userLon: number,
   date: Date,
   userTimezone: number,
-  selectedCity?: CityData
+  selectedCity?: CityData,
 ): void {
   const display = document.getElementById('sunTimesDisplay');
   if (!display) return;
@@ -162,7 +161,7 @@ export function updateSunTimesDisplay(
       selectedCity.lat,
       selectedCity.lon,
       date,
-      selectedCity.timezone
+      selectedCity.timezone,
     );
     const citySection = document.createElement('div');
     citySection.style.marginTop = '6px';

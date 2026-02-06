@@ -1,9 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import {
-  ECLIPSES,
-  findEclipseForDate,
-  getNextEclipse,
-} from './eclipse';
+import { describe, expect, it } from 'vitest';
+import { ECLIPSES, findEclipseForDate, getNextEclipse } from './eclipse';
 
 describe('ECLIPSES database', () => {
   it('should contain at least 5 future eclipses from 2024', () => {
@@ -29,7 +25,7 @@ describe('ECLIPSES database', () => {
   });
 
   it('should include eclipses from 2024 to 2030', () => {
-    const years = ECLIPSES.map((e) => parseInt(e.date.split('-')[0]));
+    const years = ECLIPSES.map((e) => parseInt(e.date.split('-')[0], 10));
     expect(Math.min(...years)).toBe(2024);
     expect(Math.max(...years)).toBe(2030);
   });

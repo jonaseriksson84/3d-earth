@@ -139,7 +139,7 @@ export function createAuroraBandGeometry(
   centerLatDeg: number,
   bandWidthDeg: number,
   segments: number,
-  rings: number
+  rings: number,
 ): THREE.BufferGeometry {
   const geometry = new THREE.BufferGeometry();
 
@@ -233,7 +233,7 @@ export function initAurora(sceneObjects: SceneObjects): AuroraState {
     CONFIG.AURORA_LATITUDE,
     CONFIG.AURORA_BAND_WIDTH,
     segments,
-    rings
+    rings,
   );
   const northMesh = new THREE.Mesh(northGeometry, auroraMaterial);
 
@@ -243,7 +243,7 @@ export function initAurora(sceneObjects: SceneObjects): AuroraState {
     -CONFIG.AURORA_LATITUDE,
     CONFIG.AURORA_BAND_WIDTH,
     segments,
-    rings
+    rings,
   );
   const southMesh = new THREE.Mesh(southGeometry, auroraMaterial);
 
@@ -285,7 +285,7 @@ export function updateAurora(
   deltaTime: number,
   sunDirX: number,
   sunDirY: number,
-  sunDirZ: number
+  sunDirZ: number,
 ): void {
   // Advance animation time
   const currentTime = aurora.material.uniforms.time.value as number;
@@ -301,10 +301,7 @@ export function updateAurora(
  * @param aurora - Aurora state to update
  * @param earthRotationY - Current Earth Y rotation in radians
  */
-export function updateAuroraRotation(
-  aurora: AuroraState,
-  earthRotationY: number
-): void {
+export function updateAuroraRotation(aurora: AuroraState, earthRotationY: number): void {
   aurora.group.rotation.y = earthRotationY;
 }
 
@@ -314,10 +311,7 @@ export function updateAuroraRotation(
  * @param aurora - Aurora state to update
  * @param visible - Whether auroras should be visible
  */
-export function setAuroraVisible(
-  aurora: AuroraState,
-  visible: boolean
-): void {
+export function setAuroraVisible(aurora: AuroraState, visible: boolean): void {
   aurora.group.visible = visible;
   aurora.visible = visible;
 }

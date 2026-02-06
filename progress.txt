@@ -1418,3 +1418,40 @@
 - All 263 tests pass
 - TypeScript compiles without errors (0 errors, 0 warnings via `astro check` and `tsc --noEmit`)
 - Build completes without errors
+
+### TOOLING-002: Add Biome configuration for linting and formatting
+- **Status:** COMPLETED
+- **Date:** 2026-02-06
+- **Changes:** Added Biome as the project's linter and formatter with project-appropriate configuration:
+  - Installed `@biomejs/biome` v2.3.14 as devDependency
+  - Created `biome.json` configuration file with:
+    - Schema v2.3.14 matching installed CLI version
+    - VCS integration (git) with `.gitignore` support
+    - File exclusions: dist, docs, .astro, public/basis, public/service-worker.js
+    - Formatter: 2-space indent, 100 char line width
+    - JavaScript: single quotes, semicolons always, trailing commas
+    - CSS: Tailwind directives enabled for `@apply`, `@import "tailwindcss"`, `@theme`
+    - Linter: recommended rules with project-specific overrides:
+      - `noForEach`: off (forEach used throughout codebase)
+      - `noNonNullAssertion`: off (used with DOM elements)
+      - `noParameterAssign`: off (common pattern in codebase)
+      - `noExplicitAny`: off (matches existing TypeScript config)
+      - `noAssignInExpressions`: off (used in some patterns)
+      - `noUnusedVariables`: warn, `noUnusedImports`: warn
+    - Override for `.astro` files: disabled `noUnusedVariables` and `noUnusedImports` (Biome can't analyze Astro frontmatter prop destructuring)
+    - Assist: import organization enabled
+  - Added npm scripts to package.json:
+    - `pnpm lint`: runs `biome check .` (lint + format check)
+    - `pnpm lint:fix`: runs `biome check --write .` (auto-fix safe issues)
+    - `pnpm format`: runs `biome format --write .` (format only)
+  - Auto-fixed codebase issues:
+    - Formatted all 71 checked files to consistent style (50 files reformatted)
+    - Converted `@ts-ignore` to `@ts-expect-error` (then removed unnecessary directive)
+    - Applied optional chaining where applicable (`useOptionalChain`)
+    - Replaced string concatenation with template literals (`useTemplate`)
+    - Replaced `Math.pow()` with `**` operator (`useExponentiationOperator`)
+    - Replaced `isNaN()` with `Number.isNaN()` (`noGlobalIsNan`)
+    - Organized imports alphabetically across all files
+  - Codebase passes Biome linting with zero errors and zero warnings
+  - All 263 tests pass
+  - TypeScript compiles without errors (0 errors, 0 warnings via `astro check` and `tsc --noEmit`)

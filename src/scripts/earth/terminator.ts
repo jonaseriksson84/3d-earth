@@ -37,7 +37,7 @@ export function generateTerminatorPoints(
   sunX: number,
   sunY: number,
   sunZ: number,
-  radius: number
+  radius: number,
 ): THREE.Vector3[] {
   // Normalize sun direction
   const len = Math.sqrt(sunX * sunX + sunY * sunY + sunZ * sunZ);
@@ -94,9 +94,7 @@ export function generateTerminatorPoints(
  * @param sceneObjects - Core scene objects to add the terminator to
  * @returns Terminator state with lines, group, and visibility flag
  */
-export function initTerminator(
-  sceneObjects: SceneObjects
-): TerminatorState {
+export function initTerminator(sceneObjects: SceneObjects): TerminatorState {
   const { scene } = sceneObjects;
   // Radius above cloud layer (5.05) so terminator renders on top of clouds
   const radius = CONFIG.EARTH_RADIUS + 0.06;
@@ -157,7 +155,7 @@ export function updateTerminatorPosition(
   state: TerminatorState,
   sunX: number,
   sunY: number,
-  sunZ: number
+  sunZ: number,
 ): void {
   if (!state.visible) return;
 
@@ -181,10 +179,7 @@ export function updateTerminatorPosition(
  * @param state - Terminator state to update
  * @param visible - Whether the terminator should be visible
  */
-export function setTerminatorVisible(
-  state: TerminatorState,
-  visible: boolean
-): void {
+export function setTerminatorVisible(state: TerminatorState, visible: boolean): void {
   state.group.visible = visible;
   state.visible = visible;
 }

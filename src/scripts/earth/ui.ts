@@ -7,9 +7,9 @@
  * @module ui
  */
 
-import { CONFIG } from './config';
-import type { TimeState, EarthObjects, LightingObjects, SceneObjects } from './types';
 import { updateSunPosition } from './astronomy';
+import { CONFIG } from './config';
+import type { EarthObjects, LightingObjects, SceneObjects, TimeState } from './types';
 
 /**
  * Updates the time display element with local and UTC time strings.
@@ -18,12 +18,9 @@ import { updateSunPosition } from './astronomy';
  * @param now - The current Date to display
  * @param timeDisplayElement - Cached DOM element to update (may be null)
  */
-export function updateTimeDisplay(
-  now: Date,
-  timeDisplayElement: HTMLElement | null
-): void {
+export function updateTimeDisplay(now: Date, timeDisplayElement: HTMLElement | null): void {
   try {
-    if (!now || !(now instanceof Date) || isNaN(now.getTime())) {
+    if (!now || !(now instanceof Date) || Number.isNaN(now.getTime())) {
       console.warn('Invalid date provided to updateTimeDisplay');
       now = new Date();
     }
@@ -101,10 +98,10 @@ function parseDateFromInput(dateString: string): Date {
  */
 export function getAstronomicalPresets(year: number): { id: string; date: Date }[] {
   return [
-    { id: 'presetSpringEquinox', date: new Date(year, 2, 20) },    // March 20
-    { id: 'presetSummerSolstice', date: new Date(year, 5, 21) },   // June 21
-    { id: 'presetAutumnEquinox', date: new Date(year, 8, 22) },    // September 22
-    { id: 'presetWinterSolstice', date: new Date(year, 11, 21) },  // December 21
+    { id: 'presetSpringEquinox', date: new Date(year, 2, 20) }, // March 20
+    { id: 'presetSummerSolstice', date: new Date(year, 5, 21) }, // June 21
+    { id: 'presetAutumnEquinox', date: new Date(year, 8, 22) }, // September 22
+    { id: 'presetWinterSolstice', date: new Date(year, 11, 21) }, // December 21
   ];
 }
 
@@ -157,7 +154,7 @@ export function togglePlayback(timeState: TimeState): void {
   timeState.lastPlaybackTime = performance.now();
   // Sync currentTime from slider when starting playback
   if (timeState.isPlaying) {
-    timeState.currentTime = parseInt(timeState.timeSlider.value);
+    timeState.currentTime = parseInt(timeState.timeSlider.value, 10);
   }
   updatePlaybackUI(timeState.isPlaying);
 }
@@ -180,7 +177,7 @@ export function setPlaybackSpeed(timeState: TimeState, speed: number): void {
  * @param direction - Step direction: 1 for forward, -1 for backward
  */
 export function stepTime(timeState: TimeState, direction: number): void {
-  const currentValue = parseInt(timeState.timeSlider.value);
+  const currentValue = parseInt(timeState.timeSlider.value, 10);
   const step = CONFIG.SLIDER_STEP * direction;
   let newValue = currentValue + step;
 
@@ -210,7 +207,10 @@ function updatePlaybackUI(isPlaying: boolean): void {
   }
 
   if (playPauseBtn) {
-    playPauseBtn.setAttribute('aria-label', isPlaying ? 'Pause time animation' : 'Play time animation');
+    playPauseBtn.setAttribute(
+      'aria-label',
+      isPlaying ? 'Pause time animation' : 'Play time animation',
+    );
   }
 }
 
@@ -260,7 +260,7 @@ export function updatePlayback(timeState: TimeState): void {
 export function initTimeControls(
   timeState: TimeState,
   earthObjects: EarthObjects,
-  _lightingObjects: LightingObjects
+  _lightingObjects: LightingObjects,
 ): void {
   const timeSlider = document.getElementById('timeSlider') as HTMLInputElement | null;
   const datePicker = document.getElementById('datePicker') as HTMLInputElement | null;
@@ -301,14 +301,12 @@ export function initTimeControls(
   timeSlider.addEventListener('input', (event: Event) => {
     try {
       const target = event.target as HTMLInputElement;
-      const value = parseInt(target.value);
-      if (isNaN(value) || value < 0 || value >= CONFIG.MINUTES_PER_DAY) {
+      const value = parseInt(target.value, 10);
+      if (Number.isNaN(value) || value < 0 || value >= CONFIG.MINUTES_PER_DAY) {
         console.warn('Invalid slider value, clamping to valid range');
-        target.value = String(
-          Math.max(0, Math.min(CONFIG.MINUTES_PER_DAY - 1, value || 0))
-        );
+        target.value = String(Math.max(0, Math.min(CONFIG.MINUTES_PER_DAY - 1, value || 0)));
       }
-      timeState.currentTime = parseInt(target.value);
+      timeState.currentTime = parseInt(target.value, 10);
       timeState.needsSunUpdate = true;
     } catch (error) {
       console.error('Error handling slider input:', error);
@@ -364,11 +362,11 @@ export function initTimeControls(
   // Speed select event listener
   if (speedSelect) {
     // Set initial speed from select value
-    timeState.playbackSpeed = parseInt(speedSelect.value);
+    timeState.playbackSpeed = parseInt(speedSelect.value, 10);
 
     speedSelect.addEventListener('change', (event: Event) => {
       const target = event.target as HTMLSelectElement;
-      setPlaybackSpeed(timeState, parseInt(target.value));
+      setPlaybackSpeed(timeState, parseInt(target.value, 10));
     });
   }
 
@@ -407,7 +405,7 @@ export function initTimeControls(
 export function handleSunUpdate(
   timeState: TimeState,
   earthObjects: EarthObjects,
-  lightingObjects: LightingObjects
+  lightingObjects: LightingObjects,
 ): void {
   const currentSliderValue = timeState.timeSlider.value;
   const currentDateValue = timeState.datePicker.value;
@@ -418,8 +416,13 @@ export function handleSunUpdate(
     // During playback, use precise currentTime; otherwise use slider value
     const sliderMinutes = timeState.isPlaying
       ? Math.floor(timeState.currentTime)
-      : parseInt(timeState.timeSlider.value);
-    const date = updateSunPosition(sliderMinutes, earthObjects, lightingObjects, timeState.selectedDate);
+      : parseInt(timeState.timeSlider.value, 10);
+    const date = updateSunPosition(
+      sliderMinutes,
+      earthObjects,
+      lightingObjects,
+      timeState.selectedDate,
+    );
     updateTimeDisplay(date, timeState.timeDisplayElement);
     timeState.lastSliderValue = currentSliderValue;
     timeState.lastDateValue = currentDateValue;

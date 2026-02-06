@@ -10,7 +10,7 @@
 
 import * as THREE from 'three';
 import { CONFIG } from './config';
-import type { SceneObjects, MoonState } from './types';
+import type { MoonState, SceneObjects } from './types';
 
 // Moon constants (scaled relative to Earth)
 const MOON_RADIUS = CONFIG.EARTH_RADIUS * 0.2724; // Real ratio: 1737km / 6371km
@@ -49,7 +49,7 @@ export function calculateMoonPosition(
   date: Date,
   sunDirX: number,
   sunDirY: number,
-  sunDirZ: number
+  sunDirZ: number,
 ): { x: number; y: number; z: number } {
   const phaseAngle = calculateMoonPhaseAngle(date);
 
@@ -81,12 +81,9 @@ export function calculateMoonPosition(
   const sinInc = Math.sin(orbitalInclination);
 
   // Position in Sun-Earth coordinate frame
-  const x =
-    MOON_DISTANCE * (cosA * sunDir.x + sinA * cosInc * right.x + sinA * sinInc * perpUp.x);
-  const y =
-    MOON_DISTANCE * (cosA * sunDir.y + sinA * cosInc * right.y + sinA * sinInc * perpUp.y);
-  const z =
-    MOON_DISTANCE * (cosA * sunDir.z + sinA * cosInc * right.z + sinA * sinInc * perpUp.z);
+  const x = MOON_DISTANCE * (cosA * sunDir.x + sinA * cosInc * right.x + sinA * sinInc * perpUp.x);
+  const y = MOON_DISTANCE * (cosA * sunDir.y + sinA * cosInc * right.y + sinA * sinInc * perpUp.y);
+  const z = MOON_DISTANCE * (cosA * sunDir.z + sinA * cosInc * right.z + sinA * sinInc * perpUp.z);
 
   return { x, y, z };
 }
@@ -174,7 +171,7 @@ export function updateMoonPosition(
   date: Date,
   sunDirX: number,
   sunDirY: number,
-  sunDirZ: number
+  sunDirZ: number,
 ): void {
   const pos = calculateMoonPosition(date, sunDirX, sunDirY, sunDirZ);
   moonState.mesh.position.set(pos.x, pos.y, pos.z);

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { estimateTimezone, loadCustomMarkers, saveCustomMarkers } from './customMarkers';
 
 // Mock localStorage for Node.js test environment
@@ -6,9 +6,15 @@ const localStorageMock = (() => {
   let store: Record<string, string> = {};
   return {
     getItem: (key: string) => store[key] ?? null,
-    setItem: (key: string, value: string) => { store[key] = value; },
-    removeItem: (key: string) => { delete store[key]; },
-    clear: () => { store = {}; },
+    setItem: (key: string, value: string) => {
+      store[key] = value;
+    },
+    removeItem: (key: string) => {
+      delete store[key];
+    },
+    clear: () => {
+      store = {};
+    },
   };
 })();
 
@@ -94,9 +100,7 @@ describe('saveCustomMarkers', () => {
   });
 
   it('saves markers to localStorage', () => {
-    const markers = [
-      { id: 'a1', label: 'Test Place', lat: 10, lon: 20, timezone: 1 },
-    ];
+    const markers = [{ id: 'a1', label: 'Test Place', lat: 10, lon: 20, timezone: 1 }];
     saveCustomMarkers(markers);
     const stored = localStorage.getItem('earth-custom-markers');
     expect(stored).not.toBeNull();

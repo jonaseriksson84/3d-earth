@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { KTX2_TEXTURES, JPEG_TEXTURES } from './textureCompression';
+import { describe, expect, it } from 'vitest';
+import { JPEG_TEXTURES, KTX2_TEXTURES } from './textureCompression';
 
 describe('textureCompression', () => {
   describe('KTX2_TEXTURES', () => {
@@ -51,14 +51,12 @@ describe('textureCompression', () => {
     });
 
     it('KTX2 and JPEG should reference same base filenames', () => {
-      expect(KTX2_TEXTURES.day.replace('.ktx2', '')).toEqual(
-        JPEG_TEXTURES.day.replace('.jpg', '')
-      );
+      expect(KTX2_TEXTURES.day.replace('.ktx2', '')).toEqual(JPEG_TEXTURES.day.replace('.jpg', ''));
       expect(KTX2_TEXTURES.night.replace('.ktx2', '')).toEqual(
-        JPEG_TEXTURES.night.replace('.jpg', '')
+        JPEG_TEXTURES.night.replace('.jpg', ''),
       );
       expect(KTX2_TEXTURES.clouds.replace('.ktx2', '')).toEqual(
-        JPEG_TEXTURES.clouds.replace('.jpg', '')
+        JPEG_TEXTURES.clouds.replace('.jpg', ''),
       );
     });
   });

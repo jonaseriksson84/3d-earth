@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { calculateSunriseSunset, formatSunTimesForTooltip } from './sunrise';
+import { describe, expect, it } from 'vitest';
 import type { SunTimes } from './sunrise';
+import { calculateSunriseSunset, formatSunTimesForTooltip } from './sunrise';
 
 describe('calculateSunriseSunset', () => {
   it('returns sunrise and sunset for a typical mid-latitude location', () => {
@@ -110,7 +110,12 @@ describe('calculateSunriseSunset', () => {
 
 describe('formatSunTimesForTooltip', () => {
   it('formats normal sunrise/sunset times', () => {
-    const times: SunTimes = { sunrise: '06:30', sunset: '18:45', polarDay: false, polarNight: false };
+    const times: SunTimes = {
+      sunrise: '06:30',
+      sunset: '18:45',
+      polarDay: false,
+      polarNight: false,
+    };
     expect(formatSunTimesForTooltip(times)).toBe('↑06:30 ↓18:45');
   });
 

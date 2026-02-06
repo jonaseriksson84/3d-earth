@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { CONFIG } from './config';
+import { describe, expect, it } from 'vitest';
 import { createAuroraBandGeometry } from './aurora';
+import { CONFIG } from './config';
 
 describe('Aurora config', () => {
   it('AURORA_LATITUDE is in geomagnetic range (60-75 degrees)', () => {

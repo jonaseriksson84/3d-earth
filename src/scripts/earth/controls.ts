@@ -17,9 +17,7 @@ import type { SceneObjects } from './types';
  * @param sceneObjects - Core scene objects (camera and renderer for controls binding)
  * @returns Configured OrbitControls instance
  */
-export function initControls(
-  sceneObjects: SceneObjects
-): OrbitControls {
+export function initControls(sceneObjects: SceneObjects): OrbitControls {
   const { camera, renderer } = sceneObjects;
 
   // Camera position
@@ -49,22 +47,34 @@ export function initControls(
  */
 export function setupCanvasTouchHandling(canvas: HTMLCanvasElement): void {
   // Prevent default touch behavior on canvas (scroll, zoom)
-  canvas.addEventListener('touchstart', (e: TouchEvent) => {
-    // Allow default behavior if touching a UI element overlaying the canvas
-    if (e.target === canvas) {
-      e.preventDefault();
-    }
-  }, { passive: false });
+  canvas.addEventListener(
+    'touchstart',
+    (e: TouchEvent) => {
+      // Allow default behavior if touching a UI element overlaying the canvas
+      if (e.target === canvas) {
+        e.preventDefault();
+      }
+    },
+    { passive: false },
+  );
 
-  canvas.addEventListener('touchmove', (e: TouchEvent) => {
-    if (e.target === canvas) {
-      e.preventDefault();
-    }
-  }, { passive: false });
+  canvas.addEventListener(
+    'touchmove',
+    (e: TouchEvent) => {
+      if (e.target === canvas) {
+        e.preventDefault();
+      }
+    },
+    { passive: false },
+  );
 
-  canvas.addEventListener('touchend', (e: TouchEvent) => {
-    if (e.target === canvas) {
-      e.preventDefault();
-    }
-  }, { passive: false });
+  canvas.addEventListener(
+    'touchend',
+    (e: TouchEvent) => {
+      if (e.target === canvas) {
+        e.preventDefault();
+      }
+    },
+    { passive: false },
+  );
 }

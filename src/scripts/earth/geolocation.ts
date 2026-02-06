@@ -8,8 +8,8 @@
  */
 
 import { CONFIG } from './config';
-import type { LocationState, EarthObjects } from './types';
 import { updateEarthRotation } from './earth';
+import type { EarthObjects, LocationState } from './types';
 
 /**
  * Callback function invoked when geolocation succeeds.
@@ -41,7 +41,7 @@ export function createLocationState(): LocationState {
 export function getLocation(
   locationState: LocationState,
   earthObjects: EarthObjects,
-  onSuccess?: GeolocationSuccessCallback
+  onSuccess?: GeolocationSuccessCallback,
 ): void {
   if (!navigator.geolocation) {
     console.log('Geolocation not supported, using default location');
@@ -63,9 +63,7 @@ export function getLocation(
       if (lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
         locationState.userLongitude = lon;
         locationState.userLatitude = lat;
-        console.log(
-          `Geolocation success: ${lat.toFixed(2)}N, ${lon.toFixed(2)}E`
-        );
+        console.log(`Geolocation success: ${lat.toFixed(2)}N, ${lon.toFixed(2)}E`);
         updateEarthRotation(earthObjects, locationState.userLongitude);
         // Invoke success callback for fly-to animation
         if (onSuccess) {
@@ -91,9 +89,9 @@ export function getLocation(
         default:
           errorMsg += 'Unknown error';
       }
-      console.log(errorMsg + ', using default location');
+      console.log(`${errorMsg}, using default location`);
       updateEarthRotation(earthObjects, locationState.userLongitude);
     },
-    options
+    options,
   );
 }

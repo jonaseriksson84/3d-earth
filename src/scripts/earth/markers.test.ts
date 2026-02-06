@@ -1,7 +1,13 @@
 // @vitest-environment jsdom
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { latLonToPosition, calculateLocalTime, searchCities, CITIES, handleSearchKeydown } from './markers';
-import type { CitySearchState, CityData } from './types';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  CITIES,
+  calculateLocalTime,
+  handleSearchKeydown,
+  latLonToPosition,
+  searchCities,
+} from './markers';
+import type { CityData, CitySearchState } from './types';
 
 // Mock THREE.Vector3 for testing without full Three.js
 vi.mock('three', () => ({
@@ -71,7 +77,7 @@ describe('latLonToPosition', () => {
 
   it('returns consistent results for cities', () => {
     // Test with known city (Tokyo)
-    const tokyo = CITIES.find(c => c.name === 'Tokyo');
+    const tokyo = CITIES.find((c) => c.name === 'Tokyo');
     if (!tokyo) throw new Error('Tokyo not found in CITIES');
 
     const pos = latLonToPosition(tokyo.lat, tokyo.lon, EARTH_RADIUS);
@@ -176,7 +182,7 @@ describe('searchCities', () => {
 
   it('finds cities by partial name', () => {
     const results = searchCities('Lon');
-    expect(results.some(c => c.name === 'London')).toBe(true);
+    expect(results.some((c) => c.name === 'London')).toBe(true);
   });
 
   it('is case-insensitive', () => {
@@ -187,7 +193,7 @@ describe('searchCities', () => {
 
   it('returns multiple matches for common substrings', () => {
     const results = searchCities('New');
-    expect(results.some(c => c.name === 'New York')).toBe(true);
+    expect(results.some((c) => c.name === 'New York')).toBe(true);
   });
 
   it('returns empty array when no match found', () => {
@@ -236,7 +242,7 @@ describe('CITIES constant', () => {
   });
 
   it('includes major world cities', () => {
-    const cityNames = CITIES.map(c => c.name);
+    const cityNames = CITIES.map((c) => c.name);
     expect(cityNames).toContain('London');
     expect(cityNames).toContain('New York');
     expect(cityNames).toContain('Tokyo');

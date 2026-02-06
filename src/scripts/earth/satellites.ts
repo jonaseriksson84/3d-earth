@@ -9,7 +9,7 @@
 
 import * as THREE from 'three';
 import { CONFIG } from './config';
-import type { SceneObjects, SatelliteState, SatelliteData } from './types';
+import type { SatelliteData, SatelliteState, SceneObjects } from './types';
 
 // Satellite orbital data
 // ISS: ~408km altitude, 51.6° inclination, ~92.68 min period
@@ -64,7 +64,7 @@ export const SATELLITES: SatelliteData[] = [
 export function calculateSatellitePosition(
   satellite: SatelliteData,
   timeMinutes: number,
-  dayOfYear: number
+  dayOfYear: number,
 ): { x: number; y: number; z: number } {
   const radius = altitudeToSceneRadius(satellite.altitudeKm);
   const inclinationRad = satellite.inclination * (Math.PI / 180);
@@ -73,7 +73,8 @@ export function calculateSatellitePosition(
   const totalMinutes = dayOfYear * 1440 + timeMinutes;
 
   // Orbital angle based on period
-  const orbitalAngle = ((totalMinutes % satellite.periodMinutes) / satellite.periodMinutes) * 2 * Math.PI;
+  const orbitalAngle =
+    ((totalMinutes % satellite.periodMinutes) / satellite.periodMinutes) * 2 * Math.PI;
 
   // Right ascension of ascending node (RAAN) - rotates slowly over time
   // Use a simplified precession based on day of year
@@ -105,7 +106,7 @@ export function calculateSatellitePosition(
  */
 export function generateOrbitPoints(
   satellite: SatelliteData,
-  segments: number = 128
+  segments: number = 128,
 ): THREE.Vector3[] {
   const radius = altitudeToSceneRadius(satellite.altitudeKm);
   const inclinationRad = satellite.inclination * (Math.PI / 180);
@@ -145,7 +146,7 @@ function createSatelliteMarkerTexture(color: number): THREE.Texture {
     return new THREE.Texture();
   }
 
-  const hexColor = '#' + color.toString(16).padStart(6, '0');
+  const hexColor = `#${color.toString(16).padStart(6, '0')}`;
 
   // Outer glow
   ctx.beginPath();
@@ -242,7 +243,7 @@ export function initSatellites(sceneObjects: SceneObjects): SatelliteState {
 export function updateSatellitePositions(
   state: SatelliteState,
   timeMinutes: number,
-  dayOfYear: number
+  dayOfYear: number,
 ): void {
   for (let i = 0; i < SATELLITES.length; i++) {
     const satellite = SATELLITES[i];
@@ -288,7 +289,7 @@ export function setSatellitesVisible(state: SatelliteState, visible: boolean): v
 export function handleSatelliteHover(
   event: MouseEvent,
   sceneObjects: SceneObjects,
-  state: SatelliteState
+  state: SatelliteState,
 ): string | null {
   if (!state.visible) return null;
 
@@ -296,7 +297,7 @@ export function handleSatelliteHover(
   const rect = sceneObjects.renderer.domElement.getBoundingClientRect();
   const mouse = new THREE.Vector2(
     ((event.clientX - rect.left) / rect.width) * 2 - 1,
-    -((event.clientY - rect.top) / rect.height) * 2 + 1
+    -((event.clientY - rect.top) / rect.height) * 2 + 1,
   );
 
   const raycaster = new THREE.Raycaster();

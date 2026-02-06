@@ -84,18 +84,9 @@ export function initStars(sceneObjects: SceneObjects): THREE.Points {
     colors[i * 3 + 2] = blueShift;
   }
 
-  geometry.setAttribute(
-    'offset',
-    new THREE.InstancedBufferAttribute(offsets, 3)
-  );
-  geometry.setAttribute(
-    'starSize',
-    new THREE.InstancedBufferAttribute(sizes, 1)
-  );
-  geometry.setAttribute(
-    'starColor',
-    new THREE.InstancedBufferAttribute(colors, 3)
-  );
+  geometry.setAttribute('offset', new THREE.InstancedBufferAttribute(offsets, 3));
+  geometry.setAttribute('starSize', new THREE.InstancedBufferAttribute(sizes, 1));
+  geometry.setAttribute('starColor', new THREE.InstancedBufferAttribute(colors, 3));
 
   geometry.instanceCount = STARS_CONFIG.count;
 

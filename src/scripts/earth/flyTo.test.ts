@@ -1,8 +1,16 @@
 // @vitest-environment jsdom
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+
 import * as THREE from 'three';
-import { createFlyToState, startFlyTo, updateFlyTo, cancelFlyTo, isFlyingTo, shouldCancelFlyTo } from './flyTo';
-import type { SceneObjects, CityData, FlyToState } from './types';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  cancelFlyTo,
+  createFlyToState,
+  isFlyingTo,
+  shouldCancelFlyTo,
+  startFlyTo,
+  updateFlyTo,
+} from './flyTo';
+import type { CityData, FlyToState, SceneObjects } from './types';
 
 // Mock performance.now
 vi.spyOn(performance, 'now');

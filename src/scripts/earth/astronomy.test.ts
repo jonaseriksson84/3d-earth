@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { getDayOfYear, calculateSunPosition } from './astronomy';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { calculateSunPosition, getDayOfYear } from './astronomy';
 
 describe('getDayOfYear', () => {
   beforeEach(() => {

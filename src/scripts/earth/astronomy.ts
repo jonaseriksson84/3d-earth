@@ -25,7 +25,7 @@ import type { EarthObjects, LightingObjects } from './types';
  */
 export function getDayOfYear(date: Date): number {
   try {
-    if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+    if (!date || !(date instanceof Date) || Number.isNaN(date.getTime())) {
       console.warn('Invalid date provided to getDayOfYear, using current date');
       date = new Date();
     }
@@ -37,7 +37,7 @@ export function getDayOfYear(date: Date): number {
       date.getUTCDate(),
       date.getUTCHours(),
       date.getUTCMinutes(),
-      date.getUTCSeconds()
+      date.getUTCSeconds(),
     );
     const oneDay = 1000 * 60 * 60 * 24;
     const dayOfYear = Math.floor((nowUTC - startUTC) / oneDay) + 1;
@@ -72,7 +72,7 @@ export interface SunPosition {
  */
 export function calculateSunPosition(
   sliderMinutes: number,
-  selectedDate?: Date
+  selectedDate?: Date,
 ): { position: SunPosition; date: Date } {
   const baseDate = selectedDate ?? new Date();
   const now = new Date(
@@ -81,12 +81,11 @@ export function calculateSunPosition(
     baseDate.getDate(),
     Math.floor(sliderMinutes / 60),
     sliderMinutes % 60,
-    0
+    0,
   );
 
   // Minutes since UTC midnight
-  const utcMinutes =
-    now.getUTCHours() * 60 + now.getUTCMinutes() + now.getUTCSeconds() / 60;
+  const utcMinutes = now.getUTCHours() * 60 + now.getUTCMinutes() + now.getUTCSeconds() / 60;
 
   // Day of year and fractional year (gamma)
   const doy = getDayOfYear(now);
@@ -111,8 +110,7 @@ export function calculateSunPosition(
     0.00148 * Math.sin(3 * gamma);
 
   // Calculate subsolar longitude (sun moves west as time progresses)
-  const sunLon =
-    -(utcMinutes - CONFIG.UTC_NOON_MINUTES + eqTime) * CONFIG.DEGREES_PER_MINUTE;
+  const sunLon = -(utcMinutes - CONFIG.UTC_NOON_MINUTES + eqTime) * CONFIG.DEGREES_PER_MINUTE;
 
   // Convert to 3D coordinates
   const lat = decl; // radians
@@ -137,7 +135,7 @@ export function updateSunPosition(
   sliderMinutes: number,
   earthObjects: EarthObjects,
   lightingObjects: LightingObjects,
-  selectedDate?: Date
+  selectedDate?: Date,
 ): Date {
   const { position, date } = calculateSunPosition(sliderMinutes, selectedDate);
   const { earthMaterial } = earthObjects;
@@ -147,17 +145,13 @@ export function updateSunPosition(
   directionalLight.position.set(
     position.x * CONFIG.SUN_DISTANCE,
     position.y * CONFIG.SUN_DISTANCE,
-    position.z * CONFIG.SUN_DISTANCE
+    position.z * CONFIG.SUN_DISTANCE,
   );
   directionalLight.intensity = CONFIG.DIRECTIONAL_LIGHT_INTENSITY;
   ambientLight.intensity = CONFIG.AMBIENT_LIGHT_INTENSITY;
 
   // Update shader
-  earthMaterial.uniforms.sunDirection.value.set(
-    position.x,
-    position.y,
-    position.z
-  );
+  earthMaterial.uniforms.sunDirection.value.set(position.x, position.y, position.z);
 
   return date;
 }

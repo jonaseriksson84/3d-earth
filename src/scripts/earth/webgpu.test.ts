@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
-import { describe, it, expect, vi, afterEach } from 'vitest';
-import { detectWebGPUSupport, verifyWebGPUAdapter, WGSL_SHADERS, getWGSLShader } from './webgpu';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { RendererInfo, WGSLShaderName } from './webgpu';
+import { detectWebGPUSupport, getWGSLShader, verifyWebGPUAdapter, WGSL_SHADERS } from './webgpu';
 
 describe('detectWebGPUSupport', () => {
   const originalNavigator = globalThis.navigator;
@@ -140,7 +140,12 @@ describe('getWGSLShader', () => {
   });
 
   it('all shader keys are accessible', () => {
-    const keys: WGSLShaderName[] = ['earthVertex', 'earthFragment', 'atmosphereVertex', 'atmosphereFragment'];
+    const keys: WGSLShaderName[] = [
+      'earthVertex',
+      'earthFragment',
+      'atmosphereVertex',
+      'atmosphereFragment',
+    ];
     for (const key of keys) {
       expect(getWGSLShader(key)).toBeTruthy();
     }

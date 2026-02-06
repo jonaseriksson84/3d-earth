@@ -8,7 +8,7 @@
 import * as THREE from 'three';
 import { CONFIG } from './config';
 import { latLonToPosition } from './markers';
-import type { SceneObjects, MarkerState, CustomMarkerState, CustomMarkerData } from './types';
+import type { CustomMarkerData, CustomMarkerState, MarkerState, SceneObjects } from './types';
 
 /** localStorage key for custom markers */
 const STORAGE_KEY = 'earth-custom-markers';
@@ -56,7 +56,7 @@ export function loadCustomMarkers(): CustomMarkerData[] {
         typeof (m as CustomMarkerData).label === 'string' &&
         typeof (m as CustomMarkerData).lat === 'number' &&
         typeof (m as CustomMarkerData).lon === 'number' &&
-        typeof (m as CustomMarkerData).timezone === 'number'
+        typeof (m as CustomMarkerData).timezone === 'number',
     );
   } catch {
     return [];
@@ -190,7 +190,7 @@ export function setPlacingMode(state: CustomMarkerState, active: boolean): void 
 export function screenToLatLon(
   clientX: number,
   clientY: number,
-  sceneObjects: SceneObjects
+  sceneObjects: SceneObjects,
 ): { lat: number; lon: number } | null {
   const { camera, scene } = sceneObjects;
   const raycaster = new THREE.Raycaster();
@@ -259,7 +259,7 @@ export function addCustomMarker(
   markerState: MarkerState,
   lat: number,
   lon: number,
-  label: string
+  label: string,
 ): CustomMarkerData | null {
   if (state.markers.length >= state.maxMarkers) {
     return null;
@@ -303,7 +303,7 @@ export function addCustomMarker(
 export function removeCustomMarker(
   state: CustomMarkerState,
   markerState: MarkerState,
-  markerId: string
+  markerId: string,
 ): boolean {
   const sprite = state.sprites.get(markerId);
   if (!sprite) return false;
@@ -332,7 +332,7 @@ export function removeCustomMarker(
 export function editCustomMarkerLabel(
   state: CustomMarkerState,
   markerId: string,
-  newLabel: string
+  newLabel: string,
 ): boolean {
   const marker = state.markers.find((m) => m.id === markerId);
   const sprite = state.sprites.get(markerId);
@@ -352,7 +352,7 @@ export function editCustomMarkerLabel(
  * @returns The custom marker ID, or null if not a custom marker
  */
 export function getCustomMarkerId(sprite: THREE.Object3D): string | null {
-  if (sprite.userData && sprite.userData.isCustomMarker) {
+  if (sprite.userData?.isCustomMarker) {
     return sprite.userData.customMarkerId as string;
   }
   return null;
@@ -372,7 +372,7 @@ export function updateCustomMarkersList(
   listElement: HTMLElement,
   onDelete: (id: string) => void,
   onEdit: (id: string) => void,
-  onFlyTo: (marker: CustomMarkerData) => void
+  onFlyTo: (marker: CustomMarkerData) => void,
 ): void {
   listElement.innerHTML = '';
 

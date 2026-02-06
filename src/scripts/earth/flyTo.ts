@@ -10,14 +10,14 @@
 import * as THREE from 'three';
 import type { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { CONFIG } from './config';
-import type { SceneObjects, CityData, FlyToState } from './types';
 import { latLonToPosition } from './markers';
+import type { CityData, FlyToState, SceneObjects } from './types';
 
 /**
  * Easing function for smooth animation (ease-in-out cubic)
  */
 function easeInOutCubic(t: number): number {
-  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
 }
 
 /**
@@ -40,11 +40,7 @@ export function createFlyToState(): FlyToState {
  * Calculate camera position to view a location on Earth
  * The camera should be positioned along the line from Earth center through the target point
  */
-function calculateCameraPosition(
-  lat: number,
-  lon: number,
-  cameraDistance: number
-): THREE.Vector3 {
+function calculateCameraPosition(lat: number, lon: number, cameraDistance: number): THREE.Vector3 {
   // Convert lat/lon to 3D position at camera distance from origin
   const position = latLonToPosition(lat, lon, cameraDistance);
   return position;
@@ -66,7 +62,7 @@ export function startFlyTo(
   sceneObjects: SceneObjects,
   flyToState: FlyToState,
   controls: OrbitControls,
-  earthRotationY: number = 0
+  earthRotationY: number = 0,
 ): void {
   // Store current camera position
   flyToState.startPosition.copy(sceneObjects.camera.position);
@@ -76,23 +72,16 @@ export function startFlyTo(
   const currentDistance = sceneObjects.camera.position.length();
   const targetDistance = Math.max(
     Math.min(currentDistance, CONFIG.INITIAL_CAMERA_DISTANCE),
-    CONFIG.MIN_ZOOM_DISTANCE + 2
+    CONFIG.MIN_ZOOM_DISTANCE + 2,
   );
 
   // Calculate the position on the sphere where the camera should look from
   // This gives us the position in "Earth local" coordinates (unrotated)
-  const localPosition = calculateCameraPosition(
-    cityData.lat,
-    cityData.lon,
-    targetDistance
-  );
+  const localPosition = calculateCameraPosition(cityData.lat, cityData.lon, targetDistance);
 
   // Apply Earth's rotation to get world-space coordinates
   // The Earth (and markers) rotate around Y axis, so we need to match that
-  flyToState.endPosition = localPosition.applyAxisAngle(
-    new THREE.Vector3(0, 1, 0),
-    earthRotationY
-  );
+  flyToState.endPosition = localPosition.applyAxisAngle(new THREE.Vector3(0, 1, 0), earthRotationY);
 
   // Adjust duration based on angular distance (longer for farther trips)
   const startNormalized = flyToState.startPosition.clone().normalize();
@@ -102,8 +91,7 @@ export function startFlyTo(
   const maxDuration = 3000; // 3 seconds max
 
   // Scale duration: 0 radians = 1500ms, PI radians = 3000ms
-  flyToState.duration =
-    baseDuration + (angularDistance / Math.PI) * (maxDuration - baseDuration);
+  flyToState.duration = baseDuration + (angularDistance / Math.PI) * (maxDuration - baseDuration);
 
   flyToState.startTime = performance.now();
   flyToState.isAnimating = true;
@@ -125,7 +113,7 @@ export function startFlyTo(
 export function updateFlyTo(
   flyToState: FlyToState,
   sceneObjects: SceneObjects,
-  controls: OrbitControls
+  controls: OrbitControls,
 ): boolean {
   if (!flyToState.isAnimating) {
     return false;
@@ -147,13 +135,10 @@ export function updateFlyTo(
   // Interpolate distance
   const startDistance = flyToState.startPosition.length();
   const endDistance = flyToState.endPosition.length();
-  const currentDistance =
-    startDistance + (endDistance - startDistance) * easedProgress;
+  const currentDistance = startDistance + (endDistance - startDistance) * easedProgress;
 
   // Apply new camera position
-  sceneObjects.camera.position.copy(
-    currentDirection.multiplyScalar(currentDistance)
-  );
+  sceneObjects.camera.position.copy(currentDirection.multiplyScalar(currentDistance));
 
   // Keep camera looking at center
   sceneObjects.camera.lookAt(0, 0, 0);
@@ -176,10 +161,7 @@ export function updateFlyTo(
  * @param flyToState - Animation state to cancel
  * @param controls - OrbitControls to re-enable
  */
-export function cancelFlyTo(
-  flyToState: FlyToState,
-  controls: OrbitControls
-): void {
+export function cancelFlyTo(flyToState: FlyToState, controls: OrbitControls): void {
   if (flyToState.isAnimating) {
     flyToState.isAnimating = false;
     flyToState.targetCity = null;

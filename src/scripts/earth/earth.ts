@@ -9,9 +9,9 @@
 
 import * as THREE from 'three';
 import { CONFIG } from './config';
-import type { EarthObjects, SceneObjects, LoadingState } from './types';
 import { createTextureLoadingManager, showErrorOverlay } from './loading';
 import { loadTexturesWithCompression } from './textureCompression';
+import type { EarthObjects, LoadingState, SceneObjects } from './types';
 
 function getVertexShader(): string {
   return `
@@ -82,10 +82,7 @@ function getLODLevels(): LODLevel[] {
  * @param loadingState - Loading overlay state for progress tracking
  * @returns Earth objects including LOD meshes and shader material
  */
-export function initEarth(
-  sceneObjects: SceneObjects,
-  loadingState: LoadingState
-): EarthObjects {
+export function initEarth(sceneObjects: SceneObjects, loadingState: LoadingState): EarthObjects {
   const { scene, renderer } = sceneObjects;
 
   const loadingManager = createTextureLoadingManager(
@@ -97,7 +94,7 @@ export function initEarth(
     (url: string) => {
       // On error - show error overlay
       showErrorOverlay(loadingState, `Failed to load texture: ${url}`);
-    }
+    },
   );
 
   const lodLevels = getLODLevels();
@@ -123,18 +120,12 @@ export function initEarth(
   // Create Earth LOD with multiple detail levels
   const earth = new THREE.LOD();
   for (const level of lodLevels) {
-    const geometry = new THREE.SphereGeometry(
-      CONFIG.EARTH_RADIUS,
-      level.segments,
-      level.segments
-    );
+    const geometry = new THREE.SphereGeometry(CONFIG.EARTH_RADIUS, level.segments, level.segments);
     const mesh = new THREE.Mesh(geometry, earthMaterial);
     earth.addLevel(mesh, level.distance);
   }
 
-  console.log(
-    `Earth LOD: ${lodLevels.map((l) => `${l.segments}seg@${l.distance}u`).join(', ')}`
-  );
+  console.log(`Earth LOD: ${lodLevels.map((l) => `${l.segments}seg@${l.distance}u`).join(', ')}`);
 
   // Apply Earth's axial tilt (23.4 degrees on the Z-axis)
   const tiltRadians = (CONFIG.AXIAL_TILT * Math.PI) / 180;
@@ -155,11 +146,7 @@ export function initEarth(
 
   const clouds = new THREE.LOD();
   for (const level of lodLevels) {
-    const geometry = new THREE.SphereGeometry(
-      CONFIG.CLOUD_RADIUS,
-      level.segments,
-      level.segments
-    );
+    const geometry = new THREE.SphereGeometry(CONFIG.CLOUD_RADIUS, level.segments, level.segments);
 
     // Flip UVs for KTX2 compressed textures (Y coordinate is inverted)
     if (textures.compressed) {
@@ -189,10 +176,7 @@ export function initEarth(
  * @param earthObjects - Earth and cloud mesh objects
  * @param userLongitude - User's longitude in degrees (-180 to 180)
  */
-export function updateEarthRotation(
-  earthObjects: EarthObjects,
-  userLongitude: number
-): void {
+export function updateEarthRotation(earthObjects: EarthObjects, userLongitude: number): void {
   const { earth, clouds } = earthObjects;
 
   // Center user's longitude at camera by yawing Earth
@@ -208,10 +192,7 @@ export function updateEarthRotation(
  * @param earthObjects - Earth and cloud LOD objects
  * @param camera - Current camera for distance calculation
  */
-export function updateEarthLOD(
-  earthObjects: EarthObjects,
-  camera: THREE.Camera
-): void {
+export function updateEarthLOD(earthObjects: EarthObjects, camera: THREE.Camera): void {
   earthObjects.earth.update(camera);
   earthObjects.clouds.update(camera);
 }
