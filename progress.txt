@@ -1379,3 +1379,22 @@
     - IntelliSense works for HTML attributes in Astro components
   - All 263 tests pass
   - Build completes without errors
+
+### BUG-008: Control section needs to be scrollable
+- **Status:** COMPLETED
+- **Date:** 2026-02-06
+- **Changes:** Added scroll support to the controls panel for all viewport sizes:
+  - Updated `.controls` in `src/styles/global.css`:
+    - Added `max-height: calc(100vh - 40px)` to constrain panel to viewport height (20px margin top/bottom)
+    - Added `overflow-y: auto` for vertical scrolling when content overflows
+    - Added `-webkit-overflow-scrolling: touch` for smooth scrolling on iOS
+    - Added `scrollbar-width: thin` and `scrollbar-color` for Firefox thin scrollbar styling
+    - Added WebKit scrollbar pseudo-element styles (6px width, transparent track, subtle white thumb)
+    - Scrollbar thumb has hover state for better visibility during interaction
+  - Desktop behavior: panel scrolls with thin, themed scrollbar when content exceeds viewport
+  - Mobile behavior: existing `max-h-[70vh]` and `overflow-y-auto` rules at 768px breakpoint still apply
+  - Scrollbar styling matches dark UI theme (semi-transparent white on transparent background)
+  - All controls accessible regardless of viewport size
+- All 263 tests pass
+- TypeScript compiles without errors
+- Build completes without errors

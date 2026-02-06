@@ -1314,7 +1314,7 @@
         "Works on both desktop and mobile viewports",
         "Panel header remains visible during scroll (optional sticky header)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "TOOLING-001",

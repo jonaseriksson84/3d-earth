@@ -106,7 +106,29 @@ canvas {
   background: var(--color-panel);
   padding: 15px;
   padding-top: 54px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
   transition: transform 0.3s ease, opacity 0.3s ease;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.controls::-webkit-scrollbar {
+  width: 6px;
+}
+
+.controls::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.controls::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.controls::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
 }
 
 .controls.collapsed {
