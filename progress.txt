@@ -1455,3 +1455,17 @@
   - Codebase passes Biome linting with zero errors and zero warnings
   - All 263 tests pass
   - TypeScript compiles without errors (0 errors, 0 warnings via `astro check` and `tsc --noEmit`)
+
+### REFACTOR-003: Evaluate and remove unnecessary UI barrel export
+- **Status:** COMPLETED
+- **Date:** 2026-02-06
+- **Changes:** Evaluated and removed the unnecessary UI barrel export file:
+  - Analyzed `src/components/ui/index.ts`: file exported nothing (`export {}`) and only contained JSDoc comments
+  - Searched codebase for any imports from `components/ui` barrel — found zero usages
+  - All Astro UI components (Toggle, Button, Panel, SearchInput) are imported directly via their `.astro` paths
+  - Barrel file provided no tree-shaking benefits (empty export) and no import convenience (Astro components can't be re-exported from TS)
+  - Removed `src/components/ui/index.ts` as dead code
+  - Import paths remain consistent (all direct imports, no barrel usage)
+- All 263 tests pass
+- Build completes without errors
+- Biome linting passes with zero errors

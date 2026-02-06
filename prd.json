@@ -1385,7 +1385,7 @@
         "Build succeeds without import errors",
         "Documentation updated if import pattern changes"
       ],
-      "passes": false
+      "passes": true
     }
   ],
   "summary": {
