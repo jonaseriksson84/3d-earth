@@ -23,6 +23,6 @@
       "@scripts/*": ["src/scripts/*"]
     }
   },
-  "include": [".astro/types.d.ts", "src/**/*"],
+  "include": [".astro/types.d.ts", "src/**/*", "src/jsx.d.ts"],
   "exclude": ["dist", "node_modules"]
 }
