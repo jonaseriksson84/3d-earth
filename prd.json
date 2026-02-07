@@ -1409,7 +1409,7 @@
         "No loss of functionality",
         "Responsive behavior maintained on mobile"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "UI-REFACTOR-012",

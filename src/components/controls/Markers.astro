@@ -23,21 +23,20 @@ const toggleClasses =
 const checkboxClasses =
   'size-4 cursor-pointer accent-[color:var(--color-accent)] pointer-coarse:size-5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent)]';
 const labelClasses = 'text-[0.8125rem] text-[color:var(--color-text-primary)]';
-const optionGroupClasses =
-  'flex flex-col gap-1.5 py-1.5 border-b border-white/5 pointer-coarse:py-2';
+const optionGroupClasses = 'py-1 border-b border-white/5 pointer-coarse:py-1.5';
 ---
 
-<div class:list={["flex flex-col gap-1 p-3 bg-[color:var(--color-panel-darker)] rounded-lg pointer-coarse:p-4", className]}>
+<div class:list={["flex flex-col gap-1 p-2.5 bg-[color:var(--color-panel-darker)] rounded-lg pointer-coarse:p-3.5", className]}>
   <!-- City markers toggle -->
   <div class:list={[optionGroupClasses, "!pt-0"]}>
     <label class={toggleClasses}>
       <input type="checkbox" id="markerToggle" checked aria-label="Toggle city markers visibility" class={checkboxClasses} />
-      <span class={labelClasses}>Show city markers</span>
+      <span class={labelClasses}>City markers</span>
     </label>
   </div>
 
   <!-- City search -->
-  <div class:list={[optionGroupClasses, "pt-1"]}>
+  <div class:list={[optionGroupClasses]}>
     <div class="relative w-full" role="search" aria-label="City search">
       <input
         type="text"
@@ -67,18 +66,20 @@ const optionGroupClasses =
   </div>
 
   <!-- Custom markers -->
-  <div class="flex flex-col gap-2 py-1.5 pointer-coarse:py-2">
+  <div class="flex flex-col gap-1.5 py-1 pointer-coarse:py-1.5">
     <div class="flex items-center justify-between gap-2">
-      <span class="text-[0.8125rem] text-[color:var(--color-text-primary)]">Custom markers</span>
-      <span class="text-xs text-[color:var(--color-text-muted)]" id="customMarkerCount"></span>
+      <div class="flex items-center gap-1.5">
+        <span class="text-[0.8125rem] text-[color:var(--color-text-primary)]">Custom</span>
+        <span class="text-xs text-[color:var(--color-text-muted)]" id="customMarkerCount"></span>
+      </div>
+      <button
+        id="addMarkerBtn"
+        class="add-marker-btn py-1 px-2.5 font-inherit text-xs font-medium text-[color:var(--color-text-primary)] bg-[color:var(--color-input-bg)] border border-dashed border-[color:var(--color-input-border)] rounded cursor-pointer transition-[background-color,border-color] duration-150 ease-in-out hover:bg-[rgba(77,166,255,0.15)] hover:border-[color:var(--color-accent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent)] pointer-coarse:min-h-[44px] pointer-coarse:py-1.5 pointer-coarse:px-3 pointer-coarse:text-[0.8125rem] motion-reduce:transition-none"
+        aria-label="Place a custom marker on the globe"
+      >
+        + Add
+      </button>
     </div>
-    <button
-      id="addMarkerBtn"
-      class="add-marker-btn flex items-center justify-center w-full py-2 px-3 font-inherit text-[0.8125rem] font-medium text-[color:var(--color-text-primary)] bg-[color:var(--color-input-bg)] border border-dashed border-[color:var(--color-input-border)] rounded cursor-pointer transition-[background-color,border-color] duration-150 ease-in-out hover:bg-[rgba(77,166,255,0.15)] hover:border-[color:var(--color-accent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent)] pointer-coarse:min-h-[44px] pointer-coarse:text-sm motion-reduce:transition-none"
-      aria-label="Place a custom marker on the globe"
-    >
-      + Add marker
-    </button>
     <div
       id="customMarkersList"
       class="flex flex-col gap-1 max-h-[150px] overflow-y-auto"

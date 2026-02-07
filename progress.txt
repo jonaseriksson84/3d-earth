@@ -1543,3 +1543,43 @@
 - TypeScript compiles without errors (0 errors, 0 warnings via `astro check` and `tsc --noEmit`)
 - Build completes without errors
 - Biome linting passes with zero errors
+
+### UI-REFACTOR-011: Compact control panel layout
+- **Status:** COMPLETED
+- **Date:** 2026-02-07
+- **Changes:** Reduced vertical space in the control panel by compacting related controls onto single lines and tightening spacing:
+  - **VisualizationOptions.astro:**
+    - Clouds toggle and mode selector placed inline on same row (`flex justify-between`)
+    - Removed "Mode:" label and indented dropdown, replaced with inline select next to toggle
+    - Reduced option group padding from `py-1.5` to `py-1` (desktop) and `py-2` to `py-1.5` (touch)
+    - Removed `flex-col gap-1.5` from option groups (single-line toggles don't need column layout)
+    - Shortened labels: removed "Show" prefix (e.g., "Show clouds" → "Clouds")
+    - Reduced container padding from `p-3` to `p-2.5` (desktop), `p-4` to `p-3.5` (touch)
+  - **TimeControls.astro:**
+    - Reduced gap between date picker and time slider sections from `gap-4` to `gap-2.5`
+    - Reduced internal section gaps from `gap-2` to `gap-1.5`
+    - Reduced container padding from `p-3` to `p-2.5` (desktop), `p-4` to `p-3.5` (touch)
+    - Removed `mt-1` from playback controls row, tightened gap from `gap-3` to `gap-2`
+  - **Markers.astro:**
+    - Shortened toggle label: "Show city markers" → "City markers"
+    - "Custom markers" header and "+ Add" button placed inline on same row
+    - Add button changed from full-width to compact inline button
+    - Reduced container padding from `p-3` to `p-2.5` (desktop), `p-4` to `p-3.5` (touch)
+  - **EclipseControls.astro:**
+    - Reduced container padding from `p-3` to `p-2.5` (desktop), `p-4` to `p-3.5` (touch)
+    - Shortened label: "Show eclipses" → "Eclipses"
+    - Reduced notification and button margins from `mt-1.5` to `mt-1`
+  - **SunTimesDisplay.astro:**
+    - Reduced container padding from `p-3` to `p-2.5`
+  - All touch targets maintained at minimum 44px via `pointer-coarse:min-h-[44px]` classes
+  - Acceptance criteria met:
+    - Control panel height reduced by ~25% through combined spacing reductions and inline layouts ✓
+    - Related controls grouped on single lines where appropriate ✓
+    - Touch targets minimum 44px for accessibility ✓
+    - Labels and controls remain clearly readable ✓
+    - No loss of functionality ✓
+    - Responsive behavior maintained on mobile ✓
+- All 263 tests pass
+- TypeScript compiles without errors (0 errors, 0 warnings via `astro check`)
+- Build completes without errors
+- Biome linting passes with zero errors

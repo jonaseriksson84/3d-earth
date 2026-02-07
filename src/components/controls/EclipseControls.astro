@@ -19,9 +19,9 @@ interface Props {
 const { class: className } = Astro.props;
 ---
 
-<div class:list={["flex flex-col gap-1 p-3 bg-[color:var(--color-panel-darker)] rounded-lg pointer-coarse:p-4", className]}>
+<div class:list={["flex flex-col gap-1 p-2.5 bg-[color:var(--color-panel-darker)] rounded-lg pointer-coarse:p-3.5", className]}>
   <!-- Eclipse toggle -->
-  <div class="flex flex-col gap-1.5 py-1.5 pointer-coarse:py-2">
+  <div class="py-1 pointer-coarse:py-1.5">
     <label class="flex items-center gap-2 cursor-pointer select-none pointer-coarse:min-h-[44px]">
       <input
         type="checkbox"
@@ -29,14 +29,14 @@ const { class: className } = Astro.props;
         aria-label="Toggle solar eclipse visualization"
         class="size-4 cursor-pointer accent-[color:var(--color-accent)] pointer-coarse:size-5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent)]"
       />
-      <span class="text-[0.8125rem] text-[color:var(--color-text-primary)]">Show eclipses</span>
+      <span class="text-[0.8125rem] text-[color:var(--color-text-primary)]">Eclipses</span>
     </label>
   </div>
 
   <!-- Eclipse notification area -->
   <div
     id="eclipseNotification"
-    class="mt-1.5 py-1.5 px-2 rounded text-xs leading-relaxed hidden pointer-coarse:py-2 pointer-coarse:px-2.5 pointer-coarse:text-[0.8125rem] bg-[rgba(255,160,0,0.2)] border border-[rgba(255,160,0,0.5)] text-[color:var(--color-eclipse)]"
+    class="mt-1 py-1 px-2 rounded text-xs leading-relaxed hidden pointer-coarse:py-1.5 pointer-coarse:px-2.5 pointer-coarse:text-[0.8125rem] bg-[rgba(255,160,0,0.2)] border border-[rgba(255,160,0,0.5)] text-[color:var(--color-eclipse)]"
     aria-live="polite"
     aria-label="Eclipse information notification"
   ></div>
@@ -44,7 +44,7 @@ const { class: className } = Astro.props;
   <!-- Quick-jump buttons for upcoming eclipses -->
   <div
     id="eclipseButtons"
-    class="flex flex-wrap gap-1 mt-1.5"
+    class="flex flex-wrap gap-1 mt-1"
     role="group"
     aria-label="Quick-jump to upcoming eclipses"
   ></div>

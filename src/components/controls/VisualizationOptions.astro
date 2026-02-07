@@ -29,22 +29,20 @@ const toggleClasses =
 const checkboxClasses =
   'size-4 cursor-pointer accent-[color:var(--color-accent)] pointer-coarse:size-5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent)]';
 const labelClasses = 'text-[0.8125rem] text-[color:var(--color-text-primary)]';
-const optionGroupClasses =
-  'flex flex-col gap-1.5 py-1.5 border-b border-white/5 pointer-coarse:py-2';
+const optionGroupClasses = 'py-1 border-b border-white/5 pointer-coarse:py-1.5';
 ---
 
-<div class:list={["flex flex-col gap-1 p-3 bg-[color:var(--color-panel-darker)] rounded-lg pointer-coarse:p-4", className]}>
-  <!-- Clouds with mode selector -->
+<div class:list={["flex flex-col p-2.5 bg-[color:var(--color-panel-darker)] rounded-lg pointer-coarse:p-3.5", className]}>
+  <!-- Clouds with mode selector (inline) -->
   <div class:list={[optionGroupClasses, "!pt-0"]}>
-    <label class={toggleClasses}>
-      <input type="checkbox" id="cloudToggle" checked aria-label="Toggle cloud layer visibility" class={checkboxClasses} />
-      <span class={labelClasses}>Show clouds</span>
-    </label>
-    <div class="flex items-center gap-1.5 ml-6">
-      <label for="cloudModeSelect" class="text-xs text-[color:var(--color-text-muted)]">Mode:</label>
+    <div class="flex items-center justify-between gap-2">
+      <label class={toggleClasses}>
+        <input type="checkbox" id="cloudToggle" checked aria-label="Toggle cloud layer visibility" class={checkboxClasses} />
+        <span class={labelClasses}>Clouds</span>
+      </label>
       <select
         id="cloudModeSelect"
-        class="py-1 px-2 bg-[color:var(--color-input-bg)] border border-[color:var(--color-input-border)] rounded text-[color:var(--color-text-primary)] text-xs font-inherit cursor-pointer focus:outline-none focus:border-[color:var(--color-accent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent)] pointer-coarse:min-h-[44px] pointer-coarse:py-2 pointer-coarse:px-3 pointer-coarse:text-sm motion-reduce:transition-none"
+        class="py-0.5 px-1.5 bg-[color:var(--color-input-bg)] border border-[color:var(--color-input-border)] rounded text-[color:var(--color-text-primary)] text-xs font-inherit cursor-pointer focus:outline-none focus:border-[color:var(--color-accent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent)] pointer-coarse:min-h-[44px] pointer-coarse:py-2 pointer-coarse:px-3 pointer-coarse:text-sm motion-reduce:transition-none"
         aria-label="Cloud animation mode"
       >
         <option value="static">Static</option>
@@ -57,7 +55,7 @@ const optionGroupClasses =
   <div class={optionGroupClasses}>
     <label class={toggleClasses}>
       <input type="checkbox" id="atmosphereToggle" checked aria-label="Toggle atmospheric glow effect" class={checkboxClasses} />
-      <span class={labelClasses}>Show atmosphere</span>
+      <span class={labelClasses}>Atmosphere</span>
     </label>
   </div>
 
@@ -65,7 +63,7 @@ const optionGroupClasses =
   <div class={optionGroupClasses}>
     <label class={toggleClasses}>
       <input type="checkbox" id="refLinesToggle" aria-label="Toggle reference lines visibility" class={checkboxClasses} />
-      <span class={labelClasses}>Show reference lines</span>
+      <span class={labelClasses}>Reference lines</span>
     </label>
   </div>
 
@@ -73,7 +71,7 @@ const optionGroupClasses =
   <div class={optionGroupClasses}>
     <label class={toggleClasses}>
       <input type="checkbox" id="terminatorToggle" aria-label="Toggle day/night terminator line visibility" class={checkboxClasses} />
-      <span class={labelClasses}>Show terminator line</span>
+      <span class={labelClasses}>Terminator line</span>
     </label>
   </div>
 
@@ -81,7 +79,7 @@ const optionGroupClasses =
   <div class={optionGroupClasses}>
     <label class={toggleClasses}>
       <input type="checkbox" id="moonToggle" aria-label="Toggle Moon visibility" class={checkboxClasses} />
-      <span class={labelClasses}>Show Moon</span>
+      <span class={labelClasses}>Moon</span>
     </label>
   </div>
 
@@ -89,7 +87,7 @@ const optionGroupClasses =
   <div class={optionGroupClasses}>
     <label class={toggleClasses}>
       <input type="checkbox" id="auroraToggle" aria-label="Toggle aurora borealis and australis visualization" class={checkboxClasses} />
-      <span class={labelClasses}>Show auroras</span>
+      <span class={labelClasses}>Auroras</span>
     </label>
   </div>
 
@@ -97,7 +95,7 @@ const optionGroupClasses =
   <div class={optionGroupClasses}>
     <label class={toggleClasses}>
       <input type="checkbox" id="solarIntensityToggle" aria-label="Toggle sun intensity gradient and subsolar point indicator" class={checkboxClasses} />
-      <span class={labelClasses}>Show sun intensity</span>
+      <span class={labelClasses}>Sun intensity</span>
     </label>
   </div>
 
@@ -105,15 +103,15 @@ const optionGroupClasses =
   <div class={optionGroupClasses}>
     <label class={toggleClasses}>
       <input type="checkbox" id="satelliteToggle" aria-label="Toggle satellite orbit visibility" class={checkboxClasses} />
-      <span class={labelClasses}>Show satellite orbits</span>
+      <span class={labelClasses}>Satellite orbits</span>
     </label>
   </div>
 
   <!-- Timezone boundaries -->
-  <div class="flex flex-col gap-1.5 py-1.5 pointer-coarse:py-2">
+  <div class="py-1 pointer-coarse:py-1.5">
     <label class={toggleClasses}>
       <input type="checkbox" id="timezoneToggle" aria-label="Toggle timezone boundary lines" class={checkboxClasses} />
-      <span class={labelClasses}>Show timezone boundaries</span>
+      <span class={labelClasses}>Timezone boundaries</span>
     </label>
   </div>
 </div>

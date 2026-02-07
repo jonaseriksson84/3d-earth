@@ -17,9 +17,9 @@ interface Props {
 const { class: className } = Astro.props;
 ---
 
-<div class:list={["flex flex-col gap-4", className]}>
+<div class:list={["flex flex-col gap-2.5", className]}>
   <!-- Date Picker with Season Presets -->
-  <div class="flex flex-col gap-2 p-3 bg-[color:var(--color-panel-darker)] rounded-lg pointer-coarse:p-4">
+  <div class="flex flex-col gap-1.5 p-2.5 bg-[color:var(--color-panel-darker)] rounded-lg pointer-coarse:p-3.5">
     <div class="flex justify-between items-center gap-2">
       <label for="datePicker" class="text-sm font-medium text-[color:var(--color-text-primary)]">Date</label>
       <input
@@ -58,7 +58,7 @@ const { class: className } = Astro.props;
   </div>
 
   <!-- Time Slider with Playback Controls -->
-  <div class="flex flex-col gap-2 p-3 bg-[color:var(--color-panel-darker)] rounded-lg pointer-coarse:p-4">
+  <div class="flex flex-col gap-1.5 p-2.5 bg-[color:var(--color-panel-darker)] rounded-lg pointer-coarse:p-3.5">
     <div class="flex justify-between items-center gap-2">
       <label for="timeSlider" class="text-sm font-medium text-[color:var(--color-text-primary)]">Time control</label>
       <span class="text-sm text-[color:var(--color-text-primary)] tabular-nums" aria-live="polite">
@@ -76,7 +76,7 @@ const { class: className } = Astro.props;
       aria-label="Time of day slider"
       aria-valuetext="12:00"
     />
-    <div class="flex items-center gap-3 mt-1">
+    <div class="flex items-center gap-2">
       <button
         id="playPauseBtn"
         class="flex items-center justify-center size-9 bg-[color:var(--color-accent)] border-none rounded-full text-black text-sm cursor-pointer transition-[background-color,transform] duration-150 ease-in-out hover:bg-[color:var(--color-accent-hover)] active:bg-[color:var(--color-accent-active)] active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent)] pointer-coarse:size-11 motion-reduce:transition-none"
