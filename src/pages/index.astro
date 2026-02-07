@@ -9,6 +9,7 @@ import ErrorOverlay from '../components/overlays/ErrorOverlay.astro';
 import LoadingOverlay from '../components/overlays/LoadingOverlay.astro';
 import InstructionsPanel from '../components/panels/InstructionsPanel.astro';
 import SunTimesDisplay from '../components/panels/SunTimesDisplay.astro';
+import CollapsibleSection from '../components/ui/CollapsibleSection.astro';
 ---
 
 <!DOCTYPE html>
@@ -32,16 +33,26 @@ import SunTimesDisplay from '../components/panels/SunTimesDisplay.astro';
       <span class="menu-toggle-icon" aria-hidden="true"></span>
     </button>
 
-    <div id="controlsPanel" class="controls" role="region" aria-label="Visualization controls">
-      <TimeControls />
+    <div id="controlsPanel" class="controls flex flex-col gap-2" role="region" aria-label="Visualization controls">
+      <CollapsibleSection id="time" title="Time">
+        <TimeControls />
+      </CollapsibleSection>
 
-      <VisualizationOptions />
+      <CollapsibleSection id="visualization" title="Visualization">
+        <VisualizationOptions />
+      </CollapsibleSection>
 
-      <Markers />
+      <CollapsibleSection id="markers" title="Markers">
+        <Markers />
+      </CollapsibleSection>
 
-      <EclipseControls />
+      <CollapsibleSection id="eclipses" title="Eclipses">
+        <EclipseControls />
+      </CollapsibleSection>
 
-      <SunTimesDisplay />
+      <CollapsibleSection id="sun-times" title="Sunrise & Sunset">
+        <SunTimesDisplay />
+      </CollapsibleSection>
     </div>
 
     <InstructionsPanel />

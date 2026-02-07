@@ -1433,7 +1433,7 @@
         "Keyboard accessible (Enter/Space to toggle)",
         "At least 4 collapsible sections: Time, Visualization, Markers, Eclipses"
       ],
-      "passes": false
+      "passes": true
     }
   ],
   "summary": {

@@ -1498,3 +1498,48 @@
 - TypeScript compiles without errors (0 errors, 0 warnings via `astro check` and `tsc --noEmit`)
 - Build completes without errors
 - Biome linting passes with zero errors
+
+### UI-REFACTOR-012: Add collapsible sections to control panel
+- **Status:** COMPLETED
+- **Date:** 2026-02-07
+- **Changes:** Added collapsible accordion sections to the control panel with localStorage persistence:
+  - Created `src/components/ui/CollapsibleSection.astro`:
+    - Reusable component with clickable header and chevron indicator
+    - Props: `id` (for localStorage key), `title`, `defaultCollapsed`, `class`
+    - Uses `<slot>` for section content
+    - `aria-expanded` and `aria-controls` for accessibility
+    - Keyboard accessible (button element, Enter/Space to toggle)
+    - Chevron rotates 90 degrees when collapsed (CSS transition)
+    - Focus-visible styles for keyboard navigation
+    - Touch-friendly minimum 44px height on coarse pointer devices
+    - Reduced motion preference respected on chevron animation
+  - Added collapsible CSS in `src/styles/global.css`:
+    - `.collapsible-content`: max-height transition for smooth expand/collapse animation
+    - `.is-collapsed .collapsible-content`: max-height: 0, opacity: 0 for hidden state
+    - `.is-collapsed .collapsible-chevron`: rotate(-90deg) for collapsed indicator
+  - Updated `src/pages/index.astro`:
+    - Wrapped TimeControls, VisualizationOptions, Markers, EclipseControls, and SunTimesDisplay with `<CollapsibleSection>`
+    - 5 collapsible sections: time, visualization, markers, eclipses, sun-times
+    - Added `flex flex-col gap-2` to controls panel for consistent spacing
+  - Updated section components to remove duplicate headers:
+    - `VisualizationOptions.astro`: removed `<h3>Visualization</h3>` header
+    - `Markers.astro`: removed `<h3>Markers</h3>` header
+    - `EclipseControls.astro`: removed `<h3>Eclipses</h3>` header
+    - `SunTimesDisplay.astro`: removed `<label>Sunrise & Sunset</label>` header
+  - Added `initCollapsibleSections()` in `src/scripts/main.ts`:
+    - Reads saved collapsed state from localStorage (`earth-collapsed-sections` key)
+    - Falls back to `data-default-collapsed` attribute if no saved state
+    - Click handler toggles `.is-collapsed` class and updates `aria-expanded`
+    - Persists state to localStorage as JSON object on each toggle
+    - Graceful error handling for localStorage read/write failures
+  - Acceptance criteria met:
+    - Control sections are collapsible via header click ✓
+    - Visual indicator shows expanded/collapsed state (chevron) ✓
+    - Collapsed state persists across page reloads (localStorage) ✓
+    - Smooth animation on expand/collapse (max-height/opacity transition) ✓
+    - Keyboard accessible (Enter/Space to toggle) ✓
+    - 5 collapsible sections: Time, Visualization, Markers, Eclipses, Sunrise & Sunset ✓
+- All 263 tests pass
+- TypeScript compiles without errors (0 errors, 0 warnings via `astro check` and `tsc --noEmit`)
+- Build completes without errors
+- Biome linting passes with zero errors

@@ -148,6 +148,60 @@ let selectedCityForSunTimes: CityData | null = null;
 let lastSunTimesDate: string = '';
 let eclipseTooltip: HTMLElement | null = null;
 
+const COLLAPSIBLE_STORAGE_KEY = 'earth-collapsed-sections';
+
+/**
+ * Initializes collapsible sections in the control panel.
+ * Reads collapsed state from localStorage and sets up click handlers on section headers.
+ */
+function initCollapsibleSections(): void {
+  const sections = document.querySelectorAll<HTMLElement>('.collapsible-section');
+  if (sections.length === 0) return;
+
+  // Load saved state from localStorage
+  let savedState: Record<string, boolean> = {};
+  try {
+    const stored = localStorage.getItem(COLLAPSIBLE_STORAGE_KEY);
+    if (stored) {
+      savedState = JSON.parse(stored);
+    }
+  } catch {
+    // Ignore parse errors
+  }
+
+  sections.forEach((section) => {
+    const sectionId = section.dataset.sectionId;
+    if (!sectionId) return;
+
+    const header = section.querySelector<HTMLButtonElement>('.collapsible-header');
+    if (!header) return;
+
+    // Determine initial state: saved > default attribute > expanded
+    const defaultCollapsed = section.dataset.defaultCollapsed === 'true';
+    const isCollapsed = savedState[sectionId] ?? defaultCollapsed;
+
+    if (isCollapsed) {
+      section.classList.add('is-collapsed');
+      header.setAttribute('aria-expanded', 'false');
+    }
+
+    header.addEventListener('click', () => {
+      const wasCollapsed = section.classList.contains('is-collapsed');
+      section.classList.toggle('is-collapsed');
+      header.setAttribute('aria-expanded', String(wasCollapsed));
+
+      // Persist state
+      try {
+        const current = JSON.parse(localStorage.getItem(COLLAPSIBLE_STORAGE_KEY) || '{}');
+        current[sectionId] = !wasCollapsed;
+        localStorage.setItem(COLLAPSIBLE_STORAGE_KEY, JSON.stringify(current));
+      } catch {
+        // Ignore storage errors
+      }
+    });
+  });
+}
+
 /**
  * Gets user geolocation and updates both Earth rotation and user marker.
  * Places default marker immediately, then updates and flies to location after geolocation resolves.
@@ -544,6 +598,9 @@ export function initApp(): void {
         controlsPanel.classList.toggle('expanded', !isExpanded);
       });
     }
+
+    // Initialize collapsible sections with localStorage persistence
+    initCollapsibleSections();
 
     // Set up marker toggle
     const markerToggle = document.getElementById('markerToggle') as HTMLInputElement | null;

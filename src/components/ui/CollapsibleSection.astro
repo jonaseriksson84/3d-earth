@@ -1,0 +1,49 @@
+---
+/**
+ * CollapsibleSection.astro - Collapsible section with header toggle
+ *
+ * A section with a clickable header that toggles visibility of its content.
+ * Collapsed state is persisted to localStorage using the section's id.
+ * Includes smooth animation and chevron indicator.
+ *
+ * @example
+ * <CollapsibleSection id="time" title="Time">
+ *   <TimeControls />
+ * </CollapsibleSection>
+ */
+
+interface Props {
+  /** Unique section ID used for localStorage persistence */
+  id: string;
+  /** Section header title */
+  title: string;
+  /** Whether section starts collapsed (default: false = expanded) */
+  defaultCollapsed?: boolean;
+  /** Additional CSS classes for the container */
+  class?: string;
+}
+
+const { id, title, defaultCollapsed = false, class: className } = Astro.props;
+---
+
+<div
+  class:list={['collapsible-section', className]}
+  data-section-id={id}
+  data-default-collapsed={defaultCollapsed ? 'true' : 'false'}
+>
+  <button
+    class="collapsible-header flex w-full items-center justify-between gap-2 cursor-pointer border-none bg-transparent p-0 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-accent)] pointer-coarse:min-h-[44px]"
+    aria-expanded="true"
+    aria-controls={`section-content-${id}`}
+    type="button"
+  >
+    <h3 class="m-0 p-0 text-sm font-medium tracking-wide text-[color:var(--color-text-primary)]">{title}</h3>
+    <span class="collapsible-chevron text-xs text-[color:var(--color-text-muted)] transition-transform duration-200 motion-reduce:transition-none" aria-hidden="true">&#9660;</span>
+  </button>
+  <div
+    id={`section-content-${id}`}
+    class="collapsible-content overflow-hidden transition-[max-height,opacity] duration-200 ease-in-out motion-reduce:transition-none"
+  >
+    <slot />
+  </div>
+</div>

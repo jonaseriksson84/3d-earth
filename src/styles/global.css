@@ -139,6 +139,33 @@ canvas {
 }
 
 /* =============================================================================
+   Collapsible Sections
+   ============================================================================= */
+
+.collapsible-section {
+  @apply flex flex-col gap-0;
+}
+
+.collapsible-content {
+  max-height: 1000px;
+  opacity: 1;
+}
+
+.collapsible-section.is-collapsed .collapsible-content {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.collapsible-section.is-collapsed .collapsible-chevron {
+  transform: rotate(-90deg);
+}
+
+.collapsible-section.is-collapsed .collapsible-header {
+  @apply mb-0;
+}
+
+/* =============================================================================
    City Search (JS-dynamically-created items)
    ============================================================================= */
 
